@@ -1,0 +1,118 @@
+---
+title: "Kérdőív válaszok összefoglalása"
+author: "Marton Kovacs"
+date: '2019.09.10.'
+output: html_document
+---
+
+```{r setup, include = FALSE}
+# Install and load needed packages
+if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
+
+if(!require(googlesheets)) install.packages("googlesheets", repos = "http://cran.us.r-project.org")
+```
+
+```{r load data, include = FALSE}
+# Loading data
+## Read survey url
+survey_url <- read_lines("survey_url.txt")
+
+## Download survey data
+survey_data <- 
+  gs_url(survey_url) %>% 
+  gs_read()
+```
+
+```{r survey data wrangling, include = FALSE}
+# Renaming variables
+survey_data <- 
+  survey_data %>% 
+  janitor::clean_names()
+```
+
+## Demográfiai adatok
+### Nemek eloszlása a kérdőív kitöltők között
+
+```{r gender plot, echo = FALSE}
+survey_data %>% 
+  filter(!is.na(nem)) %>% 
+  mutate(nem = as.factor(nem)) %>% 
+  ggplot(aes(x = nem,
+             fill = nem)) +
+  geom_bar(aes(y = (..count..)/sum(..count..)),
+           show.legend = FALSE) +
+  scale_y_continuous(expand = c(0,0), labels=scales::percent) +
+  labs(x = "Nem",
+       y = "Százalékos eloszlás") +
+  theme_minimal()
+```
+
+***
+
+## Alvás és energikusság eredmények
+
+```{r sleep time plot, echo = FALSE, warning = FALSE}
+survey_data %>% 
+  ggplot(aes(x = hany_orat_aludtal_tegnap_este)) +
+  geom_bar() +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(breaks = 1:10,
+                     labels = as.character(1:10)) +
+  labs(x = "Hány órát aludtál tegnap este?",
+       y = "Mennyiség") +
+  theme_minimal()
+```
+
+Átlagosan **`r survey_data %>% summarize(mean_sleep = mean(atlagosan_hany_orat_szoktal_aludni_munkanapokon, na.rm = T)) %>% pull(mean_sleep)` órát** szoktatok alvással tölteni munkanapokon.
+
+Ahhoz pedig, hogy kipihenten ébredjetek, átlagosan **`r survey_data %>% summarize(mean_sleep = mean(szerinted_napi_hany_ora_alvasra_lenne_szukseged_hogy_kipihenten_ebredj, na.rm = T)) %>% pull(mean_sleep)` óra** alvásra lenne szükségetek.
+
+```{r energy plot, echo = FALSE, warning = FALSE}
+survey_data %>% 
+  ggplot(aes(x = mennyire_erzed_magad_most_energikusnak)) +
+  geom_bar() +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(breaks = 1:10,
+                     labels = c("1\nExtrémen Fáradt",
+                                as.character(2:9),
+                                "10\nExtrémen Energikus")) +
+  labs(x = "Mennyire érzed magad most energikusnak",
+       y = "Mennyiség") +
+  theme_minimal()
+```
+
+Úgy tippelitek, hogy átlagosan **`r survey_data %>% summarize(social_media_time = mean(mit_tippelsz_atlagosan_egy_nap_hany_orat_toltesz_szocialis_media_hasznalattal, na.rm = T)) %>% pull(social_media_time)` órát** töltötök szociális média használattal.
+
+***
+
+## Munkameória teszt eredményei
+### Munkamemória terjedelmének eloszlása
+
+```{r wm plot, echo = FALSE, warning = FALSE}
+survey_data %>%
+  ggplot(aes(x = ird_be_a_sajat_munkamemoria_teszt_eredmenyedet)) +
+  geom_bar() +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(breaks = 1:10,
+                   labels = as.character(1:10)) +
+  labs(x = "Munkamemória teszten elért pontszám",
+       y = "Mennyiség") +
+  theme_minimal()
+```
+
+### Gyakran elrontott számok
+
+```{r number swap data wrangling, include = FALSE}
+number_swap_data <-
+  survey_data %>% 
+  select(starts_with("x")) %>% 
+  gather(key = "error_no",
+         value = "value") %>% 
+  mutate(error_no = str_extract(error_no, pattern = "[[:digit:]]")) %>% 
+  separate(value, into = c("original_number", "erroneous_number"), sep = "-") %>% 
+  drop_na(original_number, erroneous_number)
+```
+
+```{r number swap plot, echo = FALSE, warning = FALSE}
+
+```
