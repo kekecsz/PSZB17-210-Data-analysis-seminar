@@ -1,6 +1,6 @@
 ---
 title: "Kérdőív válaszok összefoglalása"
-author: "Marton Kovacs"
+author: "Kekecs Zoltán és Kovács Márton"
 date: '2019.09.10.'
 output: html_document
 ---
@@ -10,6 +10,8 @@ output: html_document
 if(!require(tidyverse)) install.packages("tidyverse", repos = "http://cran.us.r-project.org")
 
 if(!require(googlesheets)) install.packages("googlesheets", repos = "http://cran.us.r-project.org")
+
+if(!require(knitr)) install.packages("knitr", repos = "http://cran.us.r-project.org")
 ```
 
 ```{r load data, include = FALSE}
@@ -102,17 +104,72 @@ survey_data %>%
 
 ### Gyakran elrontott számok
 
-```{r number swap data wrangling, include = FALSE}
+```{r number swap plot, echo = FALSE, warning = FALSE}
 number_swap_data <-
   survey_data %>% 
   select(starts_with("x")) %>% 
   gather(key = "error_no",
          value = "value") %>% 
   mutate(error_no = str_extract(error_no, pattern = "[[:digit:]]")) %>% 
-  separate(value, into = c("original_number", "erroneous_number"), sep = "-") %>% 
-  drop_na(original_number, erroneous_number)
+  drop_na(value) %>% 
+  group_by(value) %>% 
+  count()
+
+number_swap_data %>% 
+  ggplot(aes(x = reorder(value, n), y = n)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(expand = c(0,0)) +
+  coord_flip() +
+  labs(x = "Felcserélt számpárok",
+       y = "Mennyiség") +
+  theme_minimal()
+
 ```
 
-```{r number swap plot, echo = FALSE, warning = FALSE}
+### Melyik számra gondoltak a legtöbben
 
+```{r, echo = FALSE, warning = FALSE}
+choose_number_data <- 
+  survey_data %>% 
+  group_by(valassz_egy_szamot_1_es_10_kozott) %>% 
+  count()
+
+ggplot(data = choose_number_data) +
+  geom_bar(aes(x = valassz_egy_szamot_1_es_10_kozott,
+           y = n),
+           stat = "identity") +
+  geom_bar(data = subset(choose_number_data, n == max(n)),
+           aes(x = valassz_egy_szamot_1_es_10_kozott,
+               y = n),
+           fill="red",
+           stat="identity") +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(breaks = 1:10,
+                     labels = as.character(1:10)) +
+  labs(x = "Saját választott szám",
+       y = "Mennyiség") +
+  theme_minimal()
+```
+
+```{r, echo = FALSE, warning = FALSE}
+others_number_data <- 
+  survey_data %>% 
+  group_by(mit_gondolsz_melyik_szamot_valasztotta_a_csoportban_a_legtobb_ember_a_fenti_kerdesre) %>% 
+  count()
+
+ggplot(data = others_number_data) +
+  geom_bar(aes(x = mit_gondolsz_melyik_szamot_valasztotta_a_csoportban_a_legtobb_ember_a_fenti_kerdesre,
+           y = n),
+           stat = "identity") +
+  geom_bar(data = subset(others_number_data, n == max(n)),
+           aes(x = mit_gondolsz_melyik_szamot_valasztotta_a_csoportban_a_legtobb_ember_a_fenti_kerdesre,
+               y = n),
+           fill="red",
+           stat="identity") +
+  scale_y_continuous(expand = c(0,0)) +
+  scale_x_continuous(breaks = 1:10,
+                     labels = as.character(1:10)) +
+  labs(x = "Mit gondolsz melyik számot választották a legtöbben",
+       y = "Mennyiség") +
+  theme_minimal()
 ```
