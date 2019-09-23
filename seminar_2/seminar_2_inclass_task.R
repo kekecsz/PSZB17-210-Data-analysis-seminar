@@ -155,6 +155,29 @@ ToothGrowth %>%
   mutate(mean_len_cm = mean(len_cm),
          cases = n())
 
+# A mutate() függvény változatai (ajánlott anyag)
+
+## A mutate függvény különböző változataival több változót is megváltozhtathatunk egyszerre!
+## A mutate_all() az összes változót egyszerre megváltoztathatjuk
+ToothGrowth %>% 
+  mutate_all(.funs = list(~ as.character(.)))
+
+## A mutate_at bizonyos változókra használ egy függvényt
+ToothGrowth_factor <-
+  ToothGrowth %>% 
+  mutate_at(.funs = list(~ as.factor(.)), .vars = vars(supp, dose))
+
+## Most leelenőrizhetjük, hogy tényleg faktor típusra változtattuk-e a supp és dose változókat.
+is.factor(ToothGrowth_factor$dose)
+
+## És megnézhetjük a faktor változó különböző szintjeit
+levels(ToothGrowth_factor$dose)
+
+## A mutate_if() függvény csak azokra a változókra használ egy függvényt, amelyek eleget tesznek egy feltételnek.
+ToothGrowth %>% 
+  mutate_if(.predicate = is.factor, .funs = list( ~ stringr::str_to_lower(.)))
+
+# Értékek sorba rendezése bizonyos változók alapján
 # Ezen felül egy bizonyos változó értékei mentén sorba is rendezhetjük az adatokat.
 tooth_results %>% 
   arrange(mean_len_cm)
@@ -163,6 +186,7 @@ tooth_results %>%
 tooth_results %>% 
   arrange(-mean_len_cm)
 
+# Változók kiválasztása
 # Végül kiválaszhatunk bizonyos változókat, ha csak azokat szeretnénk megtartani.
 ToothGrowth %>%
   select(supp, len)
@@ -188,70 +212,6 @@ ToothGrowth %>%
                                       dose == 1.0 ~ "medium",
                                       dose == 2.0 ~ "large",
                                       TRUE ~ NA_character_))
-
-# Adatok tisztítása
-library(tidyr)
-library(tibble)
-
-# A második órához tartozó slide-okon találsz leírást a hosszú és széles adatformátumról.
-
-# Ehhez a who adatokat fogjuk használni
-who <- who
-?who
-
-# A gather() függvénnyel hosszú formátumba (long) tudjuk alakítani az adatokat.
-who_long <- 
-  who %>% 
-  gather(key = variable, value = value, new_sp_m014:newrel_f65)
-
-# Láthatjátok, hogy rengeteg hiányzó adat van (NA). Ezeket a drop_na() függvénnyel kizárhatjuk.
-# Az adattáblában minden változó ugyanolyan hosszú kell legyen. Ezért ahol nincs adat, ott az R NA értéket tárol.
-who_long <- 
-  who_long %>% 
-  drop_na(value)
-
-# Az adatok leírása alapján sok nem tidy adat van tárolva az adattáblánkban.
-# Például a "new_" szöveg a változók nevében nem hordoz semmilyen információt.
-# Így azt eltávolíthatjuk.
-# A karaktereken (string) való mindenféle operációhoz a stringr csomagot használjuk.
-library(stringr)
-
-who_long <-
-  who_long %>% 
-  mutate(variable = str_replace(variable, "new_",""))
-
-# Most a variable változó 3 fontos infromációt tartalmaz:
-## a teszt eredményét (test_restult)
-## a nemet (gender)
-## és az életkort (age)
-
-# Először a teszt eredmény válasszuk el a nemtől és a kortól.
-# Ehhez a separate() függvényt használjuk.
-
-who_long <-
-  who_long %>% 
-  mutate(variable = str_replace(variable, "new_","")) %>% 
-  separate(col = variable, into = c("test_result","gender_age"), sep = "_")
-
-# Most válasszuk el a nemet a kortól.
-# A nemhez kiemeljük a szöveg változó első karakterét.
-# A korhoz a 2. karatertől a 4-ig.
-who_tidy <-
-  who_long %>% 
-  mutate(gender = gender_age %>% substring(1, 1),
-         age = gender_age %>% substring(2))
-
-# Most megnézhetjük, hogy milyen különböző korcsoportjaink vannak.
-who_tidy %>% 
-  distinct(age)
-
-# Feladat:
-# Alakítsuk át az "age" változót karater változóvá a következő formátumba: 014 -> "0-14"
-# Az adattábla leírásában megtalálhatod a kor változó leírását.
-
-# Végül a spread() függvénnyel visszaalakíthatjuk széles formátumú adatokká.
-who_tidy %>% 
-  spread(age, value)
 
 # Most a titanic adattáblán fogunk gyakorolni
 library(titanic)
