@@ -278,7 +278,7 @@ ggplot(data = movies) +
 # Ha nem adod meg az objektum nevét, akkor az utolsó kinyomtatott ábrát menti el
 ggsave(plot2, "film_plot_1.jpg")
 
-# Húsvét tojás
+# Húsvéti tojás
 install.packages("gganimate")
 install.packages("gifski")
 install.packages("png")
