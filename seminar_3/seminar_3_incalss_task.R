@@ -30,6 +30,9 @@ movies
 install.packages("ggplot2")
 library(ggplot2)
 
+# Segítséget a ggplot cheatsheeten találsz. Több csomaghoz is van ilyen, érdemes rájuk keresni!
+# https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
+
 # Mennyire értenek egyet a nézők a kritikusokkal?
 # Hívjuk be az adatokat, amiket ábrázolni akarunk
 ggplot(data = movies) + # A ggplotba a sorok végén "+" jelet használunk ahhoz, hogy új elemet adjunk hozzá az ábránkhoz
@@ -42,7 +45,7 @@ ggplot(data = movies) + # A ggplotba a sorok végén "+" jelet használunk ahhoz
 plot1 <- 
   ggplot(data = movies) +
   aes(x = audience_score, y = critics_score, color = genre) + # Adjuk hozzá a műfajt, mint színt
-  geom_point(aes(shape = mpaa_rating)) # A geom-hoz is hozzáadhatunk aestheticet, ha használjuk azon belül az aes() függvényt
+  geom_point(aes(shape = mpaa_rating)) # A geom-hoz is hozzáadhatunk aesthetic-et, ha használjuk azon belül az aes() függvényt
 # Most a pontok formáját változtatjuk meg asszerint, hogy milyen a korhatáros besorolása a filmnek
 # A geom-on belül hozzáadott aes() csak az adott geom-ra vonatkozik
 
@@ -76,6 +79,11 @@ ggplot(data = movies) +
   aes(y = audience_score, x = mpaa_rating) +
   geom_boxplot() # A doboz ábra (boxplot) a mediánt mutatja középen, és az adatok szóródását körülötte
 
+# Gyakorlás
+## Hozz létre egy ábrát és mentsd el "my_first_plot" néven.
+## Vizsgáld meg, hogy van-e összefüggés a film hossza (runtime) és a kritikusok által adott pontok között (critcs_score).
+## Tetszőleges geomot használj hozzá.
+
 # Hegedű ábra (ugyanaz, mint a doboz ábra) (violin plot)
 ggplot(data = movies) +
   aes(y = audience_score, x = mpaa_rating, fill = mpaa_rating) +
@@ -87,6 +95,19 @@ ggplot(data = head(movies, 20)) + # Csak az első 20 értéket választjuk ki
   geom_line(size = 2) +
   geom_point(size = 5, color = "red") # Több geomot is használhatunk egyszerre
 # Itt a méret és a szín állandó értékek
+
+# Adatok előkészítése ábra készítésre
+## A ggplot egy pipe végére is berakható, így előkészítheted az adatokat, amit ábrázolni akarsz
+# Töltsük be a dplyr nevű csomagot
+library(dplyr)
+
+## Például válasszuk ki azokat a filmeket, amelyek 1995-ben jelentek meg.
+movies %>% 
+  filter(thtr_rel_year == 1995) %>% 
+  ggplot() + # Figyelj rá, hogy a ggplot() függvény után már "+" jelet kell használni, és nem a pipe-ot!
+  aes(x = critics_score,
+      y = audience_score) +
+  geom_point()
 
 # Szöveg ábrára rakása
 ggplot(data = head(movies, 20)) + 
@@ -102,13 +123,20 @@ ggplot(data = head(movies, 20)) +
   geom_point(size = 5, color = "blue") +
   geom_label()
 
+# Gyakorlás
+## Írjuk rá az 1995-ös filmeket ábrázoló ábrán lévő pontokra a film címét, amit ábrázolnak.
+
+
 # Barplot
-ggplot(data = tail(movies, 5)) + # Use the last 5 movies
+ggplot(data = tail(movies, 5)) + # Nézzük meg a listánkban lévő utolsó öt filmet
   aes(x = title, y = imdb_rating) +
   geom_col() # geom_bar is ugyanazt az eredményt adja
 
+# Gyakorlás
+## Hasonlítsuk össze, hogy egymáshoz képest a különböző film kritikákat leközlő oldalak (critics_rating) milyen pontokat adnak (critics_score).
+
 # Pointrange
-ggplot(data = tail(movies, 5)) + # Use the last 5 movies
+ggplot(data = tail(movies, 5)) + 
   aes(x = title, y = imdb_rating, ymin = imdb_rating - 1, ymax = imdb_rating + 1) +
   geom_pointrange()  
 
@@ -118,7 +146,7 @@ ggplot(data = tail(movies, 5)) +
   geom_errorbar(aes(ymin = imdb_rating - 1, ymax = imdb_rating + 1))     
 
 # Horizontális errorbar
-ggplot(data = tail(movies, 5)) + # Az utolsó 5 filmet használjuk
+ggplot(data = tail(movies, 5)) + 
   aes(y = title, x = imdb_rating) +
   geom_errorbarh(aes(xmin = imdb_rating - 1, xmax = imdb_rating + 1), height = .5)   
 
@@ -130,52 +158,58 @@ ggplot(data = tail(movies, 5)) + # Az utolsó 5 filmet használjuk
 # Minden film barplotolva a műfajok mentén.
 # Nem kell meghatározd az y tengelyt, mert a ggplot automatikusan kiszámolja, hogy hány érték tartozik az adott szemponthoz (count).
 # Tehát a ggplot megszámolja, hogy hány film tartozik egy adott műfajhoz.
-# Aggregating and summarising data may help to understand, but inevitably causes data loss
 ggplot(data = movies) +
   aes(x = genre) +
   geom_bar()
 
-# Adds a non-linear trendline and standard error as default
+# # Hozzáadhatunk egy nem lineáris trendet mutató vonalat
+# Illetve a vonal körül szürkén a standard hiba látható
 ggplot(data = movies) +
   aes(x = thtr_rel_year, y = imdb_num_votes) +
   geom_point() +
   geom_smooth()
 
-# You can also add a linear model trend ("lm"), and remove the standad error
+# Házzadhatunk egy lineáris trendet mutató vonalat
+# És levehetjük a standard hibát
 ggplot(data = movies) +
   aes(x = thtr_rel_year, y = imdb_num_votes) +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE)
 
 ### Pozíció (Position)
-# Make a stacked bar chart that shows absolute counts
+# Hozzunk létre egy halmozott barplotot (stacked bar), ami a mennyiséget mutatja
 ggplot(data = movies) +
   aes(x = genre, group = critics_rating, fill = critics_rating) +
   geom_bar(position = "stack")
 
-# You can also make the plot proportional
+# De arányként (proportion) is megmutathatjuk a csoportok mennyisége közti összefüggést
 ggplot(data = movies) +
   aes(x = genre, group = critics_rating, fill = critics_rating) +
   geom_bar(position = "fill")
 
-# Or present the count next to each other, so everything is comparable
+# Vagy ábrázoljuk egymás mellett a mennyiséget, hogy könnyebben összehasonlíthatók legyenek a csoportok
 ggplot(data = movies) +
   aes(x = genre, group = critics_rating, fill = critics_rating) +
   geom_bar(position = "dodge")
 
-# Position jitter slightly scatters the data points so they become more visible. Scattering is random
+# A szétszórás (position jitter) segítségével random zajt adhatunk az adatokhoz, így az átfedéseket megszűntetve
+# jobban látjuk az adatpontokat
 ggplot(data = movies) +
   aes(x = genre, y = audience_score) +
   geom_point(position = "jitter")
 
-### Coordinate systems
-# Flip x and y
+### Koordináta rendszerek
+# Cseréljük meg az x és y koordinátákat
 ggplot(data = movies) +
   aes(x = genre, group = critics_rating, fill = critics_rating) +
   geom_bar(position = "dodge") +
   coord_flip()
 
-# Polar plot
+# Gyakorlás
+## Most ábrázoljuk a legnagyobb bevételt behozó filmeket csak.
+## Nézzük meg, hogy melyik film milyen imdb pontot kapott. A filmek címe szerepeljen az egyik tengelyen és legyen olvasható.
+
+# Polar ábra
 ggplot(data = movies) +
   aes(x = genre, group = critics_rating, fill = critics_rating) +
   geom_bar(position = "fill") +
@@ -226,8 +260,46 @@ plot2 <-
 
 plot2
 
+# Több színpaletta érhető el az interneten. Ezeket is használhatjuk, de mi magunk is készíthetünk ilyet.
+# Mentsük el a hex színkódokat egy változóba szövegként:
+my_palette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+# Ez egy színvakok számára is használható paletta. Érdemes ilyet használni.
+
+# Majd használjuk fel őket az ábránkon
+ggplot(data = movies) +
+  aes(x = genre, group = critics_rating, fill = critics_rating) +
+  geom_bar(position = "fill") +
+  coord_polar() +
+  scale_fill_manual(values = my_palette) # nem a brewer, hanem a manual függvényt használjuk ilyenkor
+
 ### Metsük el az ábrát
 # Mentsük el az ábrát egy objektumba ( <- ), utána használjuk a következő függvényt:
 # ggsave(<objektum neve>, "<a file neve amibe mentsük>")
 # Ha nem adod meg az objektum nevét, akkor az utolsó kinyomtatott ábrát menti el
 ggsave(plot2, "film_plot_1.jpg")
+
+# Húsvét tojás
+install.packages("gganimate")
+install.packages("gifski")
+install.packages("png")
+library(gifski)
+library(png)
+library(gganimate)
+
+# Először csináljunk egy hagyományos ábrát
+my_plot <- 
+  ggplot(data = movies) +
+  aes(x = imdb_rating,
+      y = critics_score) +
+  geom_point()
+
+my_plot
+
+# Majd animáljuk azt
+my_anim_plot <- 
+  my_plot +
+  transition_states(genre,
+                    transition_length = 2,
+                    state_length = 1)
+
+my_anim_plot
