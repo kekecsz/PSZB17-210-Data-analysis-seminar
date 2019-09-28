@@ -1,26 +1,26 @@
-kitoltesiido,ID,nem,eletkor,alvas_szukseges,nemalvas_oka,memoria,memoria_ront_A,memoria_ront_B,memoria_ront_C,memoria_ront_D,memoria_ront_E,memoria_ront_F,jegy_tipp,valasztott_szam,tippelt_gyakori_szam,magassag,cipomeret,memoriateszt_hely,alvas_tegnap_1,alvas_tegnap_3,alvas_altalaban_1,alvas_altalaban_3,energiaszint_1,energiaszint_3,szocmedia_1,szocmedia_3,hangulat_1,hangulat_3,stat_tudasszint_3,stat_gyakorlas_3
-9/11/2019 16:00:31,Süni,Nő,0-22,8,Korán kelés későn fekvés (bagoly típus vagyok),7,7-5,2-7,5-2,0-4,3-6,6-4,4,5,7,151,35,Termen kívül,9,8,7,7,6,6,0,1,6,6,3,8
-9/11/2019 15:58:45,:),Nő,0-22,10,stressz,8,4-7,,,,,,3,7,5,155,37,Termen kívül,8,9,9,8,4,5,2,2,3,5,2,3
-9/11/2019 15:55:55,mustármag,Nő,0-22,8,"nem tudok elaludni, vagy más dolgok elcsábítanak",7,4-7,,,,,,3,3,3,158,36,Teremben,6,6,5,6,2,3,1,2,5,4,0,14
-9/11/2019 15:54:14,alma,Nő,0-22,9,Álmatlanság,7,2-7,4-5,4-8,,,,4,3,8,159,36,Teremben,10,9,8,8,7,8,1,1,6,3,6,3
-9/11/2019 15:56:44,pupu,Nő,23+,9,szociális média,7,7-4,3-2,3-2,0-5,,,4,10,10,160,36,Teremben,8,7,7,7,8,8,2,2,5,6,5,3
-9/11/2019 15:57:03,alma,Nő,0-22,8,"tanulás, stressz",8,6-3,9-7,4-9,4-1,,,5,3,6,162,36,Termen kívül,7,8,6,7,1,8,1,4,5,9,6,8
-9/11/2019 16:00:57,Nindzsakommandos ,Nő,0-22,7,Chatelés,8,0-8,3-0,6-5,7-4,4-7,,5,9,10,162,37.5,Teremben,8,8,7,7,8,3,3,1,7,1,2,5
-9/11/2019 15:56:30,brk,Nő,0-22,8,"túl sok program, tanulnivaló stb. későn jutok alváshoz",9,nem rögzítettük,,,,,,4,8,6,164,37,Termen kívül,8,7,6,7,8,9,1,1,8,8,6,1.5
-9/11/2019 15:56:54,___,Nő,0-22,8,"inszomnia, RLS (alvászavarok)",10,7-1,7-4,9-2,7-2,5-2,,4,5,9,164,37,Termen kívül,6,7,5,6,3,4,0,0,5,4,5,5
-9/11/2019 16:02:15,csoki,Nő,0-22,6,stressz,8,0-2,5-7,0-2,8-4,,,4,7,2,164,37,Teremben,8,7,7,7,7,8,2,2,9,8,5,5
-9/11/2019 15:56:24,ID_02,Nő,0-22,8,,8,2-1,4-9,5-9,,,,4,2,6,165,35,Termen kívül,9,7,7,7,5,4,1,1,3,5,4,2
-9/11/2019 15:59:49,ID_05,Nő,0-22,10,Halogatás,7,7-4,2-1,9-7,8-6,,,4,8,5,168,37,Teremben,8,8,8,7,5,8,3,2,7,8,1,0
-9/11/2019 16:00:03,ID_01,Nő,0-22,9,"Időhiány, rossz időbeosztás",5,7-4,7-5,1-5,,,,5,10,3,168,37,Termen kívül,9,8,8,7,5,6,6,5,6,1,5,13
-9/11/2019 15:55:33,zsuszty,Nő,0-22,7,"Későn érek haza, korán kell kelni",8,8-1,,,,,,5,7,2,169,38,Termen kívül,8,8,7,8,7,7,1,2,8,8,8,3
-9/11/2019 15:56:09,32,Nő,0-22,8,stressz,9,6-7,6-4,7-0,0-6,2-8,semmi-1 ,3,3,6,170,38,Teremben,8,8,6,7,3,3,5,4,3,6,6,3
-9/11/2019 16:02:02,ID_03,Nő,0-22,8,"stressz, időhiány",7,8-6,7-4,8-3,6-7,,,4,7,2,170,39,Teremben,6,,7,,5,,1,,6,,,
-9/11/2019 16:04:02,anna,Nő,0-22,8,"stressz, rossz időjárás",7,3-0,0-3,5-1,0-1,1-6,5-8,5,7,5,170,40,Termen kívül,9,9,8,8,4,7,1,1,4,8,6,7
-9/11/2019 16:04:13,Zidian,Nő,0-22,9,sorozat nézés vagy utoló másodperces tanulási pánik,8,0-6,8-0,8-5,,,,3,8,7,170,40,Termen kívül,9,7,8,7,8,7,3,3,7,6,3,3
-9/11/2019 15:54:39,CAST0L,Nő,0-22,9,"túl későn fekszem le, hiába alszom sokáig, abban az időszakban nem alszom amikor inkább kellene.",4,6-1,8-1,8-0,0-1,,,3,8,6,173,41,Termen kívül,9,8,8,8,6,6,5,5,6,6,6,4
-9/11/2019 15:53:10,Bea,Nő,23+,9,olvasok,7,28920121-28902011,07513415-07153???,13102945-???????,,,,4,10,7,174,39,Teremben,6,8,7,7,8,8,1,1,9,6,5,2
-9/11/2019 16:00:28,CdM21,Férfi,23+,8,Olvasás,7,9-7,7-9,9-8,1-4,3-1,1-2,4,7,10,176,43,Teremben,7,8,7,7,4,7,1,1,6,8,2,7
-9/11/2019 15:53:48,ID_04,Nő,0-22,9,ha túl későn fekszem le,8,5-9,1-5,0-5,9-0,,,4,9,5,178,40,Teremben,10,,8,,4,,3,,8,,,
-9/11/2019 15:54:55,cia,Nő,0-22,8,"Nagyon éberen alszom, ezért sokszor felébredek.",6,7-1,5-1,9-semmi,0-semmi,6-semmi,,3,6,3,182,41,Termen kívül,6,5,6,6,8,4,3,1,5,5,2,2
-9/11/2019 15:55:57,Braccsa,Férfi,0-22,8,szociális kapcsolatok kiépítése,8,,,,,,,5,3,3,185,45,Termen kívül,9,9,8,8,8,8,1,1,8,7,3,1
-9/11/2019 15:54:41,krédőívetegyeztetni,Férfi,0-22,9,"túl sok program, egyetemkezdési világhacacáré",9,,,,,,,5,9,9,190,46,Termen kívül,7,6,6,7,3,5,1,2,8,8,3,3
+kitoltesiido,ID,nem,eletkor,alvas_szukseges,nemalvas_oka,memoria,memoria_ront_A,memoria_ront_B,memoria_ront_C,memoria_ront_D,memoria_ront_E,memoria_ront_F,jegy_tipp,valasztott_szam,tippelt_gyakori_szam,magassag,cipomeret,memoriateszt_hely,alvas_tegnap_1,alvas_tegnap_3,alvas_altalaban_1,alvas_altalaban_3,energiaszint_1,energiaszint_3,szocmedia_1,szocmedia_3,hangulat_1,hangulat_3,stat_tudasszint_3,stat_gyakorlas_3,,,,,,,
+9/11/2019 16:00:31,Süni,Nő,0-22,8,Korán kelés későn fekvés (bagoly típus vagyok),7,7-5,2-7,5-2,0-4,3-6,6-4,4,5,7,151,35,Termen kívül,9,8,7,7,6,6,0,1,6,6,3,8,,Süni,7,1,151,35,35
+9/11/2019 15:58:45,:),Nő,0-22,10,stressz,8,4-7,,,,,,3,7,5,155,37,Termen kívül,8,9,9,8,4,5,2,2,3,5,2,3,,:),8,2,155,37,37
+9/11/2019 15:55:55,mustármag,Nő,0-22,8,"nem tudok elaludni, vagy más dolgok elcsábítanak",7,4-7,,,,,,3,3,3,158,36,Teremben,6,6,5,6,2,3,1,2,5,4,0,14,,mustármag,6,2,158,36,36
+9/11/2019 15:54:14,alma,Nő,0-22,9,Álmatlanság,7,2-7,4-5,4-8,,,,4,3,8,159,36,Teremben,10,9,8,8,7,8,1,1,6,3,6,3,,alma,8,1,159,36,36
+9/11/2019 15:56:44,pupu,Nő,23+,9,szociális média,7,7-4,3-2,3-2,0-5,,,4,10,10,160,36,Teremben,8,7,7,7,8,8,2,2,5,6,5,3,,pupu,7,2,160,36,36
+9/11/2019 15:57:03,alma,Nő,0-22,8,"tanulás, stressz",8,6-3,9-7,4-9,4-1,,,5,3,6,162,36,Termen kívül,7,8,6,7,1,3,1,1,5,1,2,5,,alma,7,1,162,36,36
+9/11/2019 16:00:57,Nindzsakommandos ,Nő,0-22,7,Chatelés,8,0-8,3-0,6-5,7-4,4-7,,5,9,10,162,37.5,Teremben,8,8,7,7,8,8,3,4,7,9,6,8,,Nindzsakommandos ,7,4,162,37.5,37.5
+9/11/2019 15:56:30,brk,Nő,0-22,8,"túl sok program, tanulnivaló stb. későn jutok alváshoz",9,nem rögzítettük,,,,,,4,8,6,164,37,Termen kívül,8,7,6,7,8,9,1,1,8,8,6,1.5,,brk,7,1,164,37,37
+9/11/2019 15:56:54,___,Nő,0-22,8,"inszomnia, RLS (alvászavarok)",10,7-1,7-4,9-2,7-2,5-2,,4,5,9,164,47,Termen kívül,6,7,5,6,3,4,0,0,5,4,5,5,,___,6,0,164,47,37
+9/11/2019 16:02:15,csoki,Nő,0-22,6,stressz,8,0-2,5-7,0-2,8-4,,,4,7,2,164,37,Teremben,8,7,7,7,7,8,2,2,9,8,5,5,,csoki,7,2,164,37,37
+9/11/2019 15:56:24,ID_02,Nő,0-22,8,,8,2-1,4-9,5-9,,,,4,2,6,165,35,Termen kívül,9,7,7,7,5,4,1,1,3,5,4,2,,ID_02,7,1,165,35,35
+9/11/2019 15:59:49,ID_05,Nő,0-22,10,Halogatás,7,7-4,2-1,9-7,8-6,,,4,8,5,168,37,Teremben,8,8,8,7,5,8,3,2,7,8,1,0,,ID_05,7,2,165,39,37
+9/11/2019 16:00:03,ID_01,Nő,0-22,9,"Időhiány, rossz időbeosztás",5,7-4,7-5,1-5,,,,5,10,3,168,37,Termen kívül,9,8,8,7,5,6,6,5,6,1,5,13,,ID_01,7,5,168,37,37
+9/11/2019 15:55:33,zsuszty,Nő,0-22,7,"Későn érek haza, korán kell kelni",8,8-1,,,,,,5,7,2,169,38,Termen kívül,8,8,7,8,7,7,1,2,8,8,8,3,,zsuszty,8,2,169,38,38
+9/11/2019 15:56:09,32,Nő,0-22,8,stressz,9,6-7,6-4,7-0,0-6,2-8,semmi-1 ,3,3,6,170,38,Teremben,8,8,6,7,3,3,5,4,3,6,6,3,,32,7,4,170,38,38
+9/11/2019 16:02:02,ID_03,Nő,0-22,8,"stressz, időhiány",7,8-6,7-4,8-3,6-7,,,4,7,2,170,39,Teremben,6,,7,,5,,1,youtube,6,,,,,ID_03,,,,,39
+9/11/2019 16:04:02,anna,Nő,0-22,8,"stressz, rossz időjárás",7,3-0,0-3,5-1,0-1,1-6,5-8,5,7,5,170,40,Termen kívül,9,9,8,8,4,7,1,1,4,8,6,7,,anna,8,1,170,40,40
+9/11/2019 16:04:13,Zidian,Nő,0-22,9,sorozat nézés vagy utoló másodperces tanulási pánik,8,0-6,8-0,8-5,,,,3,8,7,170,40,Termen kívül,9,7,8,7,8,7,3,3,7,6,3,3,,Zidian,7,3,170,40,40
+9/11/2019 15:54:39,CAST0L,Nő,0-22,9,"túl későn fekszem le, hiába alszom sokáig, abban az időszakban nem alszom amikor inkább kellene.",4,6-1,8-1,8-0,0-1,,,3,8,6,173,41,Termen kívül,9,8,8,8,6,6,5,5,6,6,6,4,,CAST0L,8,5,173,41,41
+9/11/2019 15:53:10,Bea,Nő,23+,9,olvasok,7,28920121-28902011,07513415-07153???,13102945-???????,,,,4,10,7,174,39,Teremben,6,8,7,7,8,8,1,1,9,6,5,2,,Bea,7,1,174,39,39
+9/11/2019 16:00:28,CdM21,Férfi,23+,8,Olvasás,7,9-7,7-9,9-8,1-4,3-1,1-2,4,7,10,176,43,Teremben,7,8,7,7,4,7,1,1,6,8,2,7,,CdM21,7,1,176,43,43
+9/11/2019 15:53:48,ID_04,Nő,0-22,9,ha túl későn fekszem le,8,5-9,1-5,0-5,9-0,,,4,9,5,178,40,Teremben,10,,8,,4,,3,,8,,,,,ID_04,,,,,40
+9/11/2019 15:54:55,cia,Nő,0-22,8,"Nagyon éberen alszom, ezért sokszor felébredek.",6,7-1,5-1,9-semmi,0-semmi,6-semmi,,3,6,3,1.82,41,Termen kívül,6,5,6,6,8,4,3,1,5,5,2,2,,cia,6,1,182,41,41
+9/11/2019 15:55:57,Braccsa,Férfi,0-22,8,szociális kapcsolatok kiépítése,8,,,,,,,5,3,3,185,45,Termen kívül,9,9,8,8,8,8,1,1,8,7,3,1,,Braccsa,8,1,185,45,45
+9/11/2019 15:54:41,krédőívetegyeztetni,Férfi,0-22,9,"túl sok program, egyetemkezdési világhacacáré",9,,,,,,,5,9,9,190,46,Termen kívül,7,6,6,7,3,5,1,2,8,8,3,3,,krédőívetegyeztetni,7,2,195,46,46
