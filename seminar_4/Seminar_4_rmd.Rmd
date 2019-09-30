@@ -927,94 +927,14 @@ Milyen eros a kapcsolat a magassag es a cipomeret kozott?
 
 orai_adat_corrected %>%
   ggplot() +
-    aes(x = alvas_tegnap_1, y = alvas_tegnap_3) +
+    aes(x = cipomeret, y = magassag) +
     geom_point()
 
 orai_adat_corrected %>%
   ggplot() +
-    aes(x = alvas_tegnap_1, y = alvas_tegnap_3) +
+    aes(x = cipomeret, y = magassag) +
     geom_point() +
     geom_smooth() 
 ```
 
 
-
-*______________________________* 
-
-
-# Hazi feladat
-
-- Olvasd be az adatokat errol az URL-rol (ez egy .csv file):
-
-"https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_4/Orai_kerdoives_adatok%20-%20ora_1_3.csv"
-
-- Vegezd el az adattisztitast a kovetkezo koddal:
-
-```{r data correction, message=F, warning=F}
-
-orai_adat_corrected = orai_adat %>%
-  mutate(szocmedia_3 = replace(szocmedia_3,  szocmedia_3=="youtube", NA))
-
-orai_adat_corrected = orai_adat_corrected %>%
-  mutate(magassag = replace(magassag,  magassag == 1.82, 182))
-
-orai_adat_corrected = orai_adat_corrected %>%
-  mutate(cipomeret = replace(cipomeret, cipomeret == 47, 37))
-
-```
-
-- Hatarozd meg az elso orai hangulat atlagat (*hangulat_1* valotzo).
-
-
-- Csinalj egy kategorikus valtozot az elso orai hangulat alapjan ugy, hogy harom csoport alakuljon ki: 0-3 - rossz, 4-6 - kozepes, 7-10 - jo. (Emlekeztetoum: ezt a mutate() es a recode() funkciokkal tudod peldaul elerni.) Ezt az uj valtozot nevezd el *hangulat_kat_1* -nek, es az ezt az uj valtozot is tartalmazo adattablat mentsd el *orai_adat_harmashangulat_1* neven.
-
-
-- Fontos, hogy a *hangulat_kat_1* valtozot faktor valotozokent jelold meg. (Ezt lehet az elozo lepesben a mutate() funkcion belul, vagy egy kulon lepesben, de mindenkeppen a factor() vagy az as.factor() funkciokat erdemes hozza hasznalni)
-
-
-- Keszits egy tablazatot arrol, hogy hanyan esnek a *hangulat_kat_1* egyes kategoriaiba.
-
-
-- Add meg a faktorszintek helyes sorrendjet: rossz, kozepes, jo (Ird felul a *hangulat_kat_1* korabbi valtozatat ezzel a valtozattal ahol a szintek mar helyes sorrendben vannak)
-
-
-- Nezd meg a faktor szintjeit, hogy valoban helyes sorrendben szerepelnek-e
-
-
-- Keszits egy ujabb adat objektumot, amiben nincsenek benne a "rossz" hangulatuak (mondjuk a filter() segitsegevel), mondjuk legyen a neve *orai_adat_harmashangulat_1_rossznelkul*
-
-
-- Ejtsd a nem hasznalt faktorszinteket (a droplevels() funkcioval). (Ird felul a *orai_adat_harmashangulat_1_rossznelkul$hangulat_kat_1* korabbi valtozatat ezzel az modositott valatozoval, ahol mar nincsenek meg a felesleges szintek)
-
-
-- Terjunk vissza a *orai_adat_harmashangulat_1* (amiben a rossz hangulatuak is benne vannak). Most a *hangulat_kat_1* valtozo es a *valasztott_szam* valtozo kapcsolatat vizsgaljuk majd. Eloszor is jelenitsd meg hogy a *hangulat_kat_1* egyes kategoriaiban atlagosna mekkora szamot valasztottak az emberek (*valasztott_szam* valtozo).
-
-- Ez utan abrazold a hangulat *hangulat_kat_1* es a *valasztott_szam* valtozok kapcsolatat abrakon. Rajzolj legalabb ket abrat amin mas geomokat hasznalsz.
-
-- Milyen a kapcsolat az elso orai es a harmadik orai hangulat kozott (*hangulat_1* es *hangulat_3* valtozok? Hatarozd mega korrelacios egyutthatot a ket valtozo kozott.
-
-- Abrazold a *hangulat_1* es *hangulat_3* valtozok kozotti kapcsolatot egy abraval.
-
-
-
-```{r hazi megoldas}
-
-orai_adat_corrected %>%
-  filter(hangulat_kat_1 != "rossz") %>% 
-    ggplot() +
-      aes(x = hangulat_kat_1, y = valasztott_szam) +
-      geom_boxplot()
-
-orai_adat_corrected %>%
-    ggplot() +
-      aes(x = hangulat_kat_1, y = valasztott_szam) +
-      geom_boxplot()
-
-orai_adat_corrected %>%
-    ggplot() +
-      aes(x = valasztott_szam, fill = hangulat_kat_1) +
-      geom_density(alpha = 0.3)
-
-
-
-```
