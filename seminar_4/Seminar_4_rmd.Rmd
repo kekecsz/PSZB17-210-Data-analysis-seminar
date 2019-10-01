@@ -897,7 +897,7 @@ A numerikus valtozok kozotti kapcsolatot altalaban pont diagrammal szoktuk abraz
 A geom_smooth() layer hozzaadasaval kaphatunk a pontok kozott meghuzodo trendrol egy kepet. A kek vonal az ugyevezett trandvonal, a szurke sav a konfidencia intervallum. Ezekrol kesobb meg reszletesebben beszelunk majd
 
 
-```{r two numerical variables plot 1}
+```{r two numerical variables plot 1, message=F, warning=F}
 
 orai_adat_corrected %>%
   ggplot() +
@@ -923,7 +923,7 @@ Milyen eros a kapcsolat a magassag es a cipomeret kozott?
 
 *______________________________*
 
-```{r megoldas 5}
+```{r megoldas 5, message=F, warning=F}
 
 orai_adat_corrected %>%
   ggplot() +
