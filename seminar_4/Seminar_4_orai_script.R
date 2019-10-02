@@ -49,7 +49,9 @@ orai_adat %>%
 # Vagy megkapthatjuk ugyanezt az osszes valtozora, ha ugyanezt az egesz adattablara futtatjuk le. Persze a karakter osztalyba tartozo valtozoknal mindezeknek a leiro statisztikaknak nincs ertelme, ott csak a class informaciot kaptjuk az output-ban.	
 
 
-orai_adat %>% 	
+orai_adat %>% 
+  select(stat_gyakorlas_3) %>% 
+  drop_na() %>% 
   summary()	
 
 
@@ -67,7 +69,7 @@ orai_adat %>%
 # A Psych package segitsegevel a describe() funkcio megtobb hasznos informaciot adhat	
 
 
-describe(orai_adat)	
+describe(orai_adat)
 
 
 

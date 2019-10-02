@@ -2,7 +2,9 @@
 title: "PSZB17-210 - Seminar_4"
 author: "Zoltan Kekecs"
 date: "September 28, 2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -32,7 +34,7 @@ library(psych) # for describe
 Beolvassuk az orai kerdoiv adatait a read_csv funkcioval, es elmentjuk egy orai_adat nevu objektumba. A read_csv() funkcio a tidyverse resze, es egybol tibble formatumban menti el az adatainkat
 
 ```{r load_data, results='hide', message=F, warning=F}
-orai_adat <- read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_4/Orai_kerdoives_adatok%20-%20ora_1_3.csv")
+orai_adat <- read_csv("https://tinyurl.com/statgyak2019-seminar-4-data")
 
 ```
 
@@ -377,7 +379,8 @@ orai_adat_corrected = orai_adat_corrected %>%
 Erdemes megbizonyosodni rola, hogy az adatcsere sikeres volt. Alabb az adatok vizualizaciojaval gyozodunk meg errol, de az adatok megjelenitesevel, vagy a leiro statisztikak lekerdezesevel is megteheto ez, ha az informativ.
 
 ```{r data correction check, message=F, warning=F}
-# hasznalhatnak meg az alabbiakat is arra, hogy megbizonyosodjunk abban, hogy sikeres volt a csere
+# hasznalhatnak meg az alabbiakat is arra, 
+# hogy megbizonyosodjunk abban, hogy sikeres volt a csere
 # View(orai_adat_corrected)
 # describe(orai_adat_corrected)
 # summary(orai_adat_corrected$szocmedia_3)
@@ -578,7 +581,8 @@ Hasznald a fent tanult modszereket, hogy megvizsgald a **jegy_tipp_kat** es a **
 
 ```{r megoldas 3}
 
-# az y tengelyen megvaltoztathatjuk a beosztast a scale_y_continuous(breaks = c(...))) funkcio hozzaadasaval
+# az y tengelyen megvaltoztathatjuk a beosztast 
+# a scale_y_continuous(breaks = c(...))) funkcio hozzaadasaval
 # a masodik abran az y tengelynek megvaltoztatjuk a feliratat
 
 jegy_tipp_kat_hangulat_kat_plot_1 <-
@@ -647,7 +651,9 @@ grid.arrange(alvas_altalaban_szocmedia_plot_3, alvas_altalaban_szocmedia_plot_4,
 
 
 
-# a theme(legend.position) es a guides() funciok hasznalataval kontrollalhatjuk hogy hol es hogyan jelenjen meg a jelmagyarazat az abran
+# a theme(legend.position) es a guides() funciok 
+# hasznalataval kontrollalhatjuk hogy hol es hogyan 
+# jelenjen meg a jelmagyarazat az abran
 
 alvas_altalaban_szocmedia_plot_3 <- 
 orai_adat_corrected %>%
@@ -863,10 +869,10 @@ orai_adat_corrected %>%
 
 ### Ket numerikus valtozo kapcsolata
 
-Ket numerikus valtozo kozotti kapcsolat jellemzesere altalaban a korrelacios egyutthatot szoktuk hasznalni (cor()).
-A cor() funkciot akar tobb mint ket valtozo paronkenti korrelaciojanak meghatarozasara is lehet hasznalni.
+**Ket numerikus valtozo** kozotti kapcsolat jellemzesere altalaban a korrelacios egyutthatot szoktuk hasznalni (cor()).
+A **cor()** funkciot akar tobb mint ket valtozo paronkenti korrelaciojanak meghatarozasara is lehet hasznalni.
 
-A drop_na() funkcioval kiejthetjuk azokat a megfigyeleseket, ahol a valtozok barmelyikeben hianyzo adat (NA) van. Ha ezt nem tesszuk meg, a cor() fuggveny NA eredmenyt adhna ha valamelyik valtozoban NA-val talalkozik.
+A **drop_na()** funkcioval kiejthetjuk azokat a megfigyeleseket, ahol a valtozok barmelyikeben hianyzo adat (NA) van. Ha ezt nem tesszuk meg, a cor() fuggveny NA eredmenyt adhna ha valamelyik valtozoban NA-val talalkozik.
 
 
 ```{r two numerical variables}
@@ -886,9 +892,9 @@ orai_adat_corrected %>%
 ```
 
 
-A numerikus valtozok kozotti kapcsolatot altalaban pont diagrammal szoktuk abrazolni (geom_point())
+A numerikus valtozok kozotti kapcsolatot altalaban pont diagrammal szoktuk abrazolni (**geom_point()**)
 
-A geom_smooth() layer hozzaadasaval kaphatunk a pontok kozott meghuzodo trendrol egy kepet. A kek vonal az ugyevezett trandvonal, a szurke sav a konfidencia intervallum. Ezekrol kesobb meg reszletesebben beszelunk majd
+A **geom_smooth()** layer hozzaadasaval kaphatunk a pontok kozott meghuzodo trendrol egy kepet. A kek vonal az ugyevezett trandvonal, a szurke sav a konfidencia intervallum. Ezekrol kesobb meg reszletesebben beszelunk majd
 
 
 ```{r two numerical variables plot 1, message=F, warning=F}
@@ -929,6 +935,16 @@ orai_adat_corrected %>%
     aes(x = cipomeret, y = magassag) +
     geom_point() +
     geom_smooth() 
+
+```
+
+Tobb folytonos valtozo kapcsolata megjelenitheto peldaul ugy, hogy az egyik valtozot egy szinskalahoz rendeljuk az alabbi modon.
+
+```{r megoldas 6, message=F, warning=F}
+plot_szines <- ggplot(data = mtcars, aes(x = wt, y = mpg, col = hp)) + 
+  geom_point() 
+plot_szines + 
+  scale_colour_gradientn(colours=c("green","black"))
 ```
 
 
