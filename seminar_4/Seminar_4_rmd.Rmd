@@ -29,7 +29,7 @@ library(psych) # for describe
 
 ## Adatok betoltese
 
-Beolvassuk az orai kerdoiv adatait a read_csv funkcioval, es elmentjuk egy orai_adat nevu objektumba. A read_csv funkcio a tidyverse resze, es egybol tibble formatumban menti el az adatainkat
+Beolvassuk az orai kerdoiv adatait a read_csv funkcioval, es elmentjuk egy orai_adat nevu objektumba. A read_csv() funkcio a tidyverse resze, es egybol tibble formatumban menti el az adatainkat
 
 ```{r load_data, results='hide', message=F, warning=F}
 orai_adat <- read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_4/Orai_kerdoives_adatok%20-%20ora_1_3.csv")
@@ -38,15 +38,17 @@ orai_adat <- read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data
 
 ## Adatok attekintese
 
-A tibble objektum meghivasaval kapthatunk nemi informaciot az adattabla szerkezeterol. Lathatjuk hany sor es hany oszlop van az adattablaban, es lathatjuk milyen class-ba tartoznak (chr, dbl ...)
+Mindig erdemes azzal kezdeni, hogy **megismerkedunk az adat** szerkezetevel es tartalmaval.
+
+A **tibble objektum** meghivasaval kapthatunk nemi informaciot az adattabla szerkezeterol. Lathatjuk hany sor es hany oszlop van az adattablaban, es lathatjuk milyen class-ba tartoznak (chr, dbl ...)
 
 ```{r initial exploration 1}
 orai_adat
 ```
 
-Ha az egyes valtozok leirostatisztikaira (descriptive statistics) vagyunk kivancsiak, kerhetjuk ezt a mar tanult modon.
+Ha az egyes valtozok **leirostatisztikaira** (descriptive statistics) vagyunk kivancsiak, kerhetjuk ezt a mar tanult modon.
 
-Peldaul lekerhetjuk a valtozo alapveto legalacsonyabb es legmagasabb erteket, atlagat, medianjat, a kvartiliseket, es hogy hany hianyzo adat van (ha van) a summary() funkcioval (miutan a select funkcioval kivalasztottuk, melyik valtozora vagyunk kivancsiak)
+Peldaul lekerhetjuk a valtozo alapveto legalacsonyabb es legmagasabb erteket, atlagat, medianjat, a kvartiliseket, es hogy hany hianyzo adat van (ha van) a **summary()** funkcioval (miutan a select funkcioval kivalasztottuk, melyik valtozora vagyunk kivancsiak)
 
 ```{r initial exploration 2}
 orai_adat %>% 
@@ -74,7 +76,7 @@ orai_adat %>%
 
 ## Megtobb leiro statisztika
 
-A Psych package segitsegevel a describe() funkcio megtobb hasznos informaciot adhat
+A **Psych** package segitsegevel a **describe()** funkcio megtobb hasznos informaciot adhat
 
 ```{r initial Psych explore, message=F, warning=F}
 describe(orai_adat)
@@ -94,11 +96,11 @@ describe(orai_adat)
 
 ## Faktorok
 
-Nehany karaktervaltozonak csak korlatozott mennyisegu eleme lehet, mint peldaul a nem (ferfi, no, egyeb), vagy az eletkor (0-22 vagy 23+) a mi kerdoivunkben. Ezeket megjelolhetjuk faktor (factor) osztalyu valtozokent, es akkor az R tobb informaciot fog adni rola.
+Nehany karaktervaltozonak csak **korlatozott mennyisegu eleme** lehet, mint peldaul a nem (ferfi, no, egyeb), vagy az eletkor (0-22 vagy 23+) a mi kerdoivunkben. Ezeket megjelolhetjuk faktor (factor) osztalyu valtozokent, es akkor az R tobb informaciot fog adni rola.
 
-A levels() funkcio megmutatja mik a faktorunk szintjei, de lathato ez akkor is ha csak meghivjuk a valtozot magat.
+A **levels()** funkcio megmutatja mik a faktorunk szintjei, de lathato ez akkor is ha csak meghivjuk a valtozot magat.
 
-A table() funkcio pedig tablazatot keszit arrol, hogy az egyes csoportokban hany megfigyeles talalhato
+A **table()** funkcio pedig tablazatot keszit arrol, hogy az egyes csoportokban hany megfigyeles talalhato
 
 ```{r initial specify as factor}
 orai_adat <- orai_adat %>% 
@@ -117,7 +119,7 @@ table(orai_adat$nem)
 
 
 
-Igy mar a fenti summary() funkcio is kiadja az egyes faktorszintekrol (no, ferfi) hogy hanyan tartoznak oda.
+Igy mar a fenti **summary()** funkcio is kiadja az **egyes faktorszintekrol** (no, ferfi) hogy hanyan tartoznak oda.
 
 ```{r initial summarize factor}
 orai_adat %>%
@@ -126,7 +128,7 @@ orai_adat %>%
 ```
 
 
-Van, hogy szeretnenk kizarni bizonyos faktorszinteket az elemzesbol. Pl. ha valamelyik faktor szintbol nagyon keves megfigyeles van, mondjuk 23 even feluli eletkoruakbol, oket lehet hogy szeretnenk kizarni a kesobbi elemzesekbol hogy egyszerusitsuk az eredmenyeink ertelmezeset. Ezt a mar korabban tanult filter() funkcio segitsegevel konnyeden megtehetjuk, azonban arra figyelnunk kell, hogy az R megjegyzi a faktorszinteket, es azt azt kovetoen is a valtozohoz rendelve tartja, miutan mar az adott faktorszintbol nincs egy megifgyeles sem az adattablaban. 
+Van, hogy szeretnenk **kizarni** bizonyos **faktorszinteket** az elemzesbol. Pl. ha valamelyik faktor szintbol nagyon keves megfigyeles van, mondjuk 23 even feluli eletkoruakbol, oket lehet hogy szeretnenk kizarni a kesobbi elemzesekbol hogy egyszerusitsuk az eredmenyeink ertelmezeset. Ezt a mar korabban tanult **filter()** funkcio segitsegevel konnyeden megtehetjuk, azonban arra figyelnunk kell, hogy az R megjegyzi a faktorszinteket, es azt azt kovetoen is a **valtozohoz rendelve tartja**, miutan mar az adott faktorszintbol nincs egy megifgyeles sem az adattablaban. 
 
 ```{r initial droplevels 1}
 orai_adat %>%
@@ -135,7 +137,7 @@ orai_adat %>%
   summary()
 ```
 
-Igy ezeket a szinteket ejteni szoktuk a droplevels() funkcioval.
+Igy ezeket a szinteket ejteni szoktuk a **droplevels()** funkcioval.
 
 ```{r initial droplevels 2}
 orai_adat %>%
@@ -145,7 +147,7 @@ orai_adat %>%
   summary()
 ```
 
-Elofordul, hogy egy numerikus valtozot akarunk atalakitani faktorra, pl. elkepzelheto hogy ossze akarjuk hasonlitani azokat akik 6 vagy kevesebb orat alszanak altalaban azokkal akik 7 vagy 8, vagy meg tobb orat alszanak. 
+Elofordul, hogy egy **numerikus valtozot akarunk atalakitani faktorra**, pl. elkepzelheto hogy ossze akarjuk hasonlitani azokat akik 6 vagy kevesebb orat alszanak altalaban azokkal akik 7 vagy 8, vagy meg tobb orat alszanak. 
 
 ```{r factors recode plot}
 orai_adat %>%
@@ -157,16 +159,21 @@ orai_adat %>%
 
 ```
 
-Ilyenkor hasznalhatjuk a mutate() es recode() funkciok kombinaciojat hogy csinaljunk egy uj valtozot. Ebbe a kodba beleepitettem a factor() funkciot is, hogy azonnal meghatarozzuk, hogy ez az uj valtozo egy faktor, es nem egy egyszeru karaktervektor. A factor() funkcio nelkul is lefut a kod, de akkor meg kellene egy kulon sor ahol megadjuk hogy ez egy faktorvaltozo.
+Ilyenkor hasznalhatjuk a **mutate()** es **recode()** funkciok kombinaciojat hogy csinaljunk egy uj valtozot. 
+Ebbe a kodba beleepitettem a **factor()** funkciot is, hogy azonnal meghatarozzuk, hogy ez az uj valtozo egy faktor, es nem egy egyszeru karaktervektor. A factor() funkcio nelkul is lefut a kod, de akkor meg kellene egy kulon sor ahol megadjuk hogy ez egy faktorvaltozo.
 
 ```{r factors recode}
 orai_adat = orai_adat %>%
-  mutate(alvas_altalaban_kat_1 = factor(recode(alvas_altalaban_1,
-                                        "5" = "keves",
-                                        "6" = "keves",
-                                        "7" = "eleg",
-                                        "8" = "eleg",
-                                        "9" = "sok")))
+  mutate(alvas_altalaban_kat_1 = factor(
+                                        recode(
+                                          alvas_altalaban_1,
+                                          "5" = "keves",
+                                          "6" = "keves",
+                                          "7" = "eleg",
+                                          "8" = "eleg",
+                                          "9" = "sok"
+                                          )
+                                        ))
 
 
 levels(orai_adat$alvas_altalaban_kat_1)
@@ -175,7 +182,7 @@ levels(orai_adat$alvas_altalaban_kat_1)
 
 ### Faktorszintek sorrendje, ordinalis valtozok
 
-Amikor van ertelme a sorrendisegnek a faktorszintek kozott, ordinalis valtozokrol beszelunk (vagyis az egyik faktorszint alacsonyabb, vagy kisebb "erteku" mint a masik). Arra figyelnunk kell, hogy amikor faktorokat hozunk letre, az R automatikusan a faktorszintek neveinek ABC sorrendje alapjan rakja oket sorba, es az abrakon is igy szemlelteti majd oket.
+Amikor van ertelme a **sorrendisegnek** a faktorszintek kozott, **ordinalis valtozokrol** beszelunk (vagyis az egyik faktorszint alacsonyabb, vagy kisebb "erteku" mint a masik). Arra figyelnunk kell, hogy amikor faktorokat hozunk letre, az R automatikusan a faktorszintek neveinek **ABC sorrendje** alapjan rakja oket sorba, es az abrakon is igy szemlelteti majd oket.
 
 ```{r factors order plot 1}
 orai_adat %>%
@@ -185,7 +192,7 @@ orai_adat %>%
 
 ```
 
-Ilyenkor erdemes meghatarozni a faktorszintek sorrendjet (order). Ezt legegyszerubben a factor() funkcion belul tehetjuk meg, az ordered = T beallitasaval, es a levels = resznel a szintek sorrendjenek meghatarozasaval.
+Ilyenkor erdemes meghatarozni a faktorszintek sorrendjet (**order**). Ezt legegyszerubben a factor() funkcion belul tehetjuk meg, az **ordered = T** beallitasaval, es a **levels =** resznel a szintek sorrendjenek meghatarozasaval.
 
 ```{r factors order}
 orai_adat = orai_adat %>%
@@ -211,10 +218,7 @@ orai_adat %>%
 
 ### Gyakorlas
 
-- Hatarozd meg az elso orai hangulat atlagat (*hangulat_1* valotzo).
-
-
-- Csinalj egy kategorikus valtozot az elso orai hangulat alapjan ugy, hogy harom csoport alakuljon ki: 0-3 - rossz, 4-6 - kozepes, 7-10 - jo. (Emlekeztetoum: ezt a mutate() es a recode() funkciokkal tudod peldaul elerni.) Ezt az uj valtozot nevezd el *hangulat_kat_1* -nek, es az ezt az uj valtozot is tartalmazo adattablat mentsd el *orai_adat_harmashangulat_1* neven.
+- Csinalj egy kategorikus valtozot az elso orai hangulat alapjan (*hangulat_1* valotozo) ugy, hogy harom csoport alakuljon ki: 0-3 - rossz, 4-6 - kozepes, 7-10 - jo. (Emlekeztetoul: ezt a mutate() es a recode() funkciokkal tudod peldaul elerni.) Ezt az uj valtozot nevezd el *hangulat_kat_1* -nek, es az ezt az uj valtozot is tartalmazo adattablat mentsd el *orai_adat_harmashangulat_1* neven.
 
 
 - Fontos, hogy a *hangulat_kat_1* valtozot faktor valotozokent jelold meg. (Ezt lehet az elozo lepesben a mutate() funkcion belul, vagy egy kulon lepesben, de mindenkeppen a factor() vagy az as.factor() funkciokat erdemes hozza hasznalni)
@@ -266,14 +270,16 @@ orai_adat_harmashangulat_1 %>%
 
 ## Exploracio vizualizacion keresztul
 
-### egyes valtozok vizualizacioja
+### Egyes valtozok vizualizacioja
 
-Az egyes valtozok grafikonok (plot) segitsegevel is megvizsgalhatok.
-A kategorikus valtozokat gyakran oszlopdiagrammal (geom_bar) abrazoljuk, mig a numerikus valtozokat inkabb dotplot , histogram, vagy density plot segitsegevel szoktuk abrazolni.
+Az egyes valtozok **abrak** (plot) segitsegevel is megvizsgalhatok.
+A **kategorikus** valtozokat gyakran oszlopdiagrammal (**geom_bar**) abrazoljuk, 
 
-Az egyes valtozok vizualizacioja es a leiro statisztikak atvizsgalasa elengedhetetlen hogy azonositsuk az esetleges adatbeviteli hibakat es egyeb nemvart furcsasagokat az adataink kozott.
+Mig a **numerikus** valtozokat inkabb **dotplot** , **histogram**, vagy **density plot** segitsegevel szoktuk abrazolni.
 
-Mindig ellenorizd az adataidat ezekkel a modszerekkel mielott komolyabb adatelemzesbe kezdesz, hogy meggyozodj rola, hogy az adatok tisztak es megfelenek az elvarasaidnak.
+Az egyes valtozok vizualizacioja es a leiro statisztikak atvizsgalasa elengedhetetlen hogy azonositsuk az esetleges adatbeviteli **hibakat es egyeb nemvart furcsasagokat** az adataink kozott.
+
+**MINDING** ellenorizd az adataidat ezekkel a modszerekkel mielott komolyabb adatelemzesbe kezdesz, hogy meggyozodj rola, hogy az adatok tisztak es megfelenek az elvarasaidnak.
 
 
 ```{r plot single variable}
@@ -305,7 +311,7 @@ ggplot() +
 
 ### Gyakorlas
 
-Hasznald a fent tanult modszereket, hogy azonositsd az orai_adat adattablaban levo hibakat vagy nem vart furcsasagokat.
+Hasznald a fent tanult modszereket, hogy **azonositsd az orai_adat adattablaban levo hibakat** vagy nem vart furcsasagokat.
 
 - A vizualizacion tul a View(), describe(), es summary() funciokat erdemes hasznalni az adatok elso attekintesere 
 - A numerikus (vagy eppen folytonos) valtozoknal vizsgald meg a minimum es maximum erteket es a hianyzo adatok mennyiseget, valamint az eloszlast.
@@ -348,16 +354,16 @@ orai_adat %>%
 
 ```
 
-A hibakat a kovetkezokeppen javithatjuk.
+### A hibakat a kovetkezokeppen javithatjuk.
 
-A mutate() es a replace() funkciok hasznalataval cserelhetunk ki ertekeket mas ertekekre. Azt, hogy ilyenkor hianyzo adatra (NA), vagy egy masik, valoszinu ertekre kell megvaltoztatni az erteket, a szituaciotol fogg. Altalaban a biztosabb megoldas ha hianyzo adatnak jeloljuk a kerdeses erteket (NA), de ez sok adatveszteshez vezethet. Ha eleg valszinu hogy mi a helyes valasz, beirhatjuk, DE minden javitast fel kell tuntetni a kutatasi jelentesben (es a ZH soran is), hogy az olvaso szamara tiszta legyen, hogy itt egy adathelyettesites vagy kizaras tortent!
+A **mutate()** es a **replace()** funkciok hasznalataval **cserelhetunk ki** ertekeket mas ertekekre. Azt, hogy ilyenkor hianyzo adatra (NA), vagy egy masik, valoszinu ertekre kell megvaltoztatni az erteket, a szituaciotol fogg. Altalaban a biztosabb megoldas ha hianyzo adatnak jeloljuk a kerdeses erteket (NA), de ez sok adatveszteshez vezethet. Ha eleg valszinu hogy mi a helyes valasz, beirhatjuk, DE **minden javitast fel kell tuntetni** a kutatasi jelentesben (es a ZH soran is), hogy az olvaso szamara tiszta legyen, hogy itt egy adathelyettesites vagy kizaras tortent!
 
-Mindig erdemes a javitott adatokat uj adattablaba elmenteni. A mi esetunkben az orai_adat_corrected nevet adtuk a javitott objektumnak. Igy a nyers adataink megmaradnak, ami hasznos lehet kesobbi muveleteknel.
+Mindig erdemes a javitott adatokat **uj adattablaba** elmenteni. A mi esetunkben az orai_adat_corrected nevet adtuk a javitott objektumnak. Igy a nyers adataink megmaradnak, ami hasznos lehet kesobbi muveleteknel.
 
 
 ```{r data correction, message=F, warning=F}
 
-orai_adat_corrected = orai_adat %>%
+orai_adat_corrected <- orai_adat %>%
   mutate(szocmedia_3 = replace(szocmedia_3,  szocmedia_3=="youtube", NA))
 
 orai_adat_corrected = orai_adat_corrected %>%
@@ -437,8 +443,9 @@ Tobb valtozo kapcsolatat is felterkepezhetjuk tablazatok es abrak segitsegevel.
 
 ### Ket kategorikus (csoportosito) valtozo kapcsolatanak felterkepezese
 
+**Generalunk kategorikus valtozokat**
 
-Az elso oran jelentett hangulat_1 valtozobol csinalunk egy kategorikus valtozot, az faktorszintek a kovetkezok lesznek: 0-3 - "rossz", 4-6 - "kozepes", 7-10 - "jo". Ezt ugyan abba az adattablaba hangulat_kat_1 neven mentjuk el sorrendezett factorkent a fent tanultak alapjan. Mindehez a mutate(), recode(), es factor() funkciokat hasznaljuk.
+Az elso oran jelentett **hangulat_1** valtozobol csinalunk egy kategorikus valtozot, az faktorszintek a kovetkezok lesznek: 0-3 - "rossz", 4-6 - "kozepes", 7-10 - "jo". Ezt ugyan abba az adattablaba hangulat_kat_1 neven mentjuk el sorrendezett factorkent a fent tanultak alapjan. Mindehez a mutate(), recode(), es factor() funkciokat hasznaljuk.
 
 ```{r two categorical variable plots 1}
 
@@ -467,8 +474,9 @@ orai_adat_corrected %>%
 
 ```
 
-Hasonlokeppen kepzunk szocmedia_1 valtozobol egy kategorikus valtozot, ahol azok akik 0 vagy 1 orat hasznaljak a szocialis mediat, a "nem rendszeres", azok akik 2 vagy tobb orat hasznaljak a szocialis mediat, a "nem rendszeres" kategoriaba (faktorszintre) esnek majd.
-Itt nem szukseges az ordered = T es a levels = beallitasa, mert csak ket faktorszint van, es az ABC sorrend mar alapbol az intuitiv modon a "nem rendszeres" kategoriat teszi elsonek.
+Hasonlokeppen kepzunk **szocmedia_1** valtozobol egy kategorikus valtozot, ahol azok akik 0 vagy 1 orat hasznaljak a szocialis mediat, a "nem rendszeres", azok akik 2 vagy tobb orat hasznaljak a szocialis mediat, a "nem rendszeres" kategoriaba (faktorszintre) esnek majd.
+
+**Itt nem szukseges az ordered** = T es a levels = beallitasa, mert csak ket faktorszint van, es az ABC sorrend mar alapbol az intuitiv modon a "nem rendszeres" kategoriat teszi elsonek.
 
 ```{r two categorical variable plots 2}
 table(orai_adat_corrected$szocmedia_1)
@@ -492,7 +500,7 @@ orai_adat_corrected %>%
 ```
 
 
-Az elso oran kertunk egy tippet arrol, hogy az egyes emberek milyen jegyet fognak kapni a kurzus vegen az adatelemzes oran. Mivel itt szamban kertuk a valaszt, ez jelenleg egy numerikus valtozo, de csinaljunk most belole egy kategorikus valtozot, mert osszesen harom fajta tipp erkezett: 3 - "kozepes", 4 - "jo", 5 - "kivalo"
+Az elso oran kertunk egy tippet arrol, hogy az egyes emberek milyen jegyet fognak kapni a kurzus vegen az adatelemzes oran (**jegy_tipp** valtozo). Mivel itt szamban kertuk a valaszt, ez jelenleg egy numerikus valtozo, de csinaljunk most belole egy **kategorikus valtozot**, mert osszesen harom fajta tipp erkezett: 3 - "kozepes", 4 - "jo", 5 - "kivalo"
 
 ```{r two categorical variable plots 3}
 table(orai_adat_corrected$jegy_tipp)
@@ -512,23 +520,25 @@ orai_adat_corrected %>%
 ```
 
 
+**Feltaro elemzes**
 
-Most vizsgaljuk meg azt, hogy az, hogy az emberek mennyit alszanak altalaban hogyan fugg ossze azzal, hogy mennyit hasznaljak a szocialis mediat.
+Most vizsgaljuk meg azt, hogy az, hogy az emberek mennyit alszanak altalaban (**alvas_altalaban_kat_1**) hogyan fugg ossze azzal, hogy mennyit hasznaljak a szocialis mediat (**szocmedia_kat_1**).
 
 
-A legegyszerubb modja ket csoportosito valtozo kapcsolatanak megvizsgalasara a ket valtozo kereszt-tablazatanak (crosstab) elkezsitese a table() funkcioval.
+A legegyszerubb modja ket csoportosito valtozo kapcsolatanak megvizsgalasara a ket valtozo **kereszt-tablazatanak (crosstab)** elkezsitese a **table()** funkcioval.
 
 
 ```{r two categorical variable 1}
 
 table(orai_adat_corrected$alvas_altalaban_kat_1, orai_adat_corrected$szocmedia_kat_1)
 
+
 ```
 
 
-Sokszor ennel sokkal szemleletesebb az abrak (plot) hasznalata.
+Sokszor ennel sokkal **szemleletesebb az abrak** (plot) hasznalata.
 
-Erre az egyik lehetoseg a stacked bar chart (egymasra tornyozott oszlopdiagram, a geom_bar() geomot hasznaljuk) hasznalata. Itt az egyik valtozo kategoriai adjak meg hany oszlop lesz (ez a valtozo lesz az x tengelyen reprezentalva, igy ezt az "x =" reszen adhatjuk meg), a masik valtozo az oszlopokat szinekkel szegmentalja, ezt pedig a "fill =" reszen adhatjuk meg. 
+Erre az egyik lehetoseg a **stacked bar chart** (egymasra tornyozott oszlopdiagram, a **geom_bar()** geomot hasznaljuk) hasznalata. Itt az egyik valtozo kategoriai adjak meg hany oszlop lesz (ez a valtozo lesz az x tengelyen reprezentalva, igy ezt az "x =" reszen adhatjuk meg), a masik valtozo az oszlopokat szinekkel szegmentalja, ezt pedig a "**fill =**" reszen adhatjuk meg. 
 
 
 ```{r two categorical variable plots 4}
@@ -540,7 +550,7 @@ ggplot() +
 
 ```
 
-Ha az egyes faktorszinteken nagyon kulonbozo mennyisegu megfigyeles van, ez a megjelenites neha felrevezeto kovetkeztetesekhez vezethet, igy neha hasznosabb ha az oszlopok nem szamossagot (count), hanem reszaranyt (proportion) jelolnek. Ha ezt szeretnenk, ahelyett hogy uresen hagynank a geom_bar() funkciot, a kovetkezot adjuk meg: geom_bar(position = "fill").
+Ha az egyes faktorszinteken nagyon **kulonbozo mennyisegu megfigyeles** van, ez a megjelenites neha felrevezeto kovetkeztetesekhez vezethet, igy neha hasznosabb ha az oszlopok nem szamossagot (count), hanem **reszaranyt (proportion)** jelolnek. Ha ezt szeretnenk, ahelyett hogy uresen hagynank a geom_bar() funkciot, a kovetkezot adjuk meg: **geom_bar(position = "fill")**.
 
 ```{r two categorical variable plots 5}
 
@@ -557,10 +567,10 @@ ggplot() +
 
 ### Gyakorlas
 
-Hasznald a fent tanult modszereket, hogy megvizsgald a jegy_tipp_kat es a hangulat_kat_1 valtozok kozotti osszefuggest.
-- hasznalj geom_bar() geomot a megjeleniteshez
-- probald meg mind a szamossagot, mind a reszaranyt kifejezo abrat megvizsgalni geom_bar(position = "fill")
-- milyen kovetkeztetest tudsz levonni az abrakrol?
+Hasznald a fent tanult modszereket, hogy megvizsgald a **jegy_tipp_kat** es a **hangulat_kat_1** valtozok kozotti osszefuggest.
+- hasznalj **geom_bar()** geomot a megjeleniteshez
+- probald meg mind a **szamossagot**, mind a **reszaranyt** kifejezo abrat megvizsgalni geom_bar(position = "fill")
+- milyen **kovetkeztetest** tudsz levonni az abrakrol?
 
 
 *______________________________*
@@ -568,7 +578,8 @@ Hasznald a fent tanult modszereket, hogy megvizsgald a jegy_tipp_kat es a hangul
 
 ```{r megoldas 3}
 
-# az y tengelyen megvaltoztathatjuk a beosztast a scale_y_continuous(breaks = c(...))) funkcio hozzaadasaval 
+# az y tengelyen megvaltoztathatjuk a beosztast a scale_y_continuous(breaks = c(...))) funkcio hozzaadasaval
+# a masodik abran az y tengelynek megvaltoztatjuk a feliratat
 
 jegy_tipp_kat_hangulat_kat_plot_1 <-
 orai_adat_corrected %>%
@@ -581,7 +592,8 @@ jegy_tipp_kat_hangulat_kat_plot_2 <-
 orai_adat_corrected %>%
 ggplot() +
   aes(x = jegy_tipp_kat, fill = hangulat_kat_1) +
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  ylab("proportion")
 
 grid.arrange(jegy_tipp_kat_hangulat_kat_plot_1, jegy_tipp_kat_hangulat_kat_plot_2, nrow = 2)
 
@@ -590,7 +602,8 @@ grid.arrange(jegy_tipp_kat_hangulat_kat_plot_1, jegy_tipp_kat_hangulat_kat_plot_
 
 
 
-Ennel a megjelenitesnel fontos hogy ha az egyes megfigyelesek keves megfigyelesbol allnak, az abra megteveszto lehet, mert az abra nem jelzi a megfigyelesek szamat es igy azt, hogy milyen biztosak lehetunk az eredmenyben. Ilyen esetekben az egyik kategoriat ki lehet venni az abrarol, vagy a szmossagot es a reszaranyt abrazolo abrakat egymas mellet lehet bemutatni, hogy igy kiegeszitsek egymast. Ehhez hasznalhatjuk a grid.arrange() funkciot.
+Ennel a megjelenitesnel fontos hogy ha az egyes megfigyelesek **keves megfigyelesbol allnak**, az abra megteveszto lehet, mert az abra nem jelzi a megfigyelesek szamat es igy azt, hogy milyen biztosak lehetunk az eredmenyben. Ilyen esetekben az egyik kategoriat ki lehet venni az abrarol, vagy a **szamossagot es a reszaranyt abrazolo abrakat egymas mellet** lehet bemutatni, hogy igy kiegeszitsek egymast. Ehhez hasznalhatjuk a **grid.arrange()** funkciot.
+
 
 ```{r two categorical variables 3 }
 alvas_altalaban_szocmedia_plot_1 <- 
@@ -610,7 +623,7 @@ grid.arrange(alvas_altalaban_szocmedia_plot_1, alvas_altalaban_szocmedia_plot_2,
 ```
 
 
-Az abra interpretalhatosaga attol fuggen is valtozhat, hogy melyik valtozot tesszuk az x-tengelyre es melyiket szinkent abrazolva.
+Az abra **interpretalhatosaga** attol fuggoen is **valtozhat**, hogy melyik valtozot tesszuk az x-tengelyre es melyiket szinkent abrazolva.
 
 
 ```{r two categorical variables 4}
@@ -627,7 +640,8 @@ alvas_altalaban_szocmedia_plot_4 <-
 orai_adat_corrected %>%
 ggplot() +
   aes(x = szocmedia_kat_1, fill = alvas_altalaban_kat_1) +
-  geom_bar(position = "fill")
+  geom_bar(position = "fill") +
+  ylab("proportion")
 
 grid.arrange(alvas_altalaban_szocmedia_plot_3, alvas_altalaban_szocmedia_plot_4, ncol=2)
 
@@ -650,14 +664,15 @@ orai_adat_corrected %>%
   aes(x = szocmedia_kat_1, fill = alvas_altalaban_kat_1) +
   geom_bar(position = "fill") +
   theme(legend.position="bottom") +
-  guides(fill = guide_legend(title.position = "bottom"))
+  guides(fill = guide_legend(title.position = "bottom")) +
+  ylab("proportion")
 
 grid.arrange(alvas_altalaban_szocmedia_plot_3, alvas_altalaban_szocmedia_plot_4, ncol=2)
 
 ```
 
 
-Ujabb modja a barchar segitsegevel valo megjelenitesnek ha az oszlopok nem egymasra tornyozva, hanem egymas mellett jelennek meg, vagy ha a masodik valtozo szerint kulon paneleken (facet) jelennek meg.
+Ujabb modja a barchart segitsegevel valo megjelenitesnek ha az oszlopok nem egymasra tornyozva, hanem **egymas mellett** jelennek meg, vagy ha a masodik valtozo szerint **kulon paneleken (facet)** jelennek meg.
 
 ```{r two categorical variables 5 }
 
@@ -682,9 +697,9 @@ grid.arrange(alvas_altalaban_szocmedia_plot_1, alvas_altalaban_szocmedia_plot_2,
 
 ### Egy kategorikus es egy numerikus valtozo kapcsolata
 
-Vizsgaljuk meg a magassag osszefuggeset azzal, hogy ez emberek mit tippeltek, milyen jegyet fognak kapni az elso oran.
+Vizsgaljuk meg a **magassag** osszefuggeset azzal, hogy ez emberek mit tippeltek, milyen jegyet fognak kapni az elso oran (**jegy_tipp**).
 
-Ezt megtehetjuk az atlagok csoportonkenti attekintesevel a group_by() es a summarize(mean()) segitsegevel. 
+Ezt megtehetjuk az atlagok csoportonkenti attekintesevel a **group_by()** es a **summarize(mean())** segitsegevel. 
 
 ```{r categorical vs numeric}
 orai_adat_corrected %>%
@@ -694,14 +709,14 @@ orai_adat_corrected %>%
 ```
 
 
-A ket valtozo kapcsolatat megvizsgalhatjuk abrakkal is. Pl. hasznalhatjuk a 
+A ket valtozo kapcsolatat megvizsgalhatjuk **abrakkal** is. Pl. hasznalhatjuk a 
 
-- facet_wrap() fuggvenyt a egy geom_histogram() vagy geom_dotplot() -al kobinalva
-- a geom_boxplot() -ot
-- esetleg hasznalhatunk egy egymasra illesztett geom_density() plot-ot. 
-- talan ebben az esetben a legtisztabb kepet a geom_violin() mutatja, ami a geom_boxplot() es a geom_density() keverekenek tekintheto. Ezt kiegeszithetunk egy geom_point() -al, hogy pontosan latsszon, hany megfigyelesen alapulnak az abra adatai.
+- **facet_wrap()** fuggvenyt a egy **geom_histogram()** vagy **geom_dotplot()** -al kobinalva
+- a **geom_boxplot()** -ot
+- esetleg hasznalhatunk egy egymasra illesztett **geom_density()** plot-ot. 
+- talan ebben az esetben a legtisztabb kepet a **geom_violin()** mutatja, ami a geom_boxplot() es a geom_density() keverekenek tekintheto. Ezt kiegeszithetunk egy **geom_point()** -al, hogy pontosan latsszon, hany megfigyelesen alapulnak az abra adatai.
 
-Mindig erdemes tobb megkozelitest is hasznalni az adat-exploracio kozben, hogy minel reszletesebb kepet kaphassunk, es csokkentsuk a valoszinuseget hogy egyik vagy masik megkozelites hianyossagai felrevezetnek minket.
+Mindig erdemes **tobb megkozelitest** is hasznalni az adat-exploracio kozben, hogy minel reszletesebb kepet kaphassunk, es csokkentsuk a valoszinuseget hogy egyik vagy masik megkozelites hianyossagai felrevezetnek minket.
 
 
 
@@ -720,7 +735,7 @@ orai_adat_corrected %>%
 orai_adat_corrected %>%
   ggplot() +
     aes(x = magassag) +
-    geom_dotplot() +
+    geom_dotplot(binwidth = 6) +
     facet_wrap(~ jegy_tipp_kat)
 
 ```
@@ -731,6 +746,15 @@ orai_adat_corrected %>%
   ggplot() +
     aes(x = jegy_tipp_kat, y = magassag) +
     geom_boxplot()
+
+```
+
+```{r categorical vs numeric plot 1.4}
+
+orai_adat_corrected %>%
+  ggplot() +
+    aes(x = magassag, fill = jegy_tipp_kat) +
+    geom_density(alpha = 0.3)
 
 ```
 
@@ -745,45 +769,15 @@ orai_adat_corrected %>%
 ```
 
 
-```{r categorical vs numeric plot 1}
 
-orai_adat_corrected %>%
-  ggplot() +
-    aes(x = magassag) +
-    geom_histogram() +
-    facet_wrap(~ jegy_tipp_kat)
-
-orai_adat_corrected %>%
-  ggplot() +
-    aes(x = magassag) +
-    geom_dotplot() +
-    facet_wrap(~ jegy_tipp_kat)
-
-orai_adat_corrected %>%
-  ggplot() +
-    aes(x = jegy_tipp_kat, y = magassag) +
-    geom_boxplot()
-
-orai_adat_corrected %>%
-  ggplot() +
-    aes(x = magassag, fill = jegy_tipp_kat) +
-    geom_density(alpha = 0.3)
-
-orai_adat_corrected %>%
-  ggplot() +
-    aes(x = jegy_tipp_kat, y = magassag) +
-    geom_violin() +
-    geom_point()
-```
-A fenti abran latszik, hogy bar az atlagok a fenti tablazatban kulonboztek, a maguknak kivalo pontot josolok tobbsege 170 cm koruli, de van ket kiurgo magassagu szemely, aki az atlagot felhuzza ebben a csoportban.
+A fenti abran latszik, hogy bar az atlagok a fenti tablazatban kulonboztek, a maguknak kivalo pontot josolok tobbsege 170 cm koruli, de van ket **kiurgo magassagu szemely**, aki az atlagot felhuzza ebben a csoportban.
 
 
-Az is elkepzelheto hogy egy nemi hatast latunk az eredmenyekben, hiszen a ferfiak magasabbak, es elkepzelheto, hogy nagyobb az adatelemzessel kapcsolatos onbizalmuk is. Probaljuk meg a ferfiakra es a nokre kulon elkesziteni az abrat.
+Az is elkepzelheto hogy egy **nemi hatast** latunk az eredmenyekben, hiszen a ferfiak magasabbak, es elkepzelheto, hogy nagyobb az adatelemzessel kapcsolatos onbizalmuk is. Probaljuk meg a **ferfiakra es a nokre kulon elkesziteni az abrat**.
 
-Itt mar harom valtozo kapcsolatat abrazoljuk, amihez a facet_grid() funkciot lehet hasznalni, vagy kulonbozo esztetikai elemeket (aes()) lehet a kulonbozo valtozokhoz rendelni.
+Itt mar **harom valtozo** kapcsolatat abrazoljuk, amihez a facet_grid() funkciot lehet hasznalni, vagy kulonbozo esztetikai elemeket (aes()) lehet a kulonbozo valtozokhoz rendelni.
 
 
-kkal tehetjuk meg az alabbi modon, vagy 
 
 ```{r categorical vs numeric plot 3}
 
@@ -804,7 +798,7 @@ orai_adat_corrected %>%
 ```
 
 
-Ha szeretnenk kizarni az elemzesunkbol ezeket az extrem ertekekt, a filter() funkcio beekelesevel a pipe-ba megepithetjuk a fenti abrankat es tablazatokat ugy, hogy csak a 185 cm-nel alacsonyabb emberekre fogkuszalunk.
+Ha szeretnenk **kizarni az elemzesunkbol** ezeket az extrem ertekekt, a **filter()** funkcio beekelesevel a pipe-ba megepithetjuk a fenti abrankat es tablazatokat ugy, hogy csak a 185 cm-nel alacsonyabb emberekre fogkuszalunk.
 
 Igy mar eltunik a korabbi atlagok kozotti kulonbseg.  
 
@@ -835,7 +829,7 @@ orai_adat_corrected %>%
 
 ### Gyakorlas
 
-Hasznald a fent tanult modszereket, hogy megvizsgald a jegy_tipp_kat es a hangulat_1 valtozok kozotti osszefuggest.
+Hasznald a fent tanult modszereket, hogy megvizsgald a **jegy_tipp_kat** es a **hangulat_1** valtozok kozotti osszefuggest.
 
 - hasznald a fenti geomokat, es keszits legalabb ket kulonbozo abrat mas-mas geomokkal
 

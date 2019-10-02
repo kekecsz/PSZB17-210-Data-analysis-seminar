@@ -201,19 +201,24 @@ orai_adat %>%
 
 # ### Gyakorlas	
 
-# - Hatarozd meg az elso orai hangulat atlagat (*hangulat_1* valotzo).	
+# - Csinalj egy kategorikus valtozot az elso orai hangulat alapjan (*hangulat_1* valotozo) ugy, 
+# hogy harom csoport alakuljon ki: 0-3 - rossz, 4-6 - kozepes, 7-10 - jo. 
+# (Emlekeztetoul: ezt a mutate() es a recode() funkciokkal tudod peldaul elerni.) 
+# Ezt az uj valtozot nevezd el *hangulat_kat_1* -nek, es az ezt az uj valtozot is 
+# tartalmazo adattablat mentsd el *orai_adat_harmashangulat_1* neven.	
 
 
-# - Csinalj egy kategorikus valtozot az elso orai hangulat alapjan ugy, hogy harom csoport alakuljon ki: 0-3 - rossz, 4-6 - kozepes, 7-10 - jo. (Emlekeztetoum: ezt a mutate() es a recode() funkciokkal tudod peldaul elerni.) Ezt az uj valtozot nevezd el *hangulat_kat_1* -nek, es az ezt az uj valtozot is tartalmazo adattablat mentsd el *orai_adat_harmashangulat_1* neven.	
-
-
-# - Fontos, hogy a *hangulat_kat_1* valtozot faktor valotozokent jelold meg. (Ezt lehet az elozo lepesben a mutate() funkcion belul, vagy egy kulon lepesben, de mindenkeppen a factor() vagy az as.factor() funkciokat erdemes hozza hasznalni)	
+# - Fontos, hogy a *hangulat_kat_1* valtozot faktor valotozokent jelold meg. 
+# (Ezt lehet az elozo lepesben a mutate() funkcion belul, vagy egy kulon lepesben, de 
+# mindenkeppen a factor() vagy az as.factor() funkciokat erdemes hozza hasznalni)	
 
 
 # - Keszits egy tablazatot arrol, hogy hanyan esnek a *hangulat_kat_1* egyes kategoriaiba.	
 
 
-# - Add meg a faktorszintek helyes sorrendjet: rossz, kozepes, jo (Ird felul a *hangulat_kat_1* korabbi valtozatat ezzel a valtozattal ahol a szintek mar helyes sorrendben vannak)	
+# - Add meg a faktorszintek helyes sorrendjet: rossz, kozepes, jo 
+# (Ird felul a *hangulat_kat_1* korabbi valtozatat ezzel a valtozattal ahol a szintek 
+# mar helyes sorrendben vannak)	
 
 
 # - Nezd meg a faktor szintjeit, hogy valoban helyes sorrendben szerepelnek-e	
@@ -286,7 +291,7 @@ ggplot() +
 
 
 	
-orai_adat_corrected = orai_adat %>%	
+orai_adat_corrected <- orai_adat %>%	
   mutate(szocmedia_3 = replace(szocmedia_3,  szocmedia_3=="youtube", NA))	
 	
 orai_adat_corrected = orai_adat_corrected %>%	
@@ -515,7 +520,7 @@ grid.arrange(alvas_altalaban_szocmedia_plot_1, alvas_altalaban_szocmedia_plot_2,
 
 
 
-# Az abra interpretalhatosaga attol fuggen is valtozhat, hogy melyik valtozot tesszuk az x-tengelyre es melyiket szinkent abrazolva.	
+# Az abra interpretalhatosaga attol fuggoen is valtozhat, hogy melyik valtozot tesszuk az x-tengelyre es melyiket szinkent abrazolva.	
 
 
 
@@ -532,7 +537,8 @@ alvas_altalaban_szocmedia_plot_4 <-
 orai_adat_corrected %>%	
 ggplot() +	
   aes(x = szocmedia_kat_1, fill = alvas_altalaban_kat_1) +	
-  geom_bar(position = "fill")	
+  geom_bar(position = "fill")	+
+  ylab("proportion")
 	
 grid.arrange(alvas_altalaban_szocmedia_plot_3, alvas_altalaban_szocmedia_plot_4, ncol=2)	
 	
@@ -555,14 +561,15 @@ orai_adat_corrected %>%
   aes(x = szocmedia_kat_1, fill = alvas_altalaban_kat_1) +	
   geom_bar(position = "fill") +	
   theme(legend.position="bottom") +	
-  guides(fill = guide_legend(title.position = "bottom"))	
+  guides(fill = guide_legend(title.position = "bottom")) +
+  ylab("proportion")
 	
 grid.arrange(alvas_altalaban_szocmedia_plot_3, alvas_altalaban_szocmedia_plot_4, ncol=2)	
 	
 
 
 
-# Ujabb modja a barchar segitsegevel valo megjelenitesnek ha az oszlopok nem egymasra tornyozva, hanem egymas mellett jelennek meg, vagy ha a masodik valtozo szerint kulon paneleken (facet) jelennek meg.	
+# Ujabb modja a barchart segitsegevel valo megjelenitesnek ha az oszlopok nem egymasra tornyozva, hanem egymas mellett jelennek meg, vagy ha a masodik valtozo szerint kulon paneleken (facet) jelennek meg.	
 
 
 	
@@ -625,9 +632,16 @@ orai_adat_corrected %>%
 orai_adat_corrected %>%	
   ggplot() +	
     aes(x = magassag) +	
-    geom_dotplot() +	
+    geom_dotplot(binwidth = 6) +	
     facet_wrap(~ jegy_tipp_kat)	
 	
+
+
+
+orai_adat_corrected %>%
+  ggplot() +
+    aes(x = magassag, fill = jegy_tipp_kat) +
+    geom_density(alpha = 0.3)
 
 
 
@@ -649,36 +663,6 @@ orai_adat_corrected %>%
     geom_point()	
 
 
-
-
-	
-orai_adat_corrected %>%	
-  ggplot() +	
-    aes(x = magassag) +	
-    geom_histogram() +	
-    facet_wrap(~ jegy_tipp_kat)	
-	
-orai_adat_corrected %>%	
-  ggplot() +	
-    aes(x = magassag) +	
-    geom_dotplot() +	
-    facet_wrap(~ jegy_tipp_kat)	
-	
-orai_adat_corrected %>%	
-  ggplot() +	
-    aes(x = jegy_tipp_kat, y = magassag) +	
-    geom_boxplot()	
-	
-orai_adat_corrected %>%	
-  ggplot() +	
-    aes(x = magassag, fill = jegy_tipp_kat) +	
-    geom_density(alpha = 0.3)	
-	
-orai_adat_corrected %>%	
-  ggplot() +	
-    aes(x = jegy_tipp_kat, y = magassag) +	
-    geom_violin() +	
-    geom_point()	
 
 # A fenti abran latszik, hogy bar az atlagok a fenti tablazatban kulonboztek, a maguknak kivalo pontot josolok tobbsege 170 cm koruli, de van ket kiurgo magassagu szemely, aki az atlagot felhuzza ebben a csoportban.	
 
@@ -686,9 +670,7 @@ orai_adat_corrected %>%
 # Az is elkepzelheto hogy egy nemi hatast latunk az eredmenyekben, hiszen a ferfiak magasabbak, es elkepzelheto, hogy nagyobb az adatelemzessel kapcsolatos onbizalmuk is. Probaljuk meg a ferfiakra es a nokre kulon elkesziteni az abrat.	
 
 # Itt mar harom valtozo kapcsolatat abrazoljuk, amihez a facet_grid() funkciot lehet hasznalni, vagy kulonbozo esztetikai elemeket (aes()) lehet a kulonbozo valtozokhoz rendelni.	
-
-
-# kkal tehetjuk meg az alabbi modon, vagy 	
+	
 
 
 	
