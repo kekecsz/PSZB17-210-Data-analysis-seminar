@@ -106,10 +106,14 @@ cor(height_base, resilience)
 # Lathatjuk, hogy 5 valtozo van az adattablaban. 	
 
 # - participant_ID - reszvevo azonositoja	
+# - gender - nem
 # - group - csoporttagsag, ez egy faktor valtozo aminek ket szintje van: "treatment" (kezelt csoport), es "control" (kontrol csoport). A "treatment" csoport kapott kezelest, mig a "control" csoport nem kapott kezelest.	
 # - resilience - reziliancia: a nehezsegekkel valo megkuzdes kepessege, ez egy szemlyes kepesseg, olyasmi mint a szemelyisegvonasok	
 # - anxiety - szorongas szint	
 # - health_status - a klinikai kriteriumok alapjan szorongonak vagy gyogyultnak tekintheto a szemely 	
+# - home_ownership - lakhatasi helyzet: harom szintje van az alapjan hogy a szemely hol lakik: "friend" - baratnal vagy csaladnal lakik, "own" - sajat tulajdonu lakasban lakik, "rent" - berelt lakasban lakik, 
+# - height - magassag
+
 
 # Mondjuk hogy az adatok egy randomizalt kontrollalt klinikai kutatas eredmenyeibol szarmaznak, ahol a pszichoterapia hatekonysagat teszteltek. Olyan szemelyeket vontak be a kutatasba, akik egy hurrikan aldozatai voltak, es szorongassal kuszkodtek. A szemelyeknel felmertek a reziliancia szintjet, majd veletlenszeruen osztottak a szemelyeket egy kezelesi vagy egy kontrol csoportba. Ezt kovetoen a kezelesi csoport pszichoterapiat kapott 6 heten keresztul heti egyszer, mig a kontrol csoport nem kapott kezelest. A vizsgalat vegen megmertek a szemelyek szorongasszintjet, es a klinikai kriteriumok alapjan meghataroztak, hogy a szemely gyogyulnak, vagy szorongonak szamit-e.	
 
