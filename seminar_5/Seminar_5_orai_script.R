@@ -20,10 +20,6 @@
 
 if (!require("tidyverse")) install.packages("tidyverse")	
 library(tidyverse) # for dplyr and ggplot2	
-# if (!require("MASS")) install.packages("MASS")	
-# library(MASS) # for the "survey" dataset	
-# if (!require("infer")) install.packages("infer")	
-# library(infer) # for statistical inference	
 
 
 # ## Adatgeneralas az orahoz	
