@@ -5,6 +5,10 @@
 # output: html_document	
 # ---	
 
+
+	
+
+
 # # Ket valtozo kapcsolatanak vizsgalata, statisztikai inferencia	
 
 # ## Az ora celja	
@@ -16,7 +20,10 @@
 
 if (!require("tidyverse")) install.packages("tidyverse")	
 library(tidyverse) # for dplyr and ggplot2	
-
+# if (!require("MASS")) install.packages("MASS")	
+# library(MASS) # for the "survey" dataset	
+# if (!require("infer")) install.packages("infer")	
+# library(infer) # for statistical inference	
 
 
 # ## Adatgeneralas az orahoz	
@@ -42,21 +49,25 @@ gender_effect_on_height = 12
 	
 	
 treatment <- rep(c(1, 0), each = n_per_group)	
-set.seed(68)	
+set.seed(1)	
 	
 gender_num <- rbinom(n = n_per_group * 2, size = 1, prob = 0.7)	
 gender <- NA	
 gender[gender_num == 0] = "female"	
 gender[gender_num == 1] = "male"	
 	
+set.seed(2)	
 home_ownership <- sample(c("own", "rent", "friend"), n_per_group * 2, replace = T)	
 	
+set.seed(3)	
 resilience <- rnorm(mean = resilience_mean, sd = resilience_sd, n = n_per_group*2)	
 	
+set.seed(6)	
 anxiety_base <- rnorm(mean = base_anxiety_mean, sd = base_anxiety_sd, n = n_per_group*2)	
 anxiety <- anxiety_base + treatment * treatment_effect + resilience * resilience_effect + gender_num * gender_effect	
 participant_ID <- paste0("ID_", 1:(n_per_group*2))	
 	
+set.seed(5)	
 height_base <- rnorm(mean = base_height_mean, sd = base_height_sd, n = n_per_group*2)	
 height <- height_base + gender_num * gender_effect_on_height	
 	
@@ -86,6 +97,8 @@ data = data %>%
   mutate(home_ownership = factor(home_ownership))	
 	
 data	
+	
+cor(height_base, resilience)	
 	
 
 
@@ -220,8 +233,7 @@ binom.test(x = heads, n = total_flips, p = probability_of_heads_if_H0_is_true, a
 # - sample estimates: A "siker" ("celmegfigyeles", a mi esetunkben a fej) valoszinusegenek becsult merteke a populacioban a megfigyelt valoszinuseg alapjan. Ez egy pontbecsles, ami mindig megegyezik a megfigyelt valoszinuseggel.	
 
 
-# Ennek a binomialis tesztnek az eredmenyet igy irhatjuk le:	
-# "A kutatasunkban 9 fejet figyeltunk meg 10 penzfeldobasbol. Ez alapjan ugy iteljuk, hogy annak a valoszinusege, hogy fejet dobunk az ermevel szignifikansan tobb mint p = 0.5. A fej dobas valoszinusege p =  0.9 volt a mintaban (95% CI = 0.61, 1)."	
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 # *________________________________*	
 
@@ -273,10 +285,7 @@ chisq.test(ownership_health_status_table)
 	
 
 
-# Ennek a tesztnek az eredmenyet igy irhatjuk le:	
-
-# "Nem volt szignifikans elteres abban, hogy a kulonbozo lakhatasi csoportokban (baratnal, sajat lakasban, vagy berlemenyben lakok) milyen aranyban voltak azok akik meggyogyultak a kutatas vegere (X^2 = `r round(chisq.test(ownership_health_status_table)$statistic, 2)`, df = `r chisq.test(ownership_health_status_table)$parameter`, p = `r round(chisq.test(ownership_health_status_table)$p.value, 3)`)."	
-
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 
 
@@ -338,9 +347,7 @@ mean_dif
 	
 
 
-# Ezt az eredmenyt ugy irhatjuk le hogy:	
-
-# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t = `r round(t_test_results$statistic, 2)`, df = `r round(t_test_results$parameter, 2)`, p = `r round(t_test_results$p.value, 3)`. A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: `r round(summary$mean[1], 2)`(`r round(summary$sd[1], 2)`), ferfiak: `r round(summary$mean[2], 2)`(`r round(summary$sd[2], 2)`). A nok atlagosan `r round(mean_dif, 2)` ponttal voltak szorongobbak (95% CI = `r round(t_test_results$conf.int[1], 2)`, `r round(t_test_results$conf.int[2], 2)`)."	
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 # Ha egy kategorikus valtozon belul tobb csoportunk is van, hasznalhatjuk az egyszempontos ANOVA-t (one-way ANOVA) az aov() funkcioval a t.test() helyett. A formula amit be kell irni ugyan ugy nez ki, mint a t-teszt eseten.	
 
@@ -353,8 +360,7 @@ summary(ANOVA_result)
 	
 
 
-# Ezt az eredmenyt igy irnank le:	
-# "A lakhatasi csoportonk szerint nem volt szignifikans kulonsbeg a szorongas atlagos szintjeben (F (`r round(summary(ANOVA_result)[[1]]$Df[1],2)` ,`r round(summary(ANOVA_result)[[1]]$Df[2],2)`) = `r round(summary(ANOVA_result)[[1]]$F[1],2)`, p = `r round(summary(ANOVA_result)[[1]][1,4],3)`). A szorongas atlagat es szorasat az egyes csoportok szerinti bontasban lasd az 1. tablazatban"	
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 # Alabb lathato, hogyan produkalnank a megfelelo tablazatot a szorongas atlagaval home_ownership csoportok szerint.	
 
@@ -385,9 +391,7 @@ t_test_results_one_sided
 	
 
 
-# Ezt az eredmenyt a fentiekhez hasonloan igy irnank le:	
-
-# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t = `r round(t_test_results_one_sided$statistic, 2)`, df = `r round(t_test_results_one_sided$parameter, 2)`, p = `r round(t_test_results_one_sided$p.value, 3)`. A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: `r round(summary$mean[1], 2)`(`r round(summary$sd[1], 2)`), ferfiak: `r round(summary$mean[2], 2)`(`r round(summary$sd[2], 2)`). A nok atlagosan `r round(mean_dif, 2)` ponttal voltak szorongobbak (95% CI = `r round(t_test_results_one_sided$conf.int[1], 2)`, inf)."	
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 
 # Nezzuk meg, mi tortenne, ha azt tippeltuk volna a hipotezisalkotaskor, hogy a noknek alacosnyabb lesz a szorongasszintjuk. Ezt ugy hatarozhatjuk meg, hogy a t.test() funkcioban alternative = "less" parametert allitunk be.	
@@ -453,12 +457,11 @@ correlation_result
 	
 
 
-# Ennek a tesztnek az eredmenyet a kovetkezokeppen irhatjuk le:	
-# "A reziliencia es a magassag kozott nem talaltunk szignifikans egyuttjarast (r = `r round(correlation_result$estimate, 2)`, 95% CI = `r round(correlation_result$conf.int[1], 2)`, `r round(correlation_result$conf.int[2], 2)`, df = `r round(correlation_result$parameter, 2)`, p = `r round(correlation_result$p.value, 3)`)"	
+# Arrol hogy az eredmenyt hogy irhatjuk le, lasd az orai anyag pdf valtozatat
 
 # Hasonloan a t-teszthez, a korrelacios teszt eseteben is erdemes egyoldalu tesztet hasznalni amikor a hipotezisunk megmondja a kapcsolat iranyat is, nem csak azt, hogy van kapcsolat a ket valtozo kozott.	
 
-# Peldaul feltetelezzuk, hogy a ket valtozo kozotti kapcsolat pozitiv lesz. Vagyis egy ember minel magasabb, annal magasabb a rezilienciaja. Ezt ugy adhatjuk meg a statisztikai teszt specifikaciojakor, hogy a formulahoz hozzatesszuk az alternative = "greater" parametert. Ha az eredmenyt osszehasonlitjuk az elozo korrelacios teszt eredmenyevel, lathatjuk, hogy a p-ertek magasabb lett (hiszen a kapcsolat iranya a mintankban valojaban kisse negativ volt). A konfidencia intervallumnak itt is csak az also hatara erdekes, a felso hatara a leeheto legmagasabb erteket veszi fel ilyenkor, ami a korrelacional 1.	
+# Peldaul feltetelezzuk, hogy a ket valtozo kozotti kapcsolat pozitiv lesz. Vagyis egy ember minel magasabb, annal magasabb a rezilienciaja. Ezt ugy adhatjuk meg a statisztikai teszt specifikaciojakor, hogy a formulahoz hozzatesszuk az alternative = "greater" parametert. Ha az eredmenyt osszehasonlitjuk az elozo korrelacios teszt eredmenyevel, lathatjuk, hogy a p-ertek is megvalozott. A konfidencia intervallumnak itt is csak az also hatara erdekes, a felso hatara a leeheto legmagasabb erteket veszi fel ilyenkor, ami a korrelacional 1.	
 
 
 	
