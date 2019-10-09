@@ -103,7 +103,7 @@ cor(height_base, resilience)
 
 # Mint mindig, elemzes elott ellenorizzuk, hogy az adattal minden rendben van-e!	
 
-# Lathatjuk, hogy 5 valtozo van az adattablaban. 	
+# Lathatjuk, hogy 8 valtozo van az adattablaban. 	
 
 # - participant_ID - reszvevo azonositoja	
 # - gender - nem
