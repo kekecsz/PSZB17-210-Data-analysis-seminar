@@ -2,7 +2,9 @@
 title: "Seminar_5"
 author: "Zoltan Kekecs"
 date: "9 oktober 2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -13,22 +15,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Az ora celja
 
-Az ora celja hogy megismerkedjunk a statisztikai inferencia alapjaival ket valtozo kapcsolatanak elemzesen keresztul.
+Az ora celja hogy megismerkedjunk a **statisztikai inferencia alapjaival** ket valtozo kapcsolatanak elemzesen keresztul.
 
 ## Package-ek betoltese
 
 ```{r packages, message=FALSE, warning=FALSE}
 if (!require("tidyverse")) install.packages("tidyverse")
 library(tidyverse) # for dplyr and ggplot2
-# if (!require("MASS")) install.packages("MASS")
-# library(MASS) # for the "survey" dataset
-# if (!require("infer")) install.packages("infer")
-# library(infer) # for statistical inference
 ```
 
 ## Adatgeneralas az orahoz
 
-Az alabbi kod adatokat general a szamunkra. Az adatgeneralashoz hasznlalt kod megertese ezen a szinten meg nem szukseges. 
+Az alabbi kod **adatokat general** a szamunkra. Az adatgeneralashoz hasznlalt kod megertese ezen a szinten meg nem szukseges. 
 
 ```{r generate data}
 n_per_group = 40
@@ -105,17 +103,22 @@ cor(height_base, resilience)
 
 ## Adatellenorzes
 
-Mint mindig, elemzes elott ellenorizzuk, hogy az adattal minden rendben van-e!
+Mint mindig, elemzes elott **ellenorizzuk**, hogy az adattal minden rendben van-e!
 
-Lathatjuk, hogy 5 valtozo van az adattablaban. 
+Mondjuk hogy az adatok egy randomizalt kontrollalt klinikai kutatas eredmenyeibol szarmaznak, ahol a **pszichoterapia hatekonysagat** teszteltek. Olyan szemelyeket vontak be a kutatasba, akik egy **hurrikan aldozatai** voltak, es **szorongassal** kuszkodtek. A szemelyeknel felmertek a reziliancia szintjet, majd veletlenszeruen osztottak a szemelyeket egy kezelesi vagy egy kontrol csoportba. Ezt kovetoen a kezelesi csoport **pszichoterapiat kapott 6 heten keresztul** heti egyszer, mig a kontrol csoport nem kapott kezelest. A vizsgalat vegen megmertek a szemelyek **szorongasszintjet**, es a klinikai kriteriumok alapjan meghataroztak, hogy a szemely **gyogyultnak, vagy szorongonak** szamit-e.
+
+Lathatjuk, hogy 8 valtozo van az adattablaban. 
 
 - participant_ID - reszvevo azonositoja
+- gender - nem
 - group - csoporttagsag, ez egy faktor valtozo aminek ket szintje van: "treatment" (kezelt csoport), es "control" (kontrol csoport). A "treatment" csoport kapott kezelest, mig a "control" csoport nem kapott kezelest.
 - resilience - reziliancia: a nehezsegekkel valo megkuzdes kepessege, ez egy szemlyes kepesseg, olyasmi mint a szemelyisegvonasok
 - anxiety - szorongas szint
 - health_status - a klinikai kriteriumok alapjan szorongonak vagy gyogyultnak tekintheto a szemely 
+- home_ownership - lakhatasi helyzet: harom szintje van az alapjan hogy a szemely hol lakik: "friend" - baratnal vagy csaladnal lakik, "own" - sajat tulajdonu lakasban lakik, "rent" - berelt lakasban lakik, 
+- height - magassag
 
-Mondjuk hogy az adatok egy randomizalt kontrollalt klinikai kutatas eredmenyeibol szarmaznak, ahol a pszichoterapia hatekonysagat teszteltek. Olyan szemelyeket vontak be a kutatasba, akik egy hurrikan aldozatai voltak, es szorongassal kuszkodtek. A szemelyeknel felmertek a reziliancia szintjet, majd veletlenszeruen osztottak a szemelyeket egy kezelesi vagy egy kontrol csoportba. Ezt kovetoen a kezelesi csoport pszichoterapiat kapott 6 heten keresztul heti egyszer, mig a kontrol csoport nem kapott kezelest. A vizsgalat vegen megmertek a szemelyek szorongasszintjet, es a klinikai kriteriumok alapjan meghataroztak, hogy a szemely gyogyulnak, vagy szorongonak szamit-e.
+
 
 
 
@@ -147,8 +150,6 @@ set.seed(Sys.time())
 
 Vizsgaljuk meg kutatasban szereplo valtozok osszefuggeset a hipotezisek menten.
 
-Erre eloszor feltaro elemzest hasznalunk.
-
 A kutatas hipotezise a kovetkezok voltak:
 
 1. Tobb a ferfi mint a no ebben a klinikai mintaban (**gender** vs. 50%).
@@ -159,16 +160,16 @@ A kutatas hipotezise a kovetkezok voltak:
 
 ## Hipotezisteszteles
 
-A statisztikai inferencia, es hipotezis teszteles soran az a celunk, hogy megallapitsuk, letezik-e egy bizonyos hatas vagy kapcsolat. De ezt a **null-hipotezis szignifikancia teszteles (NHST)** soran egy forditott logikaval tesszuk: azt allapitjuk meg, hogy mekkora a valoszinusege hogy az altalunk megfigyelt eredmenyt (vagy annal meg extremebb eredmenyt) kapjunk, amennyiben a null-hipotezis igaz.
+A statisztikai inferencia, es hipotezis teszteles soran az a celunk, hogy megallapitsuk, letezik-e egy bizonyos hatas vagy kapcsolat. De ezt a **null-hipotezis szignifikancia teszteles (NHST)** soran egy forditott logikaval tesszuk: azt allapitjuk meg, hogy **mekkora a valoszinusege hogy az altalunk megfigyelt hatast (vagy annal meg extremebb hatast) kapjunk, amennyiben a null-hipotezis igaz**.
 
-Egy egyszeru pelda: az a sejtesem, hogy egy penzerme cinkelt, megpedig ugy hogy nagy valoszinuseggel fej legyen az eredmeny amikor feldobjuk. Ebben az esetben a null-hipotezisem az, hogy az erme nem cinkelt, vagyis ugyan akkora a valoszinusege fejet es irast kapni eredmenykent, ha feldobjuk.
+Egy egyszeru pelda: az a sejtesem, hogy **egy penzerme cinkelt**, megpedig ugy hogy nagy valoszinuseggel **fej** legyen az eredmeny amikor feldobjuk. Ebben az esetben a **null-hipotezisem** az, hogy az **erme nem cinkelt**, vagy iras fele cinkelt. Vagyis a null-hipotezis szerint ugyan akkora a valoszinusege fejet es irast kapni eredmenykent, vagy irast konnyebb dobni az ermevel.
 
-- H1: cinkelt erme
-- H0: nem cinkelt erme
+- H1: cinkelt erme (fej fele)
+- H0: nem cinkelt erme, vagy iras fele cinkelt
 
 Tegyuk fel hogy 10-szer feldobjuk az ermet, es 9-szer fejet dobunk. Mekkora a valoszinusege, hogy az erme cinkelt? Ezt nem tudjuk megmondani. Tobbek kozott azert sem mert nem tudjuk, mennyire lehet cinkelve. Viszont azt meg tudjuk mondani, hogy mekkora a valoszinusege, hogy ezt az eredmenyt kapnank, ha az erme **NINCS** cinkelve.
 
-Annak a valoszinusege, hogy legalabb 9-szer (vagy tobbszor) fejet dobok 10 dobasbol egy nem cinkelt ermevel, p = 0.0107 (nagyjabol 1%). (Ezt a kod reszt nem fontos meg megerteni, a lenyege hogy a pbinom() funkcioval kiszamoltuk a valoszinuseget, hogy 10 feldobasbol legalabb 9 fej lesz).
+Annak a valoszinusege, hogy **legalabb 9-szer** (vagy tobbszor) fejet dobok **10 dobasbol** egy nem cinkelt ermevel, p = 0.0107 (**nagyjabol 1%**). (Ezt a kod reszt nem fontos meg megerteni, a lenyege hogy a pbinom() funkcioval kiszamoltuk a valoszinuseget, hogy 10 feldobasbol legalabb 9 fej lesz).
 
 ```{r coin flips probability}
 
@@ -182,9 +183,9 @@ probability_of_result
 ```
 
 
-Ez a valoszinuseg maskepp leforditva azt jelenti, hogy ha ugyan ezt a kiserletet 100 szor megismetelnenk (mindegyikben 10 feldobassal), akkor a 100 kiserletbol csak atlagosan 1-szer varnanak, hogy 9 vagy tobb fejet kapjunk. 
+Ez a valoszinuseg **maskepp mondva** azt jelenti, hogy ha ugyan ezt a kiserletet 100 szor megismetelnenk (mindegyikben 10 feldobassal), akkor a 100 kiserletbol csak atlagosan 1-szer varnanak, hogy 9 vagy tobb fejet kapjunk. 
 
-Ezt le is ellenorizhetjuk, ha randomizalunk mondjuk 10.000 hasonlo kiserletet az rbinom() funkcioval. Az abran lathato hogy csak a kiserletek igen kis szazalekaban kaptunk 9 vagy tobb "sikert". (Ezt a kodreszt sem fontos megerteni, a lenyege hogy az rbinom() funkcioval 10000-szer szimulaltuk, hogy egymas utan 10-szer feldobtunk egy ermet (vagyis hogy veletlenszeruen valasztottunk egy szamot 0 es 1 kozul.), ez utan ezt abrazoltuk a ggplot-al)
+Ezt le is ellenorizhetjuk, ha **randomizalunk mondjuk 10.000 hasonlo kiserletet** az rbinom() funkcioval. Az abran lathato hogy csak a kiserletek igen kis szazalekaban kaptunk 9 vagy tobb "sikert". (Ezt a kodreszt sem fontos megerteni, a lenyege hogy az rbinom() funkcioval 10000-szer szimulaltuk, hogy egymas utan 10-szer feldobtunk egy ermet (vagyis hogy veletlenszeruen valasztottunk egy szamot 0 es 1 kozul.), ez utan ezt abrazoltuk a ggplot-al)
 
 ```{r coin flips null probability}
 successes = rbinom(n = 10000, size = 10, prob = 0.5)
@@ -199,14 +200,14 @@ ggplot(data = random_flips) +
 
 ```
 
-Vagyis ez egy eleg meglepo (bar nem lehetetlen) eredmeny, ha az erme nem lenne cinkelve. Amikor NHST-t csinalunk, ez alapjan hozzuk meg a dontesunket arrol, hogy **elvetjuk-e** a null-hipotezist, vagy, kello bizonyitek hijan **megtartjuk** azt.
+Vagyis ez egy eleg meglepo (bar nem lehetetlen) eredmeny, ha az erme nem lenne cinkelve. Amikor NHST-t csinalunk, ez alapjan hozzuk meg a **dontesunket** arrol, hogy **elvetjuk-e** a null-hipotezist, vagy, kello bizonyitek hijan **megtartjuk** azt.
 
-A pszichologiaban altalaban **p < 0.5** hatarerteket hasznalunk a donteshozasban, vagyis ha egy olyan meglepo eredmenyt figyelunk meg, aminek a valoszinusege kisebb mint 5% ha a null-hipotezis igaz, akkor elvetjuk a null-hipotezist. Vagyis a fenti eredmeny eseten elvethetnek a hull-hipotezist, mert a megfigyelt eredmeny vagy annal extremebb eredmeny valosinusege 1% (p = 0.01), ami kisebb mint 5% (p < 0.05).
+A pszichologiaban altalaban **p < 0.05** hatarerteket hasznalunk a donteshozasban, vagyis ha egy olyan meglepo eredmenyt figyelunk meg, **aminek a valoszinusege kisebb mint 5% ha a null-hipotezis igaz, akkor elvetjuk a null-hipotezist**. Vagyis a fenti eredmeny eseten elvethetnek a hull-hipotezist, mert a megfigyelt eredmeny vagy annal extremebb eredmeny valosinusege 1% (p = 0.01), ami kisebb mint 5% (p < 0.05).
 
 
 ## Statisztikai tesztek
 
-A megfigyeles valoszinuseget a null-hipotezis helyesseget feltetelezve altalaban egy statisztikai teszt mondja meg nekunk. Ezen az oran negy statisztikai tesztet fogunk megismerni.
+**Nem kell jonak lennunk valoszinusegszamitasbol** hogy jo statistzikai donteseket tudjunk hozni. A megfigyeles valoszinuseget a null-hipotezis helyesseget feltetelezve altalaban egy **statisztikai teszt** mondja meg nekunk. Ezen az oran negy statisztikai tesztet fogunk megismerni.
 
 - binomialis teszt
 - khi-negyzet teszt
@@ -352,6 +353,7 @@ mean_dif = summary %>%
     summarize(mean_dif = mean[1] - mean[2])
 mean_dif
 
+
 ```
 
 Az eredmenyt igy irhatjuk le:
@@ -465,8 +467,8 @@ Ezt a pearson korrelacios teszt segitsegevel tehetjuk meg, cor.test() a kovetkez
 
 ```{r correlation test}
 
-correlation_result = cor.test(resilience, height, data = data)
-correlation_result
+correlation_result = cor.test(data$resilience, data$height)	
+correlation_result	
 
 ```
 
@@ -480,8 +482,8 @@ Peldaul feltetelezzuk, hogy a ket valtozo kozotti kapcsolat pozitiv lesz. Vagyis
 
 ```{r correlation test one sided greater}
 
-correlation_result_greater = cor.test(resilience, height, data = data, alternative = "greater")
-correlation_result_greater
+correlation_result_greater = cor.test(data$resilience, data$height, alternative = "greater")	
+correlation_result_greater	
 
 ```
 

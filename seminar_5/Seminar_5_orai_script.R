@@ -223,6 +223,8 @@ ggplot(data = random_flips) +
 	
 binom.test(x = heads, n = total_flips, p = probability_of_heads_if_H0_is_true, alternative = "greater")	
 	
+binom.test(x = 55, n = 80, p = 0.5)	
+
 
 
 # Ennek a tesztnek az eredmenye a kovetkezot mutat:	
@@ -452,7 +454,7 @@ data %>%
 
 
 	
-correlation_result = cor.test(resilience, height, data = data)	
+correlation_result = cor.test(data$resilience, data$height)	
 correlation_result	
 	
 
@@ -465,7 +467,7 @@ correlation_result
 
 
 	
-correlation_result_greater = cor.test(resilience, height, data = data, alternative = "greater")	
+correlation_result_greater = cor.test(data$resilience, data$height, alternative = "greater")	
 correlation_result_greater	
 	
 
