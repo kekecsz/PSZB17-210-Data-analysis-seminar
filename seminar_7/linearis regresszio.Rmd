@@ -1,47 +1,48 @@
 ---
-title: "Exercise 11"
-author: "Zoltan Kekecs"
-date: "15 november 2018"
+title: "Linearis regresszio"
+author: "Kekecs Zoltan"
+date: "1 november 2019"
 output:
   html_document: default
-  pdf_document: default
   word_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, tidy.opts=list(width.cutoff=60), tidy=TRUE)
 ```
 
-# Exercise 11 - The basics of linear regression
+# A linearis regresszio alapjai
 
-This exercise is related to learning the basic logic behind making predictions with linear regression models, and to quantifying the effectiveness of our predictions.
+Ennek az oranak a celja hogy megismerkedjunk a linearis regresszioval, annak logikajaval, es az ertelmezesehez szukseges alapfogalmakkal.
 
-The latest version of this document and the code the document refers to can be found in the GitHub repository of the class at:
-https://github.com/kekecsz/PSYP13_Data_analysis_class-2018
+A dokumentum legfrissebb valotzata itt talalhato:
+https://osf.io/rx4f5/
 
 
-## Loading packages
+## Package-ek betoltese
 
-You will need to load the following packages for this exercise:
+Betoltjuk a kovatkazo package-eket:
 
 ```{r packages, message=FALSE}
 library(psych) # for describe
 library(dplyr) # for data management
 library(gsheet) # to read data from google sheets
 library(ggplot2) # for ggplot
+library(tidyverse) # for tidy data
 ```
 
-## Custom functions
+## Sajat funckiok betoltese
 
-The following custom functions will come in handy during the visualization of the error of the predictions of the regressions line.
-This is not essential for the analysis and you don't need to learn how this custom function works if you don't want to. 
+Az alabbi funkcio csak az orai vizualizaciohoz kell, nem feltetlenul kell megerteni a tartalmat.
+Ezt a funkciot arra hasznaljuk majd hogy a linearis regresszioban fennmarado rezidualis hibat vizualizaljuk.
 
 ```{r custom function}
 
 
 error_plotter <- function(mod, col = "black", x_var = NULL){
   mod_vars = as.character(mod$call[2])
-  data = eval(parse(text = as.character(mod$call[3])))
+  data = as.data.frame(eval(parse(text = as.character(mod$call[3]))))
   y = substr(mod_vars, 1, as.numeric(gregexpr(pattern ='~',mod_vars))-2)
   x = substr(mod_vars, as.numeric(gregexpr(pattern ='~',mod_vars))+2, nchar(mod_vars))
   
@@ -61,221 +62,287 @@ error_plotter <- function(mod, col = "black", x_var = NULL){
 }
 ```
 
-## Data management and descriptive statistics
+## Adatmenedzsment es adat bemutatasa
 
-### Collect some data
+### Adatok betoltese
 
-Lets say we are a company that sells shoes, and we would like to be able to tell people's shoe size just by knowing their height.
-We collect some data using this simple survey:
+Mondjuk, hogy egy turistak koreben gyakran latogatott cipoboltban dolgozunk, es mivel a vilagon sokfajta cipomeretet hasznalnak es az emberek gyakran nem tudjak a sajat europai cipomeretuket, szeretnenk a magassaguk alapjan megbecsulni, mekkora az europai cipomeretuk.
 
-https://goo.gl/forms/nNXWwCPTbdHxGrBO2
-
-You can load the data we just collected with the following code
+Az alabbi koddal betolthetjuk az adattablat, amiben a korabbi orakon felvett kerdoivekbol szerepelnek a magassag es cipomeret adatok.
 
 ```{r load data, message=FALSE}
-# data from https://github.com/kekecsz/PSYP13_Data_analysis_class-2018/blob/master/Shoe%20and%20height%20data%20PSYP13-HT18.csv
-mydata = as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1C07SRvPJzftZaFApiI5YgptyymvyYQpIUi9v6gFbLHw/edit?usp=sharing"))
+mydata = as_tibble(gsheet2tbl("https://docs.google.com/spreadsheets/d/1GXx2YoktyIdXLqKdm4f_MMWHUzXYgxWRRr3avYnWaew/edit?usp=sharing"))
 ```
 
-### Check the dataset for irregularities
+### Adatok ellenorzese
 
-You should always check the dataset for coding errors or data that does not make sense.
+Szokas szerint az adatok ellenorzesevel kezdunk, pl. View(), describe(), es summary() funkciokkal.
 
-View data in the data viewer tool 
-```{r view data, eval=FALSE}
-View(mydata)
-```
+```{r check data}
+# descriptive statistics
+describe(mydata)
 
-or display simple descriptive statistics and plots.
+mydata %>% 
+  summary()
 
-You can use the describe() function from the psych package for continuous data, and the table() function for categorical data.
+# histograms
+mydata %>% 
+  ggplot() +
+  aes(x = magassag) +
+  geom_histogram()
 
-```{r check data, eval = F}
-describe(mydata$height)
-hist(mydata$height, breaks = 20)
-
-describe(mydata$shoe_size)
-hist(mydata$shoe_size, breaks = 10)
+mydata %>% 
+  ggplot() +
+  aes(x = cipomeret) +
+  geom_histogram()
 
 # scatterplot
-plot(shoe_size ~ height, data = mydata)
+mydata %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret) +
+  geom_point()
+
 ```
 
-There are several irregularties in the variable 'gender'. We need to handle these before going forward.
+### Adattisztitas es ellenorzes
 
 ```{r check data 2}
-table(mydata$gender)
+
+mydata_corrected = mydata %>% 
+  mutate(magassag = replace(magassag, magassag == 1.82, 182))
+
+# descriptive statistics
+describe(mydata_corrected)
+
+mydata_corrected %>% 
+  summary()
+
+# histograms
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag) +
+  geom_histogram()
+
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = cipomeret) +
+  geom_histogram()
+
+# scatterplot
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret) +
+  geom_point()
+
+
+# scatterplot with labels
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret, label = jelige) +
+  geom_point() +
+  geom_label(nudge_y = 0.5)
+
 ```
 
-You should clean your data before doing the analyses.
-Make sure to keep a record of the corrections. You should keep the raw datafile when possible, and make changes in the code, so the corrections and omissions are trackable in your code.
-
-```{r cleaning data}
-mydata_cleaned = mydata # create a copy of the data where which will be cleaned
 
 
-mydata_cleaned[mydata_cleaned[,"height"] == "168cm", "height"] = 168
-mydata_cleaned[,"height"] = as.numeric(as.character(mydata_cleaned[,"height"]))
-mydata_cleaned[mydata_cleaned[,"height"] == 64, "height"] = 164
+```{r check data 3}
 
-describe(mydata_cleaned[,"height"])
+mydata_corrected = mydata_corrected %>% 
+  mutate(cipomeret = replace(cipomeret, jelige == "___", 37))
 
-mydata_cleaned = mydata_cleaned[-which(mydata_cleaned[,"gender"] == "etc."),] # exclude invalid value
-# this code might be required to correct the dataframe as well if you have a cell where "female" has a space after it.
-# mydata_cleaned[,"gender"][mydata_cleaned[,"gender"] == "female "] = "female" # unify different coding variations
-mydata_cleaned[mydata_cleaned[,"gender"] == "Female", "gender"] = "female"
-mydata_cleaned[mydata_cleaned[,"gender"] == "Male", "gender"] = "male"
-mydata_cleaned[,"gender"] = factor(mydata_cleaned[,"gender"])
-mydata_cleaned[,"gender"] = droplevels(mydata_cleaned[,"gender"]) # if the variable gender is identified as a factor, we can drop the factor levels that no longer use (such as "Female" and "Male" instead of "female" and "male")
-```
+# scatterplot
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret) +
+  geom_point()
 
-Check whether the data cleaning had the desired effect
-```{r check again}
-table(mydata_cleaned$gender)
 ```
 
 
+## Bejoslas linearis modellel
+### Egyszeru linearis modell felepitese
 
+A regreszio "bejoslasra" valo. Vagyis szeretnenk megtudni egy valtozo erteket (ezt altalaban bejosolt valtozonak vagy kimeneti valtozonak nevezzuk) mas bejoslo (prediktor) valtozok erteke alapjan.
 
-## Prediction with linear regressioin
-### how to set up and interpret simple regression
+Az alabbi peldaban szeretnenk megbecsulni (bejosolni/prediktalni) az egyes szemelyek EU cipomeretet a magassaguk (bejoslo valotozo) ismereteben. Ehhez eloszor az elozetes adataink hasznalataval felepitunk egy regresszios modellt.
 
-Regression is all about predicting an outcome by knowing the value of predictor variables that are associated with the outcome.
+A linearis regresszios modellt az lm() funkcioval epitjuk. Mindig ugy kell felepiteni, hogy a bejosolni kivant valtozoval kezdunk (cipomeret), majd a ~ jel utan irjuk a bejoslo valtozot (magassag). A kod vegen pedig azt specifikaljuk, melzik adattablaban talalhatoak ezek a valtozok a data = parameterrel. A modellt elmenthetjuk egy objektumba (mod1).
 
-You can set up a simple regression model by using the code below.
-In the code we first specify an object where the results will be saved (mod1), then we specify the regression formula. In the formula, we start with specifying the outcome variable, what we are interested in predicting (shoe_size), then, after a ~ we specify the predictors. In simple regresison we only have one predictor (here this is height), but we could add more predictor variables, spearated with a + sign. In the end of the code we specify the data file where these variables originate from. Remember to use the cleaned dataset (mydata_cleaned).
+(Az egyszeru linearis regresszional (simple linear regression) csak egy bejoslo valtozonk van, de barmennyi bejoslo valtozot hasznalhatunk, ilyenkor csak + jellel elvalasztva egymas utan irva be lehet mindet epiteni egyetlen modellbe, hogy javitsuk a modellunk bejoslo erejet.)
 
 ```{r simple regression model}
-mod1 <- lm(shoe_size ~ height, data = mydata_cleaned)
+mod1 <- lm(cipomeret ~ magassag, data = mydata_corrected)
 ```
 
-In simple regression, we identifies the underlying pattern of the data, by fitting a single straight line that is closest to all data points.
+Az linearis regresszioban a kimeneti valtozo es a prediktor kozotti kapcsolatot egy egyenessel modellezzuk. A modell az az ehgyenes lesz ami a legkozelebb van a pont diagram pontjaihoz.
 
 ```{r, regression line}
-plot(shoe_size ~ height, data = mydata_cleaned)
-abline(mod1)
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F)
 ```
 
-Regression provides a matematical equation (called the regression equation) with which you can predict the outcome by knowing the value of the predictors.
+A regresszios modell megad egy matematikai egyenletet, amibe a prediktor valtozo erteket behelyettesitve megkaphatjuk a legjobb becslest a kimeneti valtozo ertekere. Ezt az egyenletet regresszios egyenletnek (regression equation) nevezzuk.
 
-The regression equation is formalized as: Y = b0 + b1*X1, where Y is the predicted value of the outcome, b0 is the intercept, b1 is the regression coefficient for predictor 1, and X1 is the value of predictor 1.
+A regresszios egyenletet igy formalizaljuk: Y = b0 + b1*X1, amelyben Y a kimeneti (bejosolt) valtozo becsult erteke, a b0 egy konstans ertek, amit legtobbszor intercept-nek neveznek, a b1 a regresszios egyutthato, az x1 pedig a bejososlo (prediktor) erteke az adott szemelynel. 
+
+Vagyis ugy kaphatunk egy becslest az Y bejosolt valotozo ertekere (magassag), ha a konstanshoz hozzaadjuk a regresszios egyutthato es a prediktor ertekenek szorzatat.    
+
+Ha kilistazzuk a modell objektumot (mod1), akkor megkaphatjuk a regresszios egyenletet erre a modellre amit most epitettunk.
 
 ```{r simple regression results}
 mod1
 ```
 
 
-This means that the regression equiation for predicting shoe size is:
+Ez azt jelenti, hogy a cipomeretet bejoslo regresszios egyenlet a kovetkezo: 
 
-shoe size = `r round(mod1[[1]][1], 2)` + `r round(mod1[[1]][2], 2)` * height
+cipomeret = `r round(mod1[[1]][1], 2)` + `r round(mod1[[1]][2], 2)` * magassag
 
-that is, for a person who is 170 cm tall, the predicted shoe size is calcluated this way:
+vagyis egy 170 cm magas ember eseten a modell altal becsult cipomeret:
 
 `r round(mod1[[1]][1], 2)` + `r round(mod1[[1]][2], 2)` * 170 = `r round(mod1[[1]][1], 2) + (round(mod1[[1]][2], 2) * 170)`
 
-You don't have to do the calculations by hand, you can get the predicted values by using the predict() function.
+Ezt a szamitast nem kell kezzel vagy fejben megcsinalni, ehelyett hasznalhatod az R predict() funciojat a bejosolt ertek kiszamitasara barmilyen, vagy akar tobb prediktor-ertekre is.
 
-The predictors have to have the same variable name as in the regression formula, and they need to be in a dataframe
+A predict() funkcio hasznalatahoz meg kell adnunk egy adattablat (data.frame vagy tibble-t) ami a prediktor ertekeit tartalmazza, amit a kimeneti valtozo megbeszlesere, bejoslasara szeretnenk hasznalni. 
+
 
 ```{r predicted values}
-height = c(150, 160, 170, 180, 190)
-height_df = as.data.frame(height)
-predictions = predict(mod1, newdata = height_df)
-height_df_with_predicted = cbind(height_df, predictions)
-height_df_with_predicted
+magassag = c(150, 160, 170, 180, 190)
+magassag_df = as_tibble(magassag)
+
+predictions = predict(mod1, newdata = magassag_df)
+
+magassag_df_with_predicted = cbind(magassag_df, predictions)
+magassag_df_with_predicted
 ```
 
 Predicted values all fall on the regression line
 
 ```{r predictions on regression line}
-plot(shoe_size ~ height, data = mydata_cleaned)
-abline(mod1)
-points(height_df_with_predicted, col = "red", pch = 19, cex = 2)
+
+mydata_corrected %>% 
+  ggplot() +
+  aes(x = magassag, y = cipomeret) +
+  geom_point() +
+  geom_smooth(method = "lm", se = F) +
+  geom_point(data = magassag_df_with_predicted, aes(x = value, y = predictions), col = "red", size = 7)
 ```
 
+**______Gyakorlas_______**
 
+1. Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **energiaszint_1** a kimeneti valtozo es az **alvas_altalaban_1** a prediktor. A modell eredmenyet mentsd el egy objektumba mentsd.
+2. Ird le a regresszios fuggvenyt amivel bejosolhato az energiaszint.
+3. Ertelmezd a regresszios fuggvenyt. Aki tobbet alszik annak magasabb vagy alacsonyabb az energiaszintje? (Egy abra segithet)
+4. Ertelmezd a regresszios fuggvenyt. Aki egy oraval tobbet alszik mint masok, annak mennyivel varhato hogy magasabb lesz az energiaszintje?
+5. Ennek a modellnek a segitsegevel becsuld meg az energiaszintjet olyan embereknek akik altalaban 5, 7, vagy 9 orat alszanak.
 
-## How good is my model
+**________________________**
 
-### How to measure prediction efficiency?
+## Milyen jo a modellem? (modellilleszkedes)
 
-You can measure how effective your model is by measureing the difference between the actual outcome values and the predicted values. We call this residual error in regression.
+### Hogyan merheto a becslesi/bejoslasi hatekonysag?
 
-The residual error for each observed shoe size can be seen on this plot (this will only work if you ran the code in the top of the script containing the error_plotter() custom function). This code is only for visualization purposes.
+A modell becslesi hatekonysagat tobb fele keppen lehet merni. A legkezenfekvobb modszer, hogy meghatarozzuk, a modell becslese mennyire esett tavol a valos bejosolni kivant ertekektol. Vagyis megmerjuk a modell figyelembevetele utan fennmarado "hibat".
+
+Ezt konnyen megtehetjuk egy olyan adatbazisban, ahol rendelkezesunkre all a bejosolni kivant valtozo valos erteke, ugy hogy kivonjuk egymasbol a valos erteket es a modell altal becsult erteket. Ez a rezidualis (fennmarado) hiba, masneven **residual error**. 
 
 ```{r plot residual error}
 error_plotter(mod1, col = "blue")
 ```
 
-You can simply add up all the residual error (the length of these lines), and get a good measure of the overall efficiency of your model. This is called the residual absolute difference (RAD). However, this value is rarely used. More common is the residual sum of squared differences (RSS).
+Ha vesszuk az osszes ilyen hiba ertek abszoluterteket, es osszeadjuk oket, megkapjuk a modell rezidualis abszolut hiba (residual absolute difference - RAD) erteket.
+
+Ennel azonban joval gyakoribb hogy a rezidualis hiba negyzetosszeget hasznaljak (residual sum of squared - RSS) a statisztikaban. Vagyis az egyes rezidualis hiba ertekeket negyzetre emelik, majd osszeadjak oket.
+
+Az alabbi peldaban a mod1 eredeti adattablajanak magassagertekeit hasznaljuk a cipomeret becsult ertekenek kiszamitasara (predict(mod1)), es ezt vonjuk ki az ugyan ezen adattablaban szereplo valos  cimpomeret ertekekbol, igy kapjuk meg a rezidualis hibaertekeket. Majd egyenkent vagy az abszolutertekeuket (RAD), vagy a negyzetuket vesszuk (RSS), es osszeadjuk oket a sum() fugvennyel.
 
 ```{r RSS}
-RAD = sum(abs(mydata_cleaned$shoe_size - predict(mod1)))
+RAD = sum(abs(mydata_corrected$cipomeret - predict(mod1)))
 RAD
 
-RSS = sum((mydata_cleaned$shoe_size - predict(mod1))^2)
+RSS = sum((mydata_corrected$cipomeret - predict(mod1))^2)
 RSS
 ```
 
-### Is the predictor useful?
+### Hasznos a modellunk?
 
-To establish how much benefit did we get by taking into account the predictor, we can compare the residual error when using out best guess (mean) without taking into account the predictor, with the residual error when the predictor is taken into account.
+Azt, hogy mennyire hasznos a modellunk (mennyit nyerunk azzal, hogy ezt a modellt hasznaljuk), meghatarozhatjuk ugy, hogy osszehasonlitjuk a rezidualis hibat abban az esetben amikor a modellunket hasznaljuk (vagyis amikor figyelembe vesszuk a prediktoraink erteket) egy olyan esettel, amikor a prediktorokat egyalatalan nem vesszuk figyelembe, csak a bejosolni kivant valtozo atlagat hasznaljuk a becslesre.
 
-Below you can find regression model where we only use the mean of the outcome variable to predict the outcome value.
+Az alabbi kodban epitunk egy olyan uj modellt, ahol nem veszunk figyelembe semmilyen masik valtozot, csak a cipomeret atlagat, es azt hasznaljuk fel a cipomeret becslesekent. (pl. ha tudjuk, hogy a populacioban az atlagos cipomeret 38, akkor mindenkinek ezt a cipomeretet becsuljuk majd, fuggetlenul attol, hogy milyen magas az illeto). Ezt a modellt **null modellnek** nevezzuk. Azt, hogy a bejosolt valtozo atlagat akarjuk becslesre hasznalni, ugy adhatjuk meg, hogy a ~ utan csak egy 1-est rakunk, nem irunk mas valtozonevet.
 
-We can calculate the sum of squared differences the same way as before, but for the model without any predictors, we call this the total sum of squared differences (TSS).
+Ez persze nagy rezidualis hibahoz vezet (hiszen bar ez a populacioban az atlagos, megis a legtobb embernek nem pont 38-as a laba). A null modell altal predukalt rezidualis hibat ugyan ugy szamoljuk ki, mint a tobbi modellnel a residual sum of squared-et, viszont ennek van egy specialis neve is az irodalomban, ezt ugy hivjak, hogy total sum of squared (TSS), mert ez a lehetseges legegyszerubb meg ertelmes modell, ami altalaban azert nagy hibaval jar, igy ezt vesszuk a "teljes" hiba mennyisegnek, es ehhez viszonyitjuk a tobbi modell altal elert hibat.
+
+Alabb kiszamoljuk a TSS-t. Lathato hogy a formula ugyan az mint az RSS eseten.
 
 ```{r TSS}
-mod_mean <- lm(shoe_size ~ 1, data = mydata_cleaned)
+mod_mean <- lm(cipomeret ~ 1, data = mydata_corrected)
 
-error_plotter(mod_mean, col = "red", x_var = "height") # visualize error
+error_plotter(mod_mean, col = "red", x_var = "magassag") # visualize error
 
-TSS = sum((mydata_cleaned$shoe_size - predict(mod_mean))^2)
+TSS = sum((mydata_corrected$cipomeret - predict(mod_mean))^2)
 TSS
 ```
 
 
+Azt, hogy mennyi informaciot nyertunk a kimeneti valtozo valtozekonysagarol (variance) a prediktorok figyeklembevetelevel ahhoz kepest ha a null modellt vettuk volna figyelembe, az R^2 statisztika mutatja meg. Ennek a formulaja: 1-(RSS/TSS)
 
-
-The total amount of information gained about the variability of the outcome is shown by the R squared statistic (R^2).
 
 ```{r R squared}
 R2 = 1-(RSS/TSS)
 R2
 ```
 
-This means that by using the regression model, we are able to explain `r paste(round(R2, 4)*100, "%", sep = "")` of the variability in the outcome.
+Ez azt jelenti, hogy a prediktorok figyelembevetelevel (a mi esetunkben ez a magassag), a cipomeret valtozekonysaganak `r paste(round(R2, 4)*100, "%", sep = "")`-at tudjuk megmagyarazni. 
 
-R^2 = 1 means all variablility of the outcome is perfectly predicted by the predictor(s)
+R^2 = 1 azt jelenti, hogy a kimeneti valtozo variabilitasat teljesen meg tudjuk magyarazni a prediktorok ismereteben. 
 
-R^2 = 0 means no variablility  of the outcome is predicted by the predictor(s)
+R^2 = 0 azt jelenti, hogy a kimeneti valtozo variabilitasat egyaltalan nem magyarazzak meg a prediktorok
 
-### Is the model with the predictor significantly better than a model without the predictor?
+### A prediktorokat tartalmazo modell szigifikansan jobb mint a null modell a kimeneti valtozo becslesere?
 
-You can do an anova to find out, comparing the amount of variance explained by the two models.
+A ket modell altal produkalt rezidualis hibat az anova() funkcioval hasonlithatjuk ossze, melybe a null modell es a prediktorokat tartalamzo modell objektumot kell beletenni (akar tobbet modellt is lehet egyszerre). Az anova() szignifikancia erteket is ad.
 
 ```{r anova}
 anova(mod_mean, mod1)
 ```
 
-Or, you can get all this information and more from the model summary
+### Az egyszeru megoldas
+
+A modell summary() kikeresevel mindez a fenti informacio megkaphato, es meg tobb is.
+Itt megtalalod az R^2 erteket, az RSS-t, a modell null modellel valo osszehasonlitasanak F teszt statisztikajat es szignifikanciajat, es meg a regresszios egyenletet is.
 
 ```{r summary}
 summary(mod1)
+
 ```
 
-The confidence interval of the regression coefficient is given by the confint() function
+A regresszios egyutthatok (regression coefficients) konfidencia intervallumat a confint() paranccsal lehet kilistazni. 
 
 ```{r confidence interval}
 confint(mod1)
 ```
 
-You can also plot the confidence interval of the prediction
+A regresszios becsles konfidencia intervallumat pedig a geom_smooth()-al lehet vizualizalni.
 
 ```{r plot confidence interval}
-ggplot(mydata_cleaned, aes(x = height, y = shoe_size))+
+ggplot(mydata_corrected, aes(x = magassag, y = cipomeret))+
   geom_point()+
   geom_smooth(method='lm',formula=y~x)
 ```
 
+
+**______Gyakorlas_______**
+
+1. (Ezt nem kell megtenned ha ezt mar megtetted az elozo gyakorlasban, csak hasznald ugyan azt a model objektumot) Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **energiaszint_1** a kimeneti valtozo es az **alvas_altalaban_1** a prediktor. A modell eredmenyet mentsd el egy objektumba mentsd.
+2. Listazd ki a model summary-t a summary() fugvennyel
+3. Olvasd le a model RSS-jet
+4. Olvasd le hogy a model ami tartalmazza az alvas_altalaban_1 prediktort szignifikansan jobb bejosloja-e az energiaszintnek mint a null modell.
+5. Hatarozd meg a regresszios egyutthatok konfidencia intervallumat a confint() fuggvennyel
+
+**________________________**
 
