@@ -1,6 +1,6 @@
 ### Hazi feladat
 
-# 1. toltsd be a lakasarak adatbazist
+# 1. toltsd be a lakasarak adatbazist (az oran hasznalt valtozatat itt talalod: https://bit.ly/2DpwKOr)
 # 2. Alakitsd at az adatokat ugy hogy dollar helyett forintban legyen a price valtozo, es negyzetlab helyett 
 # negyzetmeterben szerepljenek az adatok (ez a kovetkezo valtozokat erinti: 
 # sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.9 m^2)
