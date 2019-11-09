@@ -1,9 +1,9 @@
 ### Hazi feladat
 
 # 1. toltsd be a lakasarak adatbazist (az oran hasznalt valtozatat itt talalod: https://bit.ly/2DpwKOr)
-# 2. Alakitsd at az adatokat ugy hogy dollar helyett forintban legyen a price valtozo, es negyzetlab helyett 
-# negyzetmeterben szerepljenek az adatok (ez a kovetkezo valtozokat erinti: 
-# sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.9 m^2)
+# 2. Alakitsd at az adatokat ugy hogy dollar helyett forintban legyen a price valtozo (1 USD nagyjabol 294 HUF), 
+# es negyzetlab helyett negyzetmeterben szerepljenek az adatok (ez a kovetkezo valtozokat erinti: 
+# sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.09 m^2)
 # 3. futtass le egy korrelacios tesztet hogy meghatarozd, van-e egyuttjaras a lakas ara es a lakas allapota (condition) kozott (cor.test())
 # 4. Illessz egy egyszeru regresszios modellt amelyben a lakas arat (price) josolod be a lakas allapotaval (condition)
 # 5. Hasonlitsd ossze a teljes model F-teszt p-erteket, a condition regresszios egyutthatojahoz tartozo p-erteket, es a korrelacios teszt p-erteket. Mit veszel eszre?
