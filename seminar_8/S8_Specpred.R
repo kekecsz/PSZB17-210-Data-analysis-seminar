@@ -21,18 +21,18 @@ library(gridExtra)
 # Az adatbazis egy olyan kutatas szimulalt adatait  tartalmazzam ahol kulonbozo kezelesek hatekonysagat teszteltek a sulyvesztesre tulsolyos szemelyeknel. 	
 
 # Valtozok:	
-# ID - vizsgalati szemlely azonositojele	
-# Gender - nem	
-# Age - eletkor	
-# BMI_baseline - Body mass index (BMI) a kezeles elott	
-# BMI_post_treatment - Body mass index (BMI) a kezeles utan	
+
+# - ID - vizsgalati szemlely azonositojele	
+# - Gender - nem	
+# - Age - eletkor	
+# - BMI_baseline - Body mass index (BMI) a kezeles elott	
+# - BMI_post_treatment - Body mass index (BMI) a kezeles utan	
 # treatment_type - A kezeles amit a vizsgalati szemely kapott (no treatment - nem kapott kezelest; pill - etvagycsokkento gyogyszer; psychotherapy - kognitiv behavior terapia (CBT); treatment 3 - egy harmadik fajta kezeles, lasd lentebb)	
-# motivation - onbevallasos motivacioszint a fogyasra (0-10-es skalan, ahol a 0 extremen alacsony motivacio a fogyasra, a 10 pedig extremen magas motivacio a fogyasra)	
-# body_acceptance - a szemely mennyire erzi elegedettnek magat jelenleg testevel (-7 - +7, ahol a - 7 nagyon elegedetlen, a +7 nagyon elegedett)	
+# - motivation - onbevallasos motivacioszint a fogyasra (0-10-es skalan, ahol a 0 extremen alacsony motivacio a fogyasra, a 10 pedig extremen magas motivacio a fogyasra)	
+# - body_acceptance - a szemely mennyire erzi elegedettnek magat jelenleg testevel (-7 - +7, ahol a - 7 nagyon elegedetlen, a +7 nagyon elegedett)	
 
 
 
-# data from github/kekecsz/PSYP13_Data_analysis_class-2018/master/data_house_small_sub.csv. 	
 data_weightloss = read.csv("https://tinyurl.com/weightloss-data")	
 
 
@@ -45,21 +45,6 @@ data_weightloss %>%
   summary()	
 	
 describe(data_weightloss)	
-	
-fig_1 = data_weightloss %>% 	
-  ggplot() +	
-  aes(y = BMI_baseline, x = treatment_type) +	
-  geom_boxplot()	
-  ylim(c(20, 45))	
-	
-fig_2 = data_weightloss %>% 	
-  ggplot() +	
-  aes(y = BMI_post_treatment, x = treatment_type) +	
-  geom_boxplot()	
-  ylim(c(20, 45))	
-	
-grid.arrange(fig_1, fig_2, nrow=1)	
-	
 
 
 # Ebben a gyakorlatban szeretnenk megerteni a kulonbozo kezelestipusok hatasat a BMI-re. Vegezzunk feltaro elemzest az adatokon.	
@@ -184,7 +169,7 @@ data_house = data_house %>%
 # *______________________________*	
 
 
-# ### Ket valtozo interakciojanak beillesztese a modellbe	
+# ## Ket valtozo interakciojanak beillesztese a modellbe	
 
 # A treatment_3 valojaban egy olyan kondicio volt a kutatasban, ahol az emberek mind gyogyszeres, mind pszichoterapias kezelest kaptak.	
 
@@ -203,7 +188,11 @@ data_weightloss = data_weightloss %>%
 
 # Ezt az interakciot a modellbe ugy tudjuk beepiteni, ha a + helyett *-ot rakunk a ket valtozo koze, amiknek az interakcioja erdekel mindket.	
 
-# c	
+
+mod_3 = lm(BMI_post_treatment ~ got_pill * got_psychotherapy, data = data_weightloss)	
+summary(mod_3)	
+	
+
 
 # Itt az interakcios tenyezohoz tartozo regresszios egyutthatot ugy ertelmezhetjuk, hogy abban az esetben, ha a ket valtozo szorzata egyel magasabb erteket vesz fel (a mi esetunkben ez csak akkor lesz 1, ha mind a got_pill, mind a got_psychoterapy erteke 1), milyen valtozast varhatunk a bejosolt valtozo ertekeben AZON FELUL, amit a ket valtozo onallo hatasam felul varnank. Ez azert van, mert mind a got_pill, mind a got_psychotherapy valtozok erteke 1 ebben az esetben, es azok hatasa (-2.0833 es -2.0000) igy mar bele van kalkulalva a modellbe. Vagyis ha mind a pill, mind a got_pill, mind a got_psychotherapy valtozok erteke 1, akkor azon felul hogy kifejtik egyenkent hatasukat, egy extra -1.2500 BMI csokkenest varhatunk az eredmenyek alapjan.	
 
@@ -217,8 +206,11 @@ data_weightloss = data_weightloss %>%
 
 
 
-# ### Hatvany prediktorok a nem-linearis osszefuggesek modellezesehez	
+# ## Hatvany prediktorok a nem-linearis osszefuggesek modellezesehez	
 
+# A linearis regresszios modelleket eredetileg linearis osszefuggesek modellezesere talaltak ki, de egy kis matematikai trukkel elerhetjuk, hogy modellezzunk nem-linearis osszefuggesek is.	
+
+# Az alabbi abra alapjan ugy tunik, hogy BMI_post_treatment es a body_acceptance osszefuggese nem teljesen linearis, hanem egy gorbe vonal jobban leirja a ket valtozo osszefuggeset.	
 
 
 data_weightloss %>% 	
@@ -226,100 +218,72 @@ data_weightloss %>%
   aes(y = BMI_post_treatment, x = body_acceptance) +	
   geom_point() +	
   geom_smooth()	
-	
-mod_4 = lm(BMI_post_treatment ~ body_acceptance + I(body_acceptance^2), data =  data_weightloss)	
+
+
+# Ezt ugy epithetjuk be a modellunkbe, hogy a prediktorok koze a body_acceptance melle annak masodik hatvanyat is betesszuk. Ezt a kovetkezo formula hozzadasaval tehetjuk a modellben: + I(body_acceptance^2).	
+
+# A modell summary es a modell illeszkedesi mutato alapjan ugy tunik, hogy ez az ugynevezett qyadratikus hatas szignifikans hozzaadott ertekkel bir a BMI bejoslasaban.	
+#  	
+
+
+mod_4 = lm(BMI_post_treatment ~ body_acceptance, data =  data_weightloss)	
 summary(mod_4)	
 	
-
-
-
-
-# ```	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Categorical variables can be included in models just like continuous variables. Here, we include the variable has_basement as a predictor, which is a categorical variable that has two levels: 'has basement' and 'no basement'. In this case, the intercept can be interpreted as the predicted value for all continuous predictor values as 0, and the has_basement variable at its default level: 'has basement'. The regression coefficient for has_basement indicates how much price is predicted to change if the apartment has no basement compared to if it has basement.	
-
-
-mod_cat = lm(price ~ sqft_living + grade + has_basement, data = data_house)	
+mod_5 = lm(BMI_post_treatment ~ body_acceptance + I(body_acceptance^2), data =  data_weightloss)	
+summary(mod_5)	
 	
-summary(mod_cat)	
-
-
-
-# The default level (reference level) of categorical variables is the level earliest in the alphabet. For this reason, the reference level of the variable has_basement is "has basement". For more intuitive interpretation, it would make sense to change the reference level to "no basement", so that the model coefficient for this variable would be positive, and it would indicate how much price increase would a basement mean for the apartment sales.	
-
-# This can be done with the relevel() function. We have to re-run the model for this change to take effect in the model object.	
-
-
-
-data_house$has_basement = relevel(data_house$has_basement, ref = "no basement")	
+AIC(mod_4)	
+AIC(mod_5)	
 	
-mod_cat = lm(price ~ sqft_living + grade + has_basement, data = data_house)	
-summary(mod_cat)	
 
 
-# Now it is apparent from the model summary that if an apartment has a basement, this means a `r  format(round(coef(mod_cat)["has_basementhas basement"]), digits = 2)` USD increase in price compared to apartments which do not have a basement (the reference level).	
 
-# ## Higher order terms	
-
-# If you suspect that there is non-linear relationship between the outcome and some predictor, you can try to include a second or third order term.	
-
-# For example, here we can see that the relationship of price and grade is not entirely linear.	
+# Fontos, hogy amikor hatvagy-prediktorokat hasznalunk mindenkeppen tegyuk be a modellbe a prediktor minden alacsonyabb hatvanyat is egeszen az elso hatvanyig (ami maga az eredeti prediktor).	
 
 
-plot(price ~ grade, data = data_house)	
+mod_6 = lm(BMI_post_treatment ~ body_acceptance + I(body_acceptance^2)+ I(body_acceptance^3), data =  data_weightloss)	
+summary(mod_6)	
+AIC(mod_6)	
 
 
-# So we build a model including the second order term of grade, to account for a quadratic relationsip.	
-
-# Unless you know what you are doing, always add the first order term in the model as well, like here:	
+# A regresszios "egyenes" igy nez ki ha csak az elso hatvany szerepel a modellben:	
 
 
-mod_house_quad <- lm(price ~ grade + I(grade^2), data = data_house)	
-summary(mod_house_quad)	
+data_weightloss = data_weightloss %>% 	
+  mutate(pred_mod_4 = predict(mod_4),	
+         pred_mod_5 = predict(mod_5),	
+         pred_mod_6 = predict(mod_6))	
 	
-ggplot(data_house, aes(x = grade, y = price))+	
-  geom_point()+	
-  geom_smooth(method='lm',formula=y~x+I(x^2))	
+data_weightloss %>% 	
+  ggplot() +	
+  aes(y = BMI_post_treatment, x = body_acceptance) +	
+  geom_point() +	
+  geom_line(aes(y = pred_mod_4))	
 
 
-# ## Interactions	
-
-# A relationship of different predictors can also be modelled, if you suspect that the association of a predictor and the outcome might depend on the value of another predictor.	
-
-# For example here we first build a model where we include the effect of geographic location (longitude and latitude) in the model (mod_house_geolocation), and next, we include the interaction of longitude and latitude in the model, because we suspect that these parameters might influence each others association with price.	
+# Igy amikor a masodik hatvany szerepel a modellben:	
 
 
-mod_house_geolocation = lm(price ~ sqft_living + grade + long + lat, data = data_house)	
-summary(mod_house_geolocation)	
-	
-mod_house_geolocation_inter2 = lm(price ~ sqft_living + grade + long * lat, data = data_house)	
-summary(mod_house_geolocation_inter2)	
+data_weightloss %>% 	
+  ggplot() +	
+  aes(y = BMI_post_treatment, x = body_acceptance) +	
+  geom_point() +	
+  geom_line(aes(y = pred_mod_5))	
 
 
-# Note that the adjusted R squared did not increase substancially due to the inclusion of the interaction term, so it might not be so useful to take into account the interaction, it might be enoug to take into account the main effects of longitude and latitude. This needs to be further evaluated with model comparison. See the exercise related to that.	
+# Es igy amikor a harmadik hatvany szerepel a modellben:	
 
 
+data_weightloss %>% 	
+  ggplot() +	
+  aes(y = BMI_post_treatment, x = body_acceptance) +	
+  geom_point() +	
+  geom_line(aes(y = pred_mod_6))	
 
 
+# Lathato hogy minel nagyobb hatvanyt illesztunk a modellbe, annal tob "gorbuletet" engedunk a regresszios egyenesnek. (Mindig egyel kevesebb gorbuleti (inflexios) pontot engedunk mint ahanyadik hatvanyt beletettuk a modellbe prediktorkent.)	
 
-
+# Azonban a tul nagy felxibilitas nem celravazeto, mert minel felxibilisebb a modell, annal inkabb hajlamos arra, hogy a sajat mintankhoz illeszkedjen, es nem a populacioban megtalalhato osszefuggeseket ragadja meg. Ezt tulillesztesnek (overfitting) nevezzuk. Ezert legtobbszor nem teszunk a modellekbe haramdik hatvanynal nagyobb hatvanypediktort, es csak akkor hasznalunk hatvanyprediktorokat, amikor az elmeletileg megalapozottnak tunik.
 
 
 # *__________Gyakorlas___________*	

@@ -61,10 +61,11 @@ data_house = data_house %>%
 
 # Eloszor epitunk egy egyszeru modellt amiben a haz vetelarat csak a sqm_living es a grade valtozok alapjan josoljuk be. 	
 
+mod_house1 <- lm(price_mill_HUF ~ 1, data = data_house)	
 
-
+summary(mod_house1)
 mod_house2 <- lm(price_mill_HUF ~ sqm_living + grade, data = data_house)	
-
+summary(mod_house2)
 
 # Majd epitunk egy bonyolultabb modellt, amiben a sqm_living es a grade prediktorokon kivul szerepelnek meg a lakas foldrajzi hosszusag es szelesseg adatai is (long es lat). 	
 
