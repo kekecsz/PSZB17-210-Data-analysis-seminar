@@ -8,7 +8,7 @@
 # 2. Toltsd be a King's County lakaseladasokkal foglalkozo adattablat ("https://bit.ly/2DpwKOr")
 # 3. Alakitsd at az adatokat ugy hogy dollar helyett forintban legyen a price valtozo, es negyzetlab helyett 
 # negyzetmeterben szerepljenek az adatok (ez a kovetkezo valtozokat erinti: 
-# sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.ö9 m^2)
+# sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.Ã¶9 m^2)
 # 4. Az ingatlankozvetito ceg egyik ugyfelenek ket lakasa van. 
 # Az egyik lakas paramaterei: A lakas Kings County-ban talalhato, 80 m^2 a lakoresz teruletu, 2 haloszoba es 2 furdoszoba van a lakasban, a grade erteke 7-es, es egy pince is tartozik hozza.
 # A masik lakas parameterei: A lakas szinten Kings County-ban talalhato, 100 m^2 a lakoresz teruletu, 3 haloszoba es 2 furdoszoba van a lakasban, a grade erteke viszont csak 5-os, es nincs pinceje.
