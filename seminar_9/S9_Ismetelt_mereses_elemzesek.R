@@ -119,7 +119,7 @@ cor(data_wound[,repeated_variables])
 
 # For lmer() to be able to interpret the data correctly, we will have to restructure the dataframe so that each row contains a single observation. This would mean that each participant would have 7 rows instead of 1. Data in the variables ID, distance_window, and location would be duplicated in each of the rows of the same participant, and there would be only a single column for wound rating in this new dataframe. This format of the data is usually referred to as the **long format**.	
 
-# We can do this using the gather() function from the tidyr package. In this function we specify the variable name in which will index the repeated obervations (in our case we will call this "days"), and the variable name in which we want to gather all the observations made on the same variable (in our case we will call this "wound rating"). Finally, we will have to specify the variable names in which the data is currently located in the long format. (By saying: day_1:day_7 we say that the variables are the column names between the day_1 and day_7 columns). Using the arrange() function we sort the data table based on the column "ID". This is not important, but it is easier to see the logic behind a long format file if we look at this sorted dataset.	
+# We can do this using the gather() function from the tidyr package. In this function we specify the variable name in which will index the repeated obervations (in our case we will call this "days"), and the variable name in which we want to gather all the observations made on the same variable (in our case we will call this "wound rating"). Finally, we will have to specify the variable names in which the data is currently located in the wide format. (By saying: day_1:day_7 we say that the variables are the column names between the day_1 and day_7 columns). Using the arrange() function we sort the data table based on the column "ID". This is not important, but it is easier to see the logic behind a long format file if we look at this sorted dataset.	
 
 # (As always, we create a new object where we will store the data with the new shape, and leave the raw data unchanged. The new object is called data_wound_long.)	
 
@@ -134,7 +134,7 @@ data_wound_long
 
 # We can also clarify the new dataframe a little bit by ordering the rows so that each observation from the same participant follow each other.	
 
-# Also, notice that our 'days' variable now contains the names of the repeated measures variables from the long format ('day_1', 'day_2' etc.). We will simplify this by simply using numbers 1-7 here to make them a numerical variable which is easier to deal with statistically. The easiest to do this is by using the mutate() and recode() functions.	
+# Also, notice that our 'days' variable now contains the names of the repeated measures variables from the wide format ('day_1', 'day_2' etc.). We will simplify this by simply using numbers 1-7 here to make them a numerical variable which is easier to deal with statistically. The easiest to do this is by using the mutate() and recode() functions.	
 
 
 	
