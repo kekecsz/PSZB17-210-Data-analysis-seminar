@@ -6,14 +6,14 @@
 
 # # Absztrakt	
 
-# Ebben a gyakorlatban arra tÃ©rÃ¼nk ki, hogyan ellemorizhetjÃ¼k hogy a lineÃ¡ris regressziÃ³ elofeltetelei teljesÃ¼lnek-e a modellÃ¼nkre, milyen kÃ¶vetkezmÃ©nyei vannak ha sÃ©rÃ¼lnek ezek az elofeltetelek Ã©s mi a teendo ilyenkor.	
+# Ebben a gyakorlatban arra térünk ki, hogyan ellemorizhetjük hogy a lineáris regresszió elofeltetelei teljesülnek-e a modellünkre, milyen következményei vannak ha sérülnek ezek az elofeltetelek és mi a teendo ilyenkor.	
 
 
-# # Adat kezelÃ©s Ã©s leÃ­rÃ³ statisztikÃ¡k	
+# # Adat kezelés és leíró statisztikák	
 
-# ## Csomagok betÃ¶ltÃ©se	
+# ## Csomagok betöltése	
 
-# Ennek a gyakorlatnak a sorÃ¡n az alÃ¡bbi csomagokat fogjuk hasznÃ¡lni:	
+# Ennek a gyakorlatnak a során az alábbi csomagokat fogjuk használni:	
 
 
 library(psych) # for describe	
@@ -24,11 +24,11 @@ library(boot) # for bootstrapping
 library(tidyverse) # for tidy code	
 
 
-# ## SajÃ¡t fÃ¼ggvÃ©nyek	
+# ## Saját függvények	
 
 # Az ora soran hasznalunk majd sajat fuggvenyeket, melyek nem szerepelnek a fenti package-ekben. Ezeket toltsd be most hogy a kesobbi kodok rendben lefussanak.	
 
-# A bootstrapped confidencia intervallumok meghatÃ¡rozÃ¡sÃ¡hoz az alÃ¡bbi sajÃ¡t fÃ¼ggvÃ©nyeket alkalmazzuk majd:	
+# A bootstrapped confidencia intervallumok meghatározásához az alábbi saját függvényeket alkalmazzuk majd:	
 
 
 # function to obtain regression coefficients	
@@ -71,26 +71,26 @@ confint.boot <- function(model, data = NULL, R = 1000){
 
 
 
-# ## A King County, USA-beli ingatlanÃ¡rakat tartallmazÃ³ adatsor beolvasÃ¡sa 	
+# ## A King County, USA-beli ingatlanárakat tartallmazó adatsor beolvasása 	
 
-# Ebben a gyakorlatban a kÃ¼lÃ¶nbÃ¶zo ingatlanok Ã¡rÃ¡nak meghatÃ¡rozÃ¡sÃ¡t tuzzÃ¼k ki cÃ©lul.	
+# Ebben a gyakorlatban a különbözo ingatlanok árának meghatározását tuzzük ki célul.	
 
-# A Kaggle-bol szÃ¡rmazÃ³ adatsort fogjuk hasznÃ¡lni, amely tartalmazza az ingatlan Ã¡rakat Ã©s az ezeket potenciÃ¡lisan befolyÃ¡solÃ³ egyÃ©b tÃ©nyezok Ã©rtÃ©keit. Adatsorunk a King County, USA (Seattle Ã©s kÃ¶rnyÃ©ke)-beli ingatlanÃ¡rakat tartalmazza, beleÃ©rtve Seattle-t is. Az adatokat 2014 Ã©s 2015 MÃ¡jusa kÃ¶zÃ¶tt vettÃ©k fel. TovÃ¡bbi informÃ¡ciÃ³ az adatsorrÃ³l az alÃ¡bbi linken: https://www.kaggle.com/harlfoxem/housesalesprediction	
+# A Kaggle-bol származó adatsort fogjuk használni, amely tartalmazza az ingatlan árakat és az ezeket potenciálisan befolyásoló egyéb tényezok értékeit. Adatsorunk a King County, USA (Seattle és környéke)-beli ingatlanárakat tartalmazza, beleértve Seattle-t is. Az adatokat 2014 és 2015 Májusa között vették fel. További információ az adatsorról az alábbi linken: https://www.kaggle.com/harlfoxem/housesalesprediction	
 
-# Mi az adatsornak csak egy rÃ©szÃ©t fogjuk hasznÃ¡lni, Ã¶sszesen N = 200 ingatlant vizsgÃ¡lva.	
+# Mi az adatsornak csak egy részét fogjuk használni, összesen N = 200 ingatlant vizsgálva.	
 
-# Az adatok az alÃ¡bbi kÃ³d futtatÃ¡sÃ¡val olvashatÃ³ak be:	
+# Az adatok az alábbi kód futtatásával olvashatóak be:	
 
 
 data_house = read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_7/data_house_small_sub.csv")	
 
 
-# ## Az adatsor megtekintÃ©se	
+# ## Az adatsor megtekintése	
 
-# Fontos, hogy az elemzÃ©st mindig az adatsor megismerÃ©sÃ©vel, Ã©s az esetleges ellentmondÃ¡sok javÃ­tÃ¡sÃ¡val kezdjÃ¼k.	
+# Fontos, hogy az elemzést mindig az adatsor megismerésével, és az esetleges ellentmondások javításával kezdjük.	
 
 
-# A kÃ¶vetkezo kÃ³drÃ©szletben atvaltjuk az USA dollar-t millio forint mertekegysegre,az alapterÃ¼let mÃ©rtÃ©kegysÃ©gÃ©t az eredeti nÃ©gyzetlÃ¡brÃ³l nÃ©gyzetmÃ©terrÃ© alakÃ­tjuk, illetve a has_basement vÃ¡ltozÃ³t is megnevezzÃ¼k mint faktort.	
+# A következo kódrészletben atvaltjuk az USA dollar-t millio forint mertekegysegre,az alapterület mértékegységét az eredeti négyzetlábról négyzetméterré alakítjuk, illetve a has_basement változót is megnevezzük mint faktort.	
 
 
 data_house %>% 	
@@ -111,29 +111,29 @@ data_house = data_house %>%
 
 # # Modell diagnosztika	
 
-# ValahÃ¡nyszor egy modellt statisztikai kÃ¶vetkeztetÃ©sek levonÃ¡sÃ¡ra alkalmazunk, ellenoriznÃ¼nk kell, hogy a lineÃ¡ris regressziÃ³ alapveto elofeltetelei teljesÃ¼lnek-e modellÃ¼nkre.	
+# Valahányszor egy modellt statisztikai következtetések levonására alkalmazunk, ellenoriznünk kell, hogy a lineáris regresszió alapveto elofeltetelei teljesülnek-e modellünkre.	
 
-# Ã‰ppen ezÃ©rt fontos, hogy elemzÃ©sÃ¼nk minden fontosabb modelljÃ©t ellenorizzuk. Ez mindenkeppen erinti a vÃ©gso modellunket, de gyakran erdemes a mdellvalasztas soran epitett koztes modelleket is ellenorizni. 	
+# Éppen ezért fontos, hogy elemzésünk minden fontosabb modelljét ellenorizzuk. Ez mindenkeppen erinti a végso modellunket, de gyakran erdemes a mdellvalasztas soran epitett koztes modelleket is ellenorizni. 	
 
-# Fontos megjegyezni, hogy ha bÃ¡rmit valtoztatunk a modellÃ¼nkÃ¶n, vagy az adatainkon a modelldiagnosztika eredmÃ©nyei alapjÃ¡n, Ãºgy a diagnosztiÃ¡t ujra el kell vÃ©geznÃ¼nk.	
+# Fontos megjegyezni, hogy ha bármit valtoztatunk a modellünkön, vagy az adatainkon a modelldiagnosztika eredményei alapján, úgy a diagnosztiát ujra el kell végeznünk.	
 
-# ## Modell eloÃ¡llÃ­tÃ¡sa	
+# ## Modell eloállítása	
 
-# Elso lÃ©pÃ©skÃ©nt Ã¡llÃ­tsunk elo egy modellt, amely pusztÃ¡n az sqm_living Ã©s grade vÃ¡ltozÃ³k alapjÃ¡n megÃ¡llapÃ­tja az ingatlan Ã¡rÃ¡t.	
+# Elso lépésként állítsunk elo egy modellt, amely pusztán az sqm_living és grade változók alapján megállapítja az ingatlan árát.	
 
-# Futassuk ezen a modellen a modell diagnosztikÃ¡t!	
+# Futassuk ezen a modellen a modell diagnosztikát!	
 
 
 mod_house2 <- lm(price_mill_HUF ~ sqm_living + grade, data = data_house)	
 
 
-# # KiugrÃ³ adatok kezelÃ©se	
+# # Kiugró adatok kezelése	
 
-# ## SzÃ©lsosÃ©ges esetek azonosÃ­tÃ¡sa	
+# ## Szélsoséges esetek azonosítása	
 
-# A szÃ©lsosÃ©ges eseteket azonosithatjuk a kimeneti valtozok azonosithatjuk peldaul az adatok vizualizacioja soran.	
+# A szélsoséges eseteket azonosithatjuk a kimeneti valtozok azonosithatjuk peldaul az adatok vizualizacioja soran.	
 
-# PÃ©ldÃ¡nkban az Ã¡r Ã©s alapterÃ¼let adatait Ã¡brÃ¡zoljuk scatterplot-on.	
+# Példánkban az ár és alapterület adatait ábrázoljuk scatterplot-on.	
 
 
 	
@@ -145,13 +145,13 @@ data_house %>%
 	
 
 
-# Lathato hogy a legtÃ¶bb ingatlan vÃ©gso Ã¡ra 200 milliÃ³ forint alatt volt, de voltak kivÃ©telek is. Az 200 milliÃ³ forintnÃ¡l drÃ¡gÃ¡bb ingatlanokat tekinthetjÃ¼k szÃ©lsosÃ©ges Ã©rtÃ©keknek, kÃ¼lÃ¶nÃ¶skÃ©pp az 500 milliÃ³ forint Ã¡rÃº ingatlant.	
+# Lathato hogy a legtöbb ingatlan végso ára 200 millió forint alatt volt, de voltak kivételek is. Az 200 millió forintnál drágább ingatlanokat tekinthetjük szélsoséges értékeknek, különösképp az 500 millió forint árú ingatlant.	
 
-# Nem szÃ¼ksÃ©ges azonban eltÃ¡volÃ­tani ezeket az adatokat ha van elÃ©g pontunk ami ellensÃºlyozhatja ezeknek a hatÃ¡sÃ¡t.	
+# Nem szükséges azonban eltávolítani ezeket az adatokat ha van elég pontunk ami ellensúlyozhatja ezeknek a hatását.	
 
-# ## Jelentos hatÃ¡sÃº kiugrÃ³ Ã©rtÃ©kek azonosÃ­tÃ¡sa	
+# ## Jelentos hatású kiugró értékek azonosítása	
 
-# A helyzet bonyolultabb azokban azokban az estekben ha az Ã©rtÃ©k nem csak jelentosen eltÃ©r a tÃ¶bbi adattÃ³l, de a regressziÃ³s vonalra is szÃ¡mottevo hatÃ¡ssal bÃ­r. Ezeket nagy befolyasu eseteknek nevezzuk (high leverage cases). Ezeket a nagy befolyasu eseteket a scatter plot-ot vizsgÃ¡lva, a residual-leverage plot segÃ­tÃ©gÃ©vel, es a Cook tÃ¡volsÃ¡gon keresztul fedezhetjuk fel.	
+# A helyzet bonyolultabb azokban azokban az estekben ha az érték nem csak jelentosen eltér a többi adattól, de a regressziós vonalra is számottevo hatással bír. Ezeket nagy befolyasu eseteknek nevezzuk (high leverage cases). Ezeket a nagy befolyasu eseteket a scatter plot-ot vizsgálva, a residual-leverage plot segítégével, es a Cook távolságon keresztul fedezhetjuk fel.	
 
 
 data_house %>% 	
@@ -168,33 +168,33 @@ mod_house2 %>%
 	
 
 
-# Azok a pontok, melyek a diagrammon a regressziÃ³s vonal kÃ¶zepÃ©hez kÃ¶zel helyezkednek el kissebb befolyassal vannak arra mint a vÃ©geknÃ©l lÃ©voek. Azok az esetek (megfigyelesek) amelyek nagy reziduÃ¡lis hibaval Ã©s nagy befolyÃ¡ssal jellemezhetoek, nagy hatast fejtenek ki a modellre. A Cook tÃ¡volsÃ¡g mutatja meg, mekkora egy eset hatasa a modellre. 	
+# Azok a pontok, melyek a diagrammon a regressziós vonal közepéhez közel helyezkednek el kissebb befolyassal vannak arra mint a végeknél lévoek. Azok az esetek (megfigyelesek) amelyek nagy reziduális hibaval és nagy befolyással jellemezhetoek, nagy hatast fejtenek ki a modellre. A Cook távolság mutatja meg, mekkora egy eset hatasa a modellre. 	
 
-# BÃ¡r nincs kokrÃ©t szabÃ¡ly a problÃ©mÃ¡s esetek meghatÃ¡rozÃ¡sÃ¡ra, de van nÃ©hÃ¡ny Ã¡lltalÃ¡nos alapelv. Vannak akik az 1-nÃ©l nagyobb Cook tÃ¡volsÃ¡gÃº Ã©rtÃ©keket, mÃ­g mÃ¡sok a 4/N-nÃ©l  (ahol N az adatok szÃ¡ma) nagyobb Cook tÃ¡volsÃ¡got tekintik jelentos hatasunak. 	
+# Bár nincs kokrét szabály a problémás esetek meghatározására, de van néhány álltalános alapelv. Vannak akik az 1-nél nagyobb Cook távolságú értékeket, míg mások a 4/N-nél  (ahol N az adatok száma) nagyobb Cook távolságot tekintik jelentos hatasunak. 	
 
-# EsetÃ¼nkben egyetlen esetben sem nagyobb a Cook tÃ¡volsÃ¡g 1-nÃ©l, nÃ©hÃ¡ny esetben azonban 0,02-t mÃ¡r meghaladja. Vagyis a mÃ¡sodik kirtÃ©rium alapjÃ¡n van nehany nagy hatasu eset a mintaban.	
+# Esetünkben egyetlen esetben sem nagyobb a Cook távolság 1-nél, néhány esetben azonban 0,02-t már meghaladja. Vagyis a második kirtérium alapján van nehany nagy hatasu eset a mintaban.	
 
 # A nagy hatasu esetek jelenlete unmagaban nem feltetlenul jelent orvosolando problemat, viszont ez konnyen vezethet a regresszios modell bejoslo erejenek csokkenesehez, es ahhoz, hogy a regresszio alapfeltetelei megserulnek. 	
 
-# EloszÃ¶r is teszteljÃ¼k hogy teljesÃ¼lnek-e a tÃ¶bbszÃ¶rÃ¶s regressziÃ³ elofeltetelei, Ã©s csak utÃ¡na hozzunk dontest azzal kapcslatban, hogy mit kezdunk a nagy hatasu esetekkel.	
+# Eloször is teszteljük hogy teljesülnek-e a többszörös regresszió elofeltetelei, és csak utána hozzunk dontest azzal kapcslatban, hogy mit kezdunk a nagy hatasu esetekkel.	
 
-# # A lineÃ¡ris regressziÃ³ elofeltetelei	
+# # A lineáris regresszió elofeltetelei	
 
-# * **NormalitÃ¡s**: A  modell rezidualisai normÃ¡leloszlÃ¡st kÃ¶vetnek	
-# * **LinearitÃ¡s**: A prediktor Ã©s az eredmÃ©ny kÃ¶zÃ¶tt lineÃ¡ris kapcsolat kell legyen	
-# * **HomoszkedaszticitÃ¡s**: A rezidualisok varianciÃ¡ja minden Ã©rtÃ©kre hasonlÃ³ a prediktorokÃ©hez	
-# * **Nincs kollinearitÃ¡s**: egyetlen prediktor sem hatÃ¡rozhatÃ³ meg a tÃ¶bbi prediktor lineÃ¡ris kombinÃ¡ciÃ³jakÃ©nt.	
+# * **Normalitás**: A  modell rezidualisai normáleloszlást követnek	
+# * **Linearitás**: A prediktor és az eredmény között lineáris kapcsolat kell legyen	
+# * **Homoszkedaszticitás**: A rezidualisok varianciája minden értékre hasonló a prediktorokéhez	
+# * **Nincs kollinearitás**: egyetlen prediktor sem határozható meg a többi prediktor lineáris kombinációjaként.	
 
-# ## NormalitÃ¡s	
-# A modell rezidualisai normÃ¡leloszlÃ¡st kell kÃ¶vessenek	
+# ## Normalitás	
+# A modell rezidualisai normáleloszlást kell kövessenek	
 
-# Megjegyzendo, hogy itt a modellbol szÃ¡rmazÃ³ elorejelzÃ©s hibÃ¡jÃ¡rÃ³l (rezidualisÃ¡rÃ³l), Ã©s nem az egyes prediktorok vagy bejosolt valtozo eloszlÃ¡sÃ¡rÃ³l beszÃ©lÃ¼nk.	
+# Megjegyzendo, hogy itt a modellbol származó elorejelzés hibájáról (rezidualisáról), és nem az egyes prediktorok vagy bejosolt valtozo eloszlásáról beszélünk.	
 
-# Ezt a elofeltetelt egy QQ diagramm (QQ plot) Ã¡brÃ¡zolÃ¡sÃ¡val, Ã©s az esetek elmÃ©leti, diagonÃ¡lishoz viszonyÃ­tott elrendezÃ©sÃ©nek vizsgÃ¡latÃ¡val ellenorizhetjÃ¼k. Ha az esetek jelentosen eltÃ©rnek az Ã¡brÃ¡n szaggatott vonallal jelzett elmeleti diagonÃ¡listÃ³l, Ãºgy a normalitÃ¡sra vonatkozÃ³ elofeltetel sÃ©rÃ¼lhet.	
+# Ezt a elofeltetelt egy QQ diagramm (QQ plot) ábrázolásával, és az esetek elméleti, diagonálishoz viszonyított elrendezésének vizsgálatával ellenorizhetjük. Ha az esetek jelentosen eltérnek az ábrán szaggatott vonallal jelzett elmeleti diagonálistól, úgy a normalitásra vonatkozó elofeltetel sérülhet.	
 
-# A rezidualisok hisztogrammjÃ¡t is Ã©rdemes szemÃ¼gyre vennÃ¼nk. Ezen egy a normÃ¡l eloszlÃ¡snak megfelelo, Gauss-gÃ¶rbÃ©hez hasonlÃ³ alakzatot kell lÃ¡tnunk ha a normalitÃ¡s feltÃ©tele teljesÃ¼l.	
+# A rezidualisok hisztogrammját is érdemes szemügyre vennünk. Ezen egy a normál eloszlásnak megfelelo, Gauss-görbéhez hasonló alakzatot kell látnunk ha a normalitás feltétele teljesül.	
 
-# A skew Ã©s kurtosis statisztikÃ¡kat is lekÃ©rdezhetjÃ¼k a describe() fÃ¼ggvÃ©ny segÃ­tsÃ©gÃ©vel. ha a skew Ã©s kurtosis > 1, Ãºgy az a normalitÃ¡si feltÃ©tel sÃ©rÃ¼lÃ©sÃ©t jelezheti.	
+# A skew és kurtosis statisztikákat is lekérdezhetjük a describe() függvény segítségével. ha a skew és kurtosis > 1, úgy az a normalitási feltétel sérülését jelezheti.	
 
 
 # QQ plot	
@@ -212,29 +212,29 @@ residuals_mod_house2 %>%
 describe(residuals(mod_house2))	
 
 
-# Az eredmenyek alapjan lathato hogy a rezidualisok enyhÃ©n eltÃ©rnÃ©nek a normalitÃ¡si feltÃ©teltol, ami elsosorban a nÃ©hÃ¡ny problÃ©mÃ¡s esetnek tudhatÃ³ be. 	
+# Az eredmenyek alapjan lathato hogy a rezidualisok enyhén eltérnének a normalitási feltételtol, ami elsosorban a néhány problémás esetnek tudható be. 	
 
-# ### Mi tÃ¶rtÃ©nik a normalitÃ¡si feltÃ©tel sÃ©rÃ¼lÃ©se esetÃ©n?	
+# ### Mi történik a normalitási feltétel sérülése esetén?	
 
-# A becslÃ©sek Ã©s konfidencia intervallumok pontossÃ¡ga a normalitÃ¡si feltÃ©tel sÃ©rÃ¼lÃ©se esetÃ©n csÃ¶kkenhet. Ennek mÃ©rtÃ©ke a minta mÃ©retÃ©tol is fÃ¼gg. Nagy mintÃ¡k esetÃ©n (N>500) a hatÃ¡s szinte elhanyagolhatÃ³, mÃ­g kissebb mintÃ¡k esetÃ©n (N kb. 100) a hatÃ¡s nagyobb.Lumey Diehr, Emerson Ã©s Chen (2002) kutatÃ¡sÃ¡ban pÃ©ldÃ¡ul a normalitÃ¡s szÃ©lsosÃ©ges sÃ©rÃ¼lÃ©se esetÃ©n  (skewness = 8,8; kurtosis = 131) a 95%-os konfidencia intervallum a szimulaciok 93,6%-Ã¡ban tartalmazta a populÃ¡ciÃ³atlag N=500-as minta esetÃ©n, Ã©s 91,3%-Ã¡ban az N=65-Ã¶s esetben.	
+# A becslések és konfidencia intervallumok pontossága a normalitási feltétel sérülése esetén csökkenhet. Ennek mértéke a minta méretétol is függ. Nagy minták esetén (N>500) a hatás szinte elhanyagolható, míg kissebb minták esetén (N kb. 100) a hatás nagyobb.Lumey Diehr, Emerson és Chen (2002) kutatásában például a normalitás szélsoséges sérülése esetén  (skewness = 8,8; kurtosis = 131) a 95%-os konfidencia intervallum a szimulaciok 93,6%-ában tartalmazta a populációatlag N=500-as minta esetén, és 91,3%-ában az N=65-ös esetben.	
 
-# KÃ¶vetkezik tehÃ¡t, hogy a normalitÃ¡si feltÃ©tel sÃ©rÃ¼lÃ©se esetÃ©n a konfidencia intervallumok Ã©s p Ã©rtÃ©kek kevÃ©sbÃ© lesznek megbÃ­zhatÃ³ak, de ennek figyelembevetelevel tovabbra is felhasznalhatoak.	
+# Következik tehát, hogy a normalitási feltétel sérülése esetén a konfidencia intervallumok és p értékek kevésbé lesznek megbízhatóak, de ennek figyelembevetelevel tovabbra is felhasznalhatoak.	
 
-# HivatkozÃ¡sok:	
+# Hivatkozások:	
 
 # Lumley, T., Diehr, P., Emerson, S., & Chen, L. (2002). The importance of the normality assumption in large public health data sets. Annual review of public health, 23(1), 151-169.	
 
-# ### Mit tegyÃ¼nk, ha a normalitÃ¡si feltÃ©tel sÃ©rÃ¼l?	
+# ### Mit tegyünk, ha a normalitási feltétel sérül?	
 
-# 1. KezelhetjÃ¼k egyszeruen Ã³vatosabban eredmÃ©nyeinket, pÃ©ldÃ¡ul 99%-os konfidencia intervallum hasnÃ¡latÃ¡val a szokÃ¡sos 95%-os helyett, vagy tekinthetjÃ¼k p < 0,01-et a szignifikancia hatÃ¡rÃ¡nak. 	
+# 1. Kezelhetjük egyszeruen óvatosabban eredményeinket, például 99%-os konfidencia intervallum hasnálatával a szokásos 95%-os helyett, vagy tekinthetjük p < 0,01-et a szignifikancia határának. 	
 
-# 2. MegprÃ³bÃ¡lhatjuk a prediktorainkat vagy a bejosolt valtozot ugy transzformÃ¡lni, hogy rezidualisaink eloszlÃ¡sa kÃ¶zelebb legyen a normÃ¡l eloszlÃ¡shoz. Ekkor azonban fontos figyelembe venni, hogy az Ã­gy kapott egyutthatok is transzformÃ¡lva lesznek. Ugyan ez vonatkozik a hiba feltÃ©telekre, azaz ha a modell transzformÃ¡lt Ã©rtÃ©kekre vonatkozÃ³ RSS-je nem lesz Ã¶sszehasonlÃ­thatÃ³ az transzformalatlan Ã©rtÃ©kekÃ©vel. Az Ã¡talakÃ­tÃ¡srÃ³l tovÃ¡bbi informÃ¡ciÃ³k az alÃ¡bbi linken talÃ¡lhatÃ³ak: http://abacus.bates.edu/~ganderso/biology/bio270/homework_files/Data_Transformation.pdf (a file szerzoje szÃ¡momra ismeretlen, de a dokumentum tartalmilag pontos, Ã©s megfelelo hivatkozÃ¡sokkal ellÃ¡tott).	
+# 2. Megpróbálhatjuk a prediktorainkat vagy a bejosolt valtozot ugy transzformálni, hogy rezidualisaink eloszlása közelebb legyen a normál eloszláshoz. Ekkor azonban fontos figyelembe venni, hogy az így kapott egyutthatok is transzformálva lesznek. Ugyan ez vonatkozik a hiba feltételekre, azaz ha a modell transzformált értékekre vonatkozó RSS-je nem lesz összehasonlítható az transzformalatlan értékekével. Az átalakításról további információk az alábbi linken találhatóak: http://abacus.bates.edu/~ganderso/biology/bio270/homework_files/Data_Transformation.pdf (a file szerzoje számomra ismeretlen, de a dokumentum tartalmilag pontos, és megfelelo hivatkozásokkal ellátott).	
 
-# 3. Ha mindÃ¶ssze nÃ©hÃ¡ny eset okozza a normalitÃ¡stÃ³l valÃ³ eltÃ©rÃ©st, Ãºgy hasznos lehet a kiugrÃ³ Ã©rtÃ©kek kizÃ¡rÃ¡sa. FormÃ¡lis hipotÃ©zisteszt esetÃ©n a vÃ¡ltozÃ³k kizÃ¡rÃ¡sa nem alapulhat a p-Ã©rtÃ©ken. A kizÃ¡rÃ¡s feltÃ©telei preregisztrÃ¡lhatÃ³ak, vagy egy Ã©rzÃ©kenysÃ©gi elemzest is hasznÃ¡lhatunk, azaz az adott elemzest kÃ©tszer lefuttathatjuk adatainkon, egyszer a problÃ©mÃ¡s Ã©rtÃ©kek bevonÃ¡sÃ¡val, egyszer pedig azok kizÃ¡rÃ¡sÃ¡val, majd az eredmÃ©nyeket Ã¶sszehasonlÃ­thatjuk a kÃ©t esetben.	
+# 3. Ha mindössze néhány eset okozza a normalitástól való eltérést, úgy hasznos lehet a kiugró értékek kizárása. Formális hipotézisteszt esetén a változók kizárása nem alapulhat a p-értéken. A kizárás feltételei preregisztrálhatóak, vagy egy érzékenységi elemzest is használhatunk, azaz az adott elemzest kétszer lefuttathatjuk adatainkon, egyszer a problémás értékek bevonásával, egyszer pedig azok kizárásával, majd az eredményeket összehasonlíthatjuk a két esetben.	
 
-# EsetÃ¼nkben, lÃ©vÃ©n adataink mindÃ¶ssze nÃ©hÃ¡ny kiugro eset miatt sÃ©rtik a normalitÃ¡si feltÃ©telt, megprÃ³bÃ¡lhatjuk kizÃ¡rni ezeket az adatokat, hÃ¡tha Ã­gy kikÃ¼szÃ¶bÃ¶lheto a problÃ©ma. Itt a 186-os Ã©s 113-as esetek kizÃ¡rÃ¡sÃ¡t vÃ¡lasztottuk azok Cook tÃ¡volsÃ¡ga alapjÃ¡n, Ã©s mivel a QQ plot alapjÃ¡n szerepÃ¼k volt a normalitÃ¡stÃ³l valÃ³ eltÃ©rÃ©sben.	
+# Esetünkben, lévén adataink mindössze néhány kiugro eset miatt sértik a normalitási feltételt, megpróbálhatjuk kizárni ezeket az adatokat, hátha így kiküszöbölheto a probléma. Itt a 186-os és 113-as esetek kizárását választottuk azok Cook távolsága alapján, és mivel a QQ plot alapján szerepük volt a normalitástól való eltérésben.	
 
-# Az alÃ¡bbiakban a fenti kÃ©t eset kizÃ¡rÃ¡sÃ¡val Ãºjra illesztjÃ¼k modellÃ¼nket, Ã©s ujra ellenorizzÃ¼k a normalitÃ¡si feltÃ©telt. LÃ¡thatÃ³, hogy a kiugrÃ³ adatok nÃ©lkÃ¼l a rezidualisok a normÃ¡l eloszlÃ¡shoz lÃ©nyegesen hasonlÃ³bb eloszlÃ¡st mutatnak mint korÃ¡bban. 	
+# Az alábbiakban a fenti két eset kizárásával újra illesztjük modellünket, és ujra ellenorizzük a normalitási feltételt. Látható, hogy a kiugró adatok nélkül a rezidualisok a normál eloszláshoz lényegesen hasonlóbb eloszlást mutatnak mint korábban. 	
 
 
 data_house_nooutliers = data_house %>% 	
@@ -253,7 +253,7 @@ residuals_mod_house3 %>%
   geom_histogram()	
 
 
-# Amikor a kÃ©t modellt az Ã©rzÃ©kenysÃ©gi elemzes mÃ³dszerÃ©vel hasonlÃ­tjuk Ã¶ssze, lathato hogy a kiugrÃ³ adatok kizarasa nem vÃ¡ltoztatott a statisztikai kÃ¶vetkeztetÃ©seinket, hisz a korÃ¡bban jelentos prediktorok tovÃ¡bbra is jelentosek, Ã©s a modell F prÃ³bÃ¡ja is szignifikÃ¡s mindkÃ©t esetben. Az adjusted R^2 Ã©rtÃ©k lÃ©nyegesen javult, hisz a regressziÃ³s vonalunk mostmÃ¡r sokkal jobban illeszkedik a megmaradÃ³ adatainkra. (Ugyanakkor a modell illeszkedÃ©sÃ©t Ãºj adatokon, vagy egy test-seten is Ã©rdemes kiprÃ³bÃ¡lnunk, hogy az elorejelzÃ©seink hatÃ©konysÃ¡gÃ¡rÃ³l tisztÃ¡bb kÃ©pet alkothassunk, hiszen a kizÃ¡rtakhoz hasonlÃ³ kiugrÃ³ Ã©rtÃ©kek az Ãºj adatok kÃ¶zÃ¶tt is szerepelhetnek, melyek meghatÃ¡rozÃ¡sÃ¡ban modellÃ¼nk pontatlan lesz.)	
+# Amikor a két modellt az érzékenységi elemzes módszerével hasonlítjuk össze, lathato hogy a kiugró adatok kizarasa nem változtatott a statisztikai következtetéseinket, hisz a korábban jelentos prediktorok továbbra is jelentosek, és a modell F próbája is szignifikás mindkét esetben. Az adjusted R^2 érték lényegesen javult, hisz a regressziós vonalunk mostmár sokkal jobban illeszkedik a megmaradó adatainkra. (Ugyanakkor a modell illeszkedését új adatokon, vagy egy test-seten is érdemes kipróbálnunk, hogy az elorejelzéseink hatékonyságáról tisztább képet alkothassunk, hiszen a kizártakhoz hasonló kiugró értékek az új adatok között is szerepelhetnek, melyek meghatározásában modellünk pontatlan lesz.)	
 
 
 # comparing the models on data with and without the outliers	
@@ -261,17 +261,17 @@ summary(mod_house2)
 summary(mod_house3)	
 
 
-# A tovÃ¡bbi feltÃ©tel-vizsgÃ¡latokban azt a modell-t vizsgaljuk majd, amibol mar kizartuk ezeket a kiurgo eseteket (186-os Ã©s 113-as esetek).	
+# A további feltétel-vizsgálatokban azt a modell-t vizsgaljuk majd, amibol mar kizartuk ezeket a kiurgo eseteket (186-os és 113-as esetek).	
 
-# 4. Bootstrapping modszert is hasznÃ¡lhatjuk a konfidencia szintek robosztus becslÃ©sÃ©re a normalitas feltetel serulese eseten.	
+# 4. Bootstrapping modszert is használhatjuk a konfidencia szintek robosztus becslésére a normalitas feltetel serulese eseten.	
 
 # ### Bootstrapping	
 
-# A bootstrapping lenyege hogy sajÃ¡t mintÃ¡nkbol vÃ©letlenszeruen mintakat veszunk, es ezeken az uj mintakon illesztjuk ujra a modellunket. Ezt a folyamatot sokszor megismÃ©teljÃ¼k (1000-10000 alkalommal), majd ezek eredmÃ©nyei alapjÃ¡n kÃ¶vetkeztetÃ¼nk a konfidencia hatÃ¡rokra.	
+# A bootstrapping lenyege hogy saját mintánkbol véletlenszeruen mintakat veszunk, es ezeken az uj mintakon illesztjuk ujra a modellunket. Ezt a folyamatot sokszor megismételjük (1000-10000 alkalommal), majd ezek eredményei alapján következtetünk a konfidencia határokra.	
 
-# (Az alÃ¡bbiak megfelelo mukÃ¶dÃ©sÃ©hez szÃ¼ksÃ©ges a fenti sajÃ¡t fÃ¼ggvÃ©nyek futtatÃ¡sa.)	
+# (Az alábbiak megfelelo muködéséhez szükséges a fenti saját függvények futtatása.)	
 
-# HasonlÃ­tsuk Ã¶ssze a szokasos Ã©s a bootstrapping mÃ³dszerrel nyert konfidencia intervallumokat. 	
+# Hasonlítsuk össze a szokasos és a bootstrapping módszerrel nyert konfidencia intervallumokat. 	
 
 
 	
@@ -292,13 +292,13 @@ boot.ci(results.boot, type="bca", index=1)
 
 
 
-# ## LinearitÃ¡s	
+# ## Linearitás	
 
-# Az eredmÃ©ny Ã©s a prediktorok kÃ¶zÃ¶tt lineÃ¡ris kapcsolat kell legyen.	
+# Az eredmény és a prediktorok között lineáris kapcsolat kell legyen.	
 
-# A car csomag residualPlots() fÃ¼ggvÃ©nyÃ©nek prediktoronkÃ©nti hasznÃ¡latÃ¡val vizsgÃ¡lhatjuk meg a linearitÃ¡st. A fÃ¼ggvÃ©ny eredmÃ©nyekÃ©nt egy scatterplot-ot kapunk egy spline-al, mely dÃºrvÃ¡n jelzi a prediktor Ã©s az eredmÃ©ny kÃ¶zti kapcsolatot, illetve a rezidualis-elorejelzett Ã©rtÃ©k plot-ot is megkapjuk. A linearitÃ¡s teljesÃ¼lÃ©se esetÃ©n az Ã¶sszes kapott Ã¡brÃ¡n megkÃ¶zelÃ­toleg vÃ­zszintes vonalakat kell lÃ¡tnunk.	
+# A car csomag residualPlots() függvényének prediktoronkénti használatával vizsgálhatjuk meg a linearitást. A függvény eredményeként egy scatterplot-ot kapunk egy spline-al, mely dúrván jelzi a prediktor és az eredmény közti kapcsolatot, illetve a rezidualis-elorejelzett érték plot-ot is megkapjuk. A linearitás teljesülése esetén az összes kapott ábrán megközelítoleg vízszintes vonalakat kell látnunk.	
 
-# A residualPlots() fÃ¼ggvÃ©ny a linearitÃ¡s serulesenek tesztjet is elvegzi. A teszt szignifikanciÃ¡ja esetÃ©n (p < 0.05) arra kovetkeztethetunk, hogy a linearitÃ¡si feltÃ©tel sÃ©rÃ¼l.	
+# A residualPlots() függvény a linearitás serulesenek tesztjet is elvegzi. A teszt szignifikanciája esetén (p < 0.05) arra kovetkeztethetunk, hogy a linearitási feltétel sérül.	
 
 
 
@@ -307,28 +307,28 @@ mod_house3 %>%
   residualPlots()	
 
 
-# EsetÃ¼nkben, bÃ¡r lÃ¡thatÃ³ nÃ©mi gÃ¶rbÃ¼let az Ã¡rÃ¡kon, a tesztek egyike sem szignifikÃ¡ns, vagyis a modellÃ¼nk feltehetoen eleget tesz a linearitÃ¡si elvÃ¡rÃ¡snak.	
+# Esetünkben, bár látható némi görbület az árákon, a tesztek egyike sem szignifikáns, vagyis a modellünk feltehetoen eleget tesz a linearitási elvárásnak.	
 
-# ### Mi a hatasa a linearitÃ¡s sÃ©rÃ¼lÃ©senek?	
+# ### Mi a hatasa a linearitás sérülésenek?	
 
-# Ha a prediktorok Ã©s bejosolt valtozok kÃ¶zÃ¶tt nem lineÃ¡ris a kapcsolat, Ãºgy modellÃ¼nk elorejelzÃ©sei pontatlanok lehetnek. TovÃ¡bbÃ¡ a modell egyutthatoi is megbÃ­zhatatlanok lesznek ha elorejelzÃ©shez szeretnÃ©nk hasznÃ¡lni oket. Peldaul a linearutas feltetelenek serulese eseten elofordulhat hogy a standardizÃ¡lt egyutthatok, t-prÃ³bÃ¡k Ã©s p-Ã©rtÃ©kek azt sejtethetik, hogy egy prediktornak nincs hatÃ¡sa a kimenetre, lehet hogy valÃ³jÃ¡ban a prediktor megis hordoz relevans informaciot a bejoslashoz, csak az osszefugges nem lineÃ¡ris.	
+# Ha a prediktorok és bejosolt valtozok között nem lineáris a kapcsolat, úgy modellünk elorejelzései pontatlanok lehetnek. Továbbá a modell egyutthatoi is megbízhatatlanok lesznek ha elorejelzéshez szeretnénk használni oket. Peldaul a linearutas feltetelenek serulese eseten elofordulhat hogy a standardizált egyutthatok, t-próbák és p-értékek azt sejtethetik, hogy egy prediktornak nincs hatása a kimenetre, lehet hogy valójában a prediktor megis hordoz relevans informaciot a bejoslashoz, csak az osszefugges nem lineáris.	
 
-# ### Mit tegyÃ¼nk ha a linearitÃ¡s sÃ©rÃ¼l?	
+# ### Mit tegyünk ha a linearitás sérül?	
 
-# A linearitÃ¡s sÃ©rÃ¼lÃ©se esetÃ©n modellÃ¼nk rugalmasabbÃ¡ tÃ©telÃ©vel Ã©rdemes prÃ³bÃ¡lkoznunk.	
+# A linearitás sérülése esetén modellünk rugalmasabbá tételével érdemes próbálkoznunk.	
 
-# 1. egyik lehetoseg a hatvanyprediktorok hasznalata. (Ennek pontos menetet a speciÃ¡lis prediktorok gyakorlatban targyaltuk.) ÃlltalÃ¡ban a mÃ¡sod Ã©s harmadrendu hatvanyprediktorok hasznÃ¡lata mÃ¡r elÃ©gnek bizonyul. Ã‰rdemes elkerÃ¼lni hogy tÃºl magasrendu hatvanytenyezot tegyunk a modellunkbe, ugyanis az overfitting-hez vezethet.	
+# 1. egyik lehetoseg a hatvanyprediktorok hasznalata. (Ennek pontos menetet a speciális prediktorok gyakorlatban targyaltuk.) Álltalában a másod és harmadrendu hatvanyprediktorok használata már elégnek bizonyul. Érdemes elkerülni hogy túl magasrendu hatvanytenyezot tegyunk a modellunkbe, ugyanis az overfitting-hez vezethet.	
 
-# 2. ha a hatvanyprediktorok nem alkalmasak az Ã¶sszefÃ¼ggÃ©s leÃ­rÃ¡sÃ¡ra, Ã©rdemes lehet a nem lineÃ¡ris regressziÃ³val prÃ³bÃ¡t tenni. Ez nem resze a tananyagnak ezen a szinten. Akit erdekel, az az alÃ¡bbi kÃ¶nyvben olvashat errol a modszerrol: James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. New York: springer.	
+# 2. ha a hatvanyprediktorok nem alkalmasak az összefüggés leírására, érdemes lehet a nem lineáris regresszióval próbát tenni. Ez nem resze a tananyagnak ezen a szinten. Akit erdekel, az az alábbi könyvben olvashat errol a modszerrol: James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning. New York: springer.	
 # Ingyen hozzaferheto itt: http://www-bcf.usc.edu/~gareth/ISL/	
 
-# ## HomoszkedaszticitÃ¡s	
+# ## Homoszkedaszticitás	
 
-# A regressziÃ³ sorÃ¡n feltÃ©telezzÃ¼k, hogy a hiba tagok (rezidualisok)  szÃ³rÃ¡sa konstans Ã©s a prediktorok Ã©rtÃ©kÃ©tol fÃ¼ggetlen. TehÃ¡t pÃ©ldÃ¡ul a rezidualisok varianciÃ¡jÃ¡nak 60 nÃ©gyzetmeter alapterÃ¼letu Ã©s 300 nÃ©gyzetmeter alapterÃ¼letu ingatlanok esetÃ©n meg kell egyezzen.	
+# A regresszió során feltételezzük, hogy a hiba tagok (rezidualisok)  szórása konstans és a prediktorok értékétol független. Tehát például a rezidualisok varianciájának 60 négyzetmeter alapterületu és 300 négyzetmeter alapterületu ingatlanok esetén meg kell egyezzen.	
 
-# Ezt a standardizÃ¡lt rezidualisokat Ã©s a prediktorokat Ã¡brÃ¡zolÃ³ diagramm vizsgÃ¡latÃ¡val ellenorizhetjÃ¼k, ahol azt varjuk, hogy megkÃ¶zelÃ­toleg azonos varianciÃ¡t figyelnÃ¼nk majd meg minden elorejelzett Ã©rtÃ©k esetÃ©n. Hasznos statisztikai prÃ³bÃ¡k is rendelkezÃ©sÃ¼nkre Ã¡llnak. Ãgy pÃ©ldÃ¡ul a Breush-Pagan tesztet a bptest() fÃ¼gvÃ©nnyel hÃ­vhatjuk meg, melyet a lmtest csomagban talÃ¡lhatunk. Egy mÃ¡sik lehetosÃ©g az NCV teszt amely az ncvTest() fÃ¼ggvÃ©nnyel hÃ­vhatÃ³ meg, Ã©s az R-nek eleve rÃ©szÃ©t kÃ©pzi (nincs szÃ¼ksÃ©g tovÃ¡bbi csomagra). Ha a p-Ã©rtÃ©k < 0.05 ezekben a tesztekben, Ãºgy a homoszkedaszticitÃ¡s sÃ©rÃ¼lÃ©sÃ©re (vagyis jelentos heteroszkedaszticitÃ¡sra) kovetkeztethetunk. 	
+# Ezt a standardizált rezidualisokat és a prediktorokat ábrázoló diagramm vizsgálatával ellenorizhetjük, ahol azt varjuk, hogy megközelítoleg azonos varianciát figyelnünk majd meg minden elorejelzett érték esetén. Hasznos statisztikai próbák is rendelkezésünkre állnak. Így például a Breush-Pagan tesztet a bptest() fügvénnyel hívhatjuk meg, melyet a lmtest csomagban találhatunk. Egy másik lehetoség az NCV teszt amely az ncvTest() függvénnyel hívható meg, és az R-nek eleve részét képzi (nincs szükség további csomagra). Ha a p-érték < 0.05 ezekben a tesztekben, úgy a homoszkedaszticitás sérülésére (vagyis jelentos heteroszkedaszticitásra) kovetkeztethetunk. 	
 
-# A fent emlÃ­tett tesztek alapjÃ¡n jelentos heteroszkedaszticitÃ¡st talalunk a mod_house3 modellben, Ã­gy ezt tovÃ¡bbi vizsgÃ¡latnak kell alÃ¡vetnÃ¼nk.	
+# A fent említett tesztek alapján jelentos heteroszkedaszticitást talalunk a mod_house3 modellben, így ezt további vizsgálatnak kell alávetnünk.	
 
 
 mod_house3 %>% 	
@@ -341,22 +341,22 @@ mod_house3 %>%
   bptest() # Breush-Pagan test	
 
 
-# ### Mi a helyzet a heteroszkedaszticitÃ¡si feltÃ©tel sÃ©rÃ¼lÃ©se esetÃ©n?	
+# ### Mi a helyzet a heteroszkedaszticitási feltétel sérülése esetén?	
 
-# Amennyben heteroszkedaszticitÃ¡s lÃ©p fel, Ãºgy modellÃ¼nk pontatlan lehet. Ettol fÃ¼ggetlenÃ¼l hasznÃ¡lhatÃ³ marad a modell, egyszeruen csak pontatlanabbul hatÃ¡rozhatjuk meg az Ãºj adatainkat.	
+# Amennyben heteroszkedaszticitás lép fel, úgy modellünk pontatlan lehet. Ettol függetlenül használható marad a modell, egyszeruen csak pontatlanabbul határozhatjuk meg az új adatainkat.	
 
-# Ami fontosabb, hogy a modell egyutthatoi Ã©s a hozzÃ¡juk tartozÃ³ konfidencia intervallumok is pontatlanok lesznek.	
+# Ami fontosabb, hogy a modell egyutthatoi és a hozzájuk tartozó konfidencia intervallumok is pontatlanok lesznek.	
 
-# Ha tehÃ¡t szeretnÃ©nk meghatÃ¡rozni az ingatlanok Ã©rtÃ©keit a prediktorok alapjÃ¡n, azt bÃ¡r pontatlanabbul, de a heteroszkedaszticitÃ¡s fennÃ¡llÃ¡sa mellett is megtehetjÃ¼k, de az egyes egyutthatok Ã©s a konfidencia intervallumok megbizhatosaga serul.	
+# Ha tehát szeretnénk meghatározni az ingatlanok értékeit a prediktorok alapján, azt bár pontatlanabbul, de a heteroszkedaszticitás fennállása mellett is megtehetjük, de az egyes egyutthatok és a konfidencia intervallumok megbizhatosaga serul.	
 
-# ### Mit tehetÃ¼nk ha a heteroszkedaszticitÃ¡si feltÃ©tel sÃ©rÃ¼l?	
+# ### Mit tehetünk ha a heteroszkedaszticitási feltétel sérül?	
 
-# Ebben az esetben az alÃ¡bbi mÃ³dszerek bizonyulhatnak cÃ©lravezetonek: 	
+# Ebben az esetben az alábbi módszerek bizonyulhatnak célravezetonek: 	
 
-# 1. **TranszformÃ¡ciÃ³**. ha elsodleges cÃ©lunk az, hogy javÃ­tsuk elorejelzÃ©seink pontossÃ¡gÃ¡t, Ãºgy ezt a kimeneti Ã©rtÃ©kek Ã©s/vagy prediktorok transzformÃ¡ciÃ³jÃ¡val elÃ©rhetjÃ¼k, azok normÃ¡l eloszlÃ¡sÃºvÃ¡ tÃ©telÃ©vel, Ã­gy homogenizÃ¡lva a varianciÃ¡t az adatsor bizonyos rÃ©szeire. 	
-# PÃ©ldÃ¡ul alÃ¡bb a log() transzformÃ¡ciÃ³t alkalmazzuk a bejosolt valtozora, vagyis az ingalanok Ã¡rÃ¡ra, majd ennek megfeleloen Ãºjra illesztjÃ¼k modellÃ¼nket. Ennek az eljÃ¡rÃ¡snak az eredmÃ©nyekÃ©nt a heteroszkedaszticitas tesztek mar nem szignifikansak. 	
+# 1. **Transzformáció**. ha elsodleges célunk az, hogy javítsuk elorejelzéseink pontosságát, úgy ezt a kimeneti értékek és/vagy prediktorok transzformációjával elérhetjük, azok normál eloszlásúvá tételével, így homogenizálva a varianciát az adatsor bizonyos részeire. 	
+# Például alább a log() transzformációt alkalmazzuk a bejosolt valtozora, vagyis az ingalanok árára, majd ennek megfeleloen újra illesztjük modellünket. Ennek az eljárásnak az eredményeként a heteroszkedaszticitas tesztek mar nem szignifikansak. 	
 
-# Ne feledkezzÃ¼k meg azonban arrÃ³l, hogy mostmÃ¡r nem az Ã¡rakat, hanem azok logaritmusÃ¡t hatÃ¡rozuk meg, ezÃ©rt a kapott eredmÃ©nyeket vissza kell mÃ©g transzformÃ¡lni az exponenciÃ¡lis "exp()" fÃ¼gvÃ©nnyel. A modell egyutthatok meghatÃ¡rozÃ¡sÃ¡nÃ¡l is fontos, hogy az Ã¡r Ã©rtÃ©kek helyett azok logaritmusait hasznÃ¡ltuk.	
+# Ne feledkezzük meg azonban arról, hogy mostmár nem az árakat, hanem azok logaritmusát határozuk meg, ezért a kapott eredményeket vissza kell még transzformálni az exponenciális "exp()" fügvénnyel. A modell egyutthatok meghatározásánál is fontos, hogy az ár értékek helyett azok logaritmusait használtuk.	
 
 
 	
@@ -375,7 +375,7 @@ mod_house4 %>%
   bptest() # Breush-Pagan test	
 
 
-# A kapott eredmÃ©nyeket az exp() fÃ¼gvÃ©nnyel transzformÃ¡lhatjuk vissza az eredeti skÃ¡lÃ¡ra.	
+# A kapott eredményeket az exp() fügvénnyel transzformálhatjuk vissza az eredeti skálára.	
 
 
 	
@@ -383,11 +383,11 @@ exp(predict(mod_house4))
 	
 
 
-# 2. **Robosztus becsles alkalmazÃ¡sa**. ha fontos hogy megtartsuk az eredeti skÃ¡lÃ¡t hogy a modell egyutthatok megtarthassÃ¡k intuitÃ­v jelentÃ©sÃ¼k, haznÃ¡lhatunk robosztus kÃ¶zelÃ­tÃ©si mÃ³dszereket a heteroszkedaszticitÃ¡s-konzisztens (HC) standard hibÃ¡k meghatÃ¡rozÃ¡sÃ¡ra, Ã©s hasznÃ¡lhatjuk ezeket a konfidencia intervallumok, Ã©s a modell egyutthatoira vonatkozÃ³ korrigÃ¡lt p-Ã©rtÃ©kek meghatÃ¡rozÃ¡sÃ¡ra. Az Ã­gy kapott Ã©rtÃ©kek kevÃ©ssÃ© Ã©rzÃ©kenyek a heteroszkedaszticitÃ¡sra, ezÃ©rt nevezzÃ¼k oket robosztus becsleseknek. Az alÃ¡bbi pÃ©ldÃ¡ban a Huber-White Sandwich becslest hasznaljuk.	
+# 2. **Robosztus becsles alkalmazása**. ha fontos hogy megtartsuk az eredeti skálát hogy a modell egyutthatok megtarthassák intuitív jelentésük, haználhatunk robosztus közelítési módszereket a heteroszkedaszticitás-konzisztens (HC) standard hibák meghatározására, és használhatjuk ezeket a konfidencia intervallumok, és a modell egyutthatoira vonatkozó korrigált p-értékek meghatározására. Az így kapott értékek kevéssé érzékenyek a heteroszkedaszticitásra, ezért nevezzük oket robosztus becsleseknek. Az alábbi példában a Huber-White Sandwich becslest hasznaljuk.	
 
-# Kis mintÃ¡k esetÃ©n (N kb. 50) a standardizÃ¡lt hiba korrigÃ¡lÃ¡sÃ¡hoz mÃ¡s mÃ³dszerre lehet szÃ¼ksÃ©g, pÃ©ldÃ¡ul a Bell-McCaffrey fÃ©le kÃ¶zelÃ­tÃ©sre. Ennek rÃ©szletesebb leÃ­rÃ¡sÃ¡t lÃ¡sd Imbens Ã©s Kolesar (2016) cikkÃ©ben, az Ã¡lltaluk hasznÃ¡lt R fÃ¼ggvÃ©nyeket pedig az alÃ¡bbi linken: https://github.com/kolesarm/Robust-Small-Sample-Standard-Errors	
+# Kis minták esetén (N kb. 50) a standardizált hiba korrigálásához más módszerre lehet szükség, például a Bell-McCaffrey féle közelítésre. Ennek részletesebb leírását lásd Imbens és Kolesar (2016) cikkében, az álltaluk használt R függvényeket pedig az alábbi linken: https://github.com/kolesarm/Robust-Small-Sample-Standard-Errors	
 
-# HivatkozÃ¡sok:	
+# Hivatkozások:	
 # Imbens, G. W., & Kolesar, M. (2016). Robust standard errors in small samples: Some practical advice. Review of Economics and Statistics, 98(4), 701-712.	
 
 
@@ -405,7 +405,7 @@ CI95_ub_robust = coef(mod_house3)+1.96*mod_house3_sandwich_se
 cbind(mod_house3_sandwich_test, CI95_lb_robust, CI95_ub_robust)	
 
 
-# 3. **KÃ¼lÃ¶n modellek az adatsor eltÃ©ro rÃ©szeihez**. Egy Ãºjabb modszert is bevethetunk, ha a variancia valamilyen egyszeru mintazat / csoportosulas szerint mutat heteroszkedaszticitast. A mi mintÃ¡nk esetÃ©ben megfigyelheto, hogy a 200 nÃ©gyzetmÃ©teres alapterÃ¼letu ingatlanok esetÃ©n hirtelen megnol a variancia. Az adatainkat tehÃ¡t kettÃ©vÃ¡lasztjuk 200 nÃ©gyzetmÃ©teres Ã©s az alatti alapterÃ¼letu (data_house_small), illetve annÃ¡l nagyobb alapterÃ¼letu ingatlanokra (data_house_large), majd ezekre kÃ¼lÃ¶n-kÃ¼lÃ¶n modelleket illesztÃ¼nk. Ãgy ha egy 200 nÃ©gyzetmÃ©ter, vagy az alatti lakas Ã©rtÃ©kÃ©t szeretnÃ©nk meghatÃ¡rozni, Ãºgy a mod_house3_small, mÃ­g ha ennÃ©l nagyobb ingatlanÃ©t, Ãºgy a mod_house3_large modellt kell hasznÃ¡lnunk. A heteroszkedaszticitas tesztjei nem szignifikansak ebben a ket modellben.	
+# 3. **Külön modellek az adatsor eltéro részeihez**. Egy újabb modszert is bevethetunk, ha a variancia valamilyen egyszeru mintazat / csoportosulas szerint mutat heteroszkedaszticitast. A mi mintánk esetében megfigyelheto, hogy a 200 négyzetméteres alapterületu ingatlanok esetén hirtelen megnol a variancia. Az adatainkat tehát kettéválasztjuk 200 négyzetméteres és az alatti alapterületu (data_house_small), illetve annál nagyobb alapterületu ingatlanokra (data_house_large), majd ezekre külön-külön modelleket illesztünk. Így ha egy 200 négyzetméter, vagy az alatti lakas értékét szeretnénk meghatározni, úgy a mod_house3_small, míg ha ennél nagyobb ingatlanét, úgy a mod_house3_large modellt kell használnunk. A heteroszkedaszticitas tesztjei nem szignifikansak ebben a ket modellben.	
 
 
 	
@@ -448,13 +448,13 @@ mod_house3_large %>%
 
 # ## A Multikollinearitas tesztelese	
 
-# FeltÃ©telezzÃ¼k, hogy a prediktoraink lineÃ¡risan fÃ¼ggetlenek (egyik sem jelentosen bejosolhato a tÃ¶bbi prediktor ismerete alapjan). Ez Ã¡lltalÃ¡ban azt feltÃ©telezi, hogy az egyes prediktorok kÃ¶zÃ¶tt nincs eros korrelÃ¡ciÃ³, ez azonban magÃ¡ban mÃ©g kevÃ©s, hisz ha a prediktorok pÃ¡rosÃ¡val esetleg mÃ©g nem is mutatnak komoly korrelÃ¡ciÃ³t, ez magÃ¡ban mÃ©g nem zÃ¡rja ki azt hogy tÃ¶bb prediktor bonyolult lineÃ¡ris kombinÃ¡ciÃ³jakÃ©nt eloÃ¡llhassanak.	
+# Feltételezzük, hogy a prediktoraink lineárisan függetlenek (egyik sem jelentosen bejosolhato a többi prediktor ismerete alapjan). Ez álltalában azt feltételezi, hogy az egyes prediktorok között nincs eros korreláció, ez azonban magában még kevés, hisz ha a prediktorok párosával esetleg még nem is mutatnak komoly korrelációt, ez magában még nem zárja ki azt hogy több prediktor bonyolult lineáris kombinációjaként eloállhassanak.	
 
-# A feltÃ©telezÃ©s ellenÃ¶rzÃ©se Ã©rdekÃ©ben kiszÃ¡moljuk a variancia inflÃ¡ciÃ³ faktort (VIF) minden prediktorra, a vif() fÃ¼ggvÃ©ny hasunÃ¡latÃ¡val, melyet a car csomagban talÃ¡lhatunk meg.	
+# A feltételezés ellenörzése érdekében kiszámoljuk a variancia infláció faktort (VIF) minden prediktorra, a vif() függvény hasunálatával, melyet a car csomagban találhatunk meg.	
 
-# ArrÃ³l, hogy mely VIF Ã©rtÃ©kek jelÃ¶lnek  a kollinearitÃ¡s szempontjÃ¡bÃ³l problÃ©mÃ¡t, mÃ©g nem szÃ¼letett konszenzus. Vannak akik a 10 vagy afÃ¶lÃ¶tti vif Ã©rtÃ©keket tekintik problÃ©mÃ¡snak (pl.: Montgomery Ã©s Peck ,1992). Egy konzervatÃ­vabb megkÃ¶zelÃ­tÃ©s, ha a 3 feletti VIF Ã©rtÃ©kek esetÃ©ben mÃ¡r kÃ¼lÃ¶n eljÃ¡runk. (Zuur, Ieno, Ã©s Elphick, 2010 javaslata alapjÃ¡n). A ZHk-ban hasznaljuk a 3 feletti VIF Ã©rtÃ©keket, mint kriteriumot a multikollinearitas azonositasara.	
+# Arról, hogy mely VIF értékek jelölnek  a kollinearitás szempontjából problémát, még nem született konszenzus. Vannak akik a 10 vagy afölötti vif értékeket tekintik problémásnak (pl.: Montgomery és Peck ,1992). Egy konzervatívabb megközelítés, ha a 3 feletti VIF értékek esetében már külön eljárunk. (Zuur, Ieno, és Elphick, 2010 javaslata alapján). A ZHk-ban hasznaljuk a 3 feletti VIF értékeket, mint kriteriumot a multikollinearitas azonositasara.	
 
-# HivatkozÃ¡sok:	
+# Hivatkozások:	
 # Montgomery, D.C. & Peck, E.A. (1992) Introduction to Linear Regression Analysis. Wiley, New York.	
 # Zuur, A. F., Ieno, E. N., & Elphick, C. S. (2010). A protocol for data exploration to avoid common statistical problems. Methods in ecology and evolution, 1(1), 3-14.	
 
@@ -463,31 +463,31 @@ mod_house3 %>%
   vif()	
 
 
-# A fenti pÃ©ldÃ¡ban nincs problÃ©ma a kollinearitÃ¡st illetoen. 	
+# A fenti példában nincs probléma a kollinearitást illetoen. 	
 
-# ### Mi a helyzet kollinearitÃ¡s esetÃ©n?	
+# ### Mi a helyzet kollinearitás esetén?	
 
-# RegressziÃ³ esetÃ©n gyakran szeretnÃ©nk tudni az egyes prediktorok egyedi hozzaadott erteket a modellhez, Ã©s hogy ez a hozzaadott ertek statisztikailag szignifikÃ¡ns-e. Az egyes prediktorokhoz tartozo regressszios egyutthatok jelzik, a prediktor hatÃ¡sanak irÃ¡nyÃ¡t Ã©s mÃ©rtÃ©kÃ©t a tÃ¶bbi prediktor hatasanak fixen tartÃ¡sa mellett. Eroesen korrelÃ¡lÃ³ prediktorok esetÃ©n ritkÃ¡n fog elofordulni, hogy az egyik magas, mÃ­g a tÃ¶bbi alacsony, Ã­gy az egyedi hatÃ¡sok is nehezen lesznek szÃ©tvÃ¡laszthatÃ³ak.	
+# Regresszió esetén gyakran szeretnénk tudni az egyes prediktorok egyedi hozzaadott erteket a modellhez, és hogy ez a hozzaadott ertek statisztikailag szignifikáns-e. Az egyes prediktorokhoz tartozo regressszios egyutthatok jelzik, a prediktor hatásanak irányát és mértékét a többi prediktor hatasanak fixen tartása mellett. Eroesen korreláló prediktorok esetén ritkán fog elofordulni, hogy az egyik magas, míg a többi alacsony, így az egyedi hatások is nehezen lesznek szétválaszthatóak.	
 
-# RÃ¶viden Ã¶sszegezve tehÃ¡t kollinearitÃ¡s esetÃ©n a modell egyutthatoi Ã©s az egyedi predikciÃ³s Ã©rtÃ©keikre vonatkozÃ³ t-prÃ³bÃ¡k kevÃ©sbÃ© lesznek megbÃ­zhatÃ³ak. TovÃ¡bbÃ¡ a modell egyutthatoi kifejezetten instabilak lesznek, azaz a modell vÃ¡ltozÃ¡sai esetÃ©n (pl.: egy prediktor eltÃ¡volÃ­tÃ¡sa esetÃ©n) nagyokat vÃ¡ltozhatnak, sot akÃ¡r elojelet is vÃ¡lthatnak.	
+# Röviden összegezve tehát kollinearitás esetén a modell egyutthatoi és az egyedi predikciós értékeikre vonatkozó t-próbák kevésbé lesznek megbízhatóak. Továbbá a modell egyutthatoi kifejezetten instabilak lesznek, azaz a modell változásai esetén (pl.: egy prediktor eltávolítása esetén) nagyokat változhatnak, sot akár elojelet is válthatnak.	
 
-# SzerencsÃ©re az elorejelzÃ©sek pontossÃ¡gÃ¡t nem befolyÃ¡solja a kollinearitÃ¡s, Ã­gy ha csak ez Ã©rdekel bennÃ¼nket, nem is kell vele foglalkoznunk, csak ha Ã©rdekelnek minket az egyes regresszios egyutthatok, Ã©s szeretnÃ©nk kÃ¶vetkeztetni az egyes prediktorok egyedi hatÃ¡saira vagy modellhez valo hozzajarulasara.	
+# Szerencsére az elorejelzések pontosságát nem befolyásolja a kollinearitás, így ha csak ez érdekel bennünket, nem is kell vele foglalkoznunk, csak ha érdekelnek minket az egyes regresszios egyutthatok, és szeretnénk következtetni az egyes prediktorok egyedi hatásaira vagy modellhez valo hozzajarulasara.	
 
-# ### Mi a teendo kollinearitÃ¡s esetÃ©n?	
+# ### Mi a teendo kollinearitás esetén?	
 
-# A kollinearitÃ¡snak kÃ©t formÃ¡ja van: 	
+# A kollinearitásnak két formája van: 	
 
-# **Szerkezeti kollinearitÃ¡s**, ebben az esetben egy olyan prediktort is hozzÃ¡adunk a modellÃ¼nkhÃ¶z, mely egy vagy tÃ¶bb mÃ¡sik prediktorbÃ³l szÃ¡rmazik. PÃ©ldÃ¡ul hatvanyprediktorok (pÃ©ldÃ¡ul grade Ã©s grade^2), vagy iterÃ¡ciÃ³k (pl.: long*lat).	
+# **Szerkezeti kollinearitás**, ebben az esetben egy olyan prediktort is hozzáadunk a modellünkhöz, mely egy vagy több másik prediktorból származik. Például hatvanyprediktorok (például grade és grade^2), vagy iterációk (pl.: long*lat).	
 
-# **Adat kollinearitÃ¡s**, ebben az esetben a kollinearitÃ¡s magÃ¡ban az adatban jelenik meg, Ã©s nem csak a modellÃ¼nk termÃ©ke.	
+# **Adat kollinearitás**, ebben az esetben a kollinearitás magában az adatban jelenik meg, és nem csak a modellünk terméke.	
 
-# Ezek vizsgalatahoz most kÃ©t Ãºj modellt fogunk eloÃ¡llÃ­tani. 	
+# Ezek vizsgalatahoz most két új modellt fogunk eloállítani. 	
 
-# #### Szerkezeti kollinearitÃ¡s kezelÃ©se	
+# #### Szerkezeti kollinearitás kezelése	
 
-# EloszÃ¶r is Ã¡llÃ­tsunk elo egy modellt, melyben az sqm_living Ã©s grade vÃ¡ltozÃ³kon tÃºl a GPS koordinatakat is bevonjuk a modellunkbe mint prediktorokat.	
+# Eloször is állítsunk elo egy modellt, melyben az sqm_living és grade változókon túl a GPS koordinatakat is bevonjuk a modellunkbe mint prediktorokat.	
 
-# Az elso modellben csak a prediktorok elsodleges hatÃ¡sÃ¡val fogunk foglalkozni, azaz nem lesznek interkciÃ³s elemek. A modell summary azt mutatja, hogy a hosszÃºsÃ¡g (long) egyutthatoja negatÃ­v, vagyis minÃ©l keletebbre megyÃ¼nk, annÃ¡l olcsÃ³bbak lesznek az ingatlanok, ami logikus, hiszen a vizsgÃ¡lt terÃ¼let nyugati rÃ©szÃ©n helyezkedik el Seattle es az ocean. A szÃ©lessÃ©ghez (lat) tatozÃ³ koefficiens pozitÃ­v, vagyis Ã©szakra no az ingatlanok Ã¡ra. A szÃ©lessÃ©g prediktÃ­v Ã©rtÃ©ke szignifikÃ¡ns modellÃ¼nkben. A VIF alapjÃ¡n nincs problemas multikollinearitÃ¡s ebben a modellben.	
+# Az elso modellben csak a prediktorok elsodleges hatásával fogunk foglalkozni, azaz nem lesznek interkciós elemek. A modell summary azt mutatja, hogy a hosszúság (long) egyutthatoja negatív, vagyis minél keletebbre megyünk, annál olcsóbbak lesznek az ingatlanok, ami logikus, hiszen a vizsgált terület nyugati részén helyezkedik el Seattle es az ocean. A szélességhez (lat) tatozó koefficiens pozitív, vagyis északra no az ingatlanok ára. A szélesség prediktív értéke szignifikáns modellünkben. A VIF alapján nincs problemas multikollinearitás ebben a modellben.	
 
 
 mod_house_geolocation = lm(price_mill_HUF ~ sqm_living + grade + long + lat, data = data_house_nooutliers)	
@@ -497,7 +497,7 @@ mod_house_geolocation %>%
   vif()	
 
 
-# Most helyezzÃ¼k el az interakciÃ³s tagot is modellÃ¼nkben (a * jelet hasznÃ¡lva a + helyett), ahol a szÃ©lessÃ©g Ã©s hosszÃºsÃ¡g interakciÃ³jÃ¡t is bele foglaljuk a modellbe. Ekkor a coefficiensek Ã©s elojelek egy markÃ¡ns vÃ¡ltozÃ¡son mennek keresztÃ¼l. A hosszÃºsÃ¡g most pozitÃ­v koefficienssel, mÃ­g a szÃ©lessÃ©g negatÃ­v koefficiense rendelkezik. A szÃ©lessÃ©g predikciÃ³s mÃ©rteke sem szignifikÃ¡ns tÃ¶bbÃ©. Ugyanakkor a long, lat Ã©s long:lat vÃ¡ltozÃ³k VIF Ã©rtÃ©ke rendkÃ­vÃ¼l magas, jelentos multikollinearitÃ¡st jelezve. Az eredmÃ©nyeinkben lÃ¡thatÃ³ jelentos vÃ¡ltozÃ¡s a kollinearitÃ¡s miatti instabilitÃ¡sbÃ³l fakad. BÃ¡r a modell koefficiensei jelentosen megvÃ¡ltoztak, a modell R^2 Ã©rtÃ©ke csak egÃ©sz kicsit mozdult el.	
+# Most helyezzük el az interakciós tagot is modellünkben (a * jelet használva a + helyett), ahol a szélesség és hosszúság interakcióját is bele foglaljuk a modellbe. Ekkor a coefficiensek és elojelek egy markáns változáson mennek keresztül. A hosszúság most pozitív koefficienssel, míg a szélesség negatív koefficiense rendelkezik. A szélesség predikciós mérteke sem szignifikáns többé. Ugyanakkor a long, lat és long:lat változók VIF értéke rendkívül magas, jelentos multikollinearitást jelezve. Az eredményeinkben látható jelentos változás a kollinearitás miatti instabilitásból fakad. Bár a modell koefficiensei jelentosen megváltoztak, a modell R^2 értéke csak egész kicsit mozdult el.	
 
 
 mod_house_geolocation_inter = lm(price_mill_HUF ~ sqm_living + grade + long * lat, data = data_house_nooutliers)	
@@ -507,11 +507,11 @@ mod_house_geolocation_inter %>%
   vif()	
 
 
-# A long:lat interakciÃ³s taggal a long es a lat prediktorok eros korrelÃ¡ciÃ³t mutatnak. Itt szerkezeti kollinearitÃ¡srÃ³l beszÃ©lhetÃ¼nk, hiszen a multikollinearitast ket mar a modellunkben levo prediktorbol kepezett uj prediktor okozza. A kevert interakciÃ³s tag mind a long mind pedig a lat prediktoroktÃ³l fÃ¼gg, ebbol szÃ¡rmazik a magas korrelÃ¡ciÃ³.	
+# A long:lat interakciós taggal a long es a lat prediktorok eros korrelációt mutatnak. Itt szerkezeti kollinearitásról beszélhetünk, hiszen a multikollinearitast ket mar a modellunkben levo prediktorbol kepezett uj prediktor okozza. A kevert interakciós tag mind a long mind pedig a lat prediktoroktól függ, ebbol származik a magas korreláció.	
 
-# A vÃ¡ltozÃ³k standardizÃ¡lÃ¡sÃ¡val megoldhatÃ³ a problÃ©ma. Egy lehetsÃ©ges jÃ³ megoldÃ¡s a "centrÃ¡lÃ¡s", azaz minden erintett prediktor esetÃ©n a mintaatlagot kivonjuk az egyes Ã©rtÃ©kekbol. Ezzel a mÃ³dszerrel megorizzÃ¼k a vÃ¡ltozÃ³k eredeti skÃ¡lÃ¡jÃ¡t, Ã©s Ã­gy, a egyutthatok ugyan azt fogjÃ¡k jelenteni mint korÃ¡bban, a centrÃ¡lÃ¡s elott. (HasznÃ¡lhatnÃ¡nk Z transzformÃ¡ciÃ³t is, de az a egyutthatok Ã©rtelmezÃ©sÃ©t is megvÃ¡ltoztatnÃ¡, mivel ilyenkor a prediktorok skÃ¡lÃ¡ja is valtozik.)	
+# A változók standardizálásával megoldható a probléma. Egy lehetséges jó megoldás a "centrálás", azaz minden erintett prediktor esetén a mintaatlagot kivonjuk az egyes értékekbol. Ezzel a módszerrel megorizzük a változók eredeti skáláját, és így, a egyutthatok ugyan azt fogják jelenteni mint korábban, a centrálás elott. (Használhatnánk Z transzformációt is, de az a egyutthatok értelmezését is megváltoztatná, mivel ilyenkor a prediktorok skálája is valtozik.)	
 
-# A longitude (hosszÃºsÃ¡g) Ã©s lattitude (szÃ©lessÃ©g) centrÃ¡lÃ¡sÃ¡t kÃ¶vetoen a kollinearitÃ¡s megszunik, Ã©s megkÃ¶zelÃ­toleg hasnonlÃ³ a hatÃ¡s mÃ©rtÃ©ket is mint az interakciÃ³ bevonasa elott. A szÃ©lessÃ©gnek megint van szignifikÃ¡ns prediktÃ­v Ã©rtÃ©ke. Ugyanakkor az R^2 Ã©rtÃ©k teljesen Ã©rintetlenÃ¼l marad a multikollinearitÃ¡s eltÃ¡volÃ­tÃ¡sa sorÃ¡n. Azaz az elorejelzÃ©sekre valÃ³ alkalmassÃ¡g vÃ¡ltozatlanul marad, de a regresszios egyutthatok stabilabbÃ¡ Ã©s kÃ¶nnybben interpretÃ¡lhatÃ³vÃ¡ vÃ¡ltak.	
+# A longitude (hosszúság) és lattitude (szélesség) centrálását követoen a kollinearitás megszunik, és megközelítoleg hasnonló a hatás mértéket is mint az interakció bevonasa elott. A szélességnek megint van szignifikáns prediktív értéke. Ugyanakkor az R^2 érték teljesen érintetlenül marad a multikollinearitás eltávolítása során. Azaz az elorejelzésekre való alkalmasság változatlanul marad, de a regresszios egyutthatok stabilabbá és könnybben interpretálhatóvá váltak.	
 
 
 data_house_nooutliers = data_house_nooutliers %>% 	
@@ -527,9 +527,9 @@ mod_house_geolocation_inter_centered %>%
 summary(mod_house_geolocation_inter_centered)	
 
 
-# #### Adat kollinearitÃ¡s kezelÃ©se	
+# #### Adat kollinearitás kezelése	
 
-# ÃllÃ­tsunk elo egy modellt, melyben az sqm_living Ã©s grade vÃ¡ltozÃ³kon tÃºl az sqm_above vÃ¡ltozÃ³t is hasznÃ¡ljuk mint prediktort (az ingatlan fÃ¶ldfelszÃ­n feletti terÃ¼lete nÃ©gyzetmeterben).	
+# Állítsunk elo egy modellt, melyben az sqm_living és grade változókon túl az sqm_above változót is használjuk mint prediktort (az ingatlan földfelszín feletti területe négyzetmeterben).	
 
 # A vif itt 3 feletti.	
 
@@ -539,9 +539,9 @@ mod_house5 = lm(price_mill_HUF ~ sqm_living + grade + sqm_above, data = data_hou
 vif(mod_house5)	
 
 
-# Ennek okat megvizsgalhatjuk a prediktorok korrelÃ¡ciÃ³s mÃ¡trixÃ¡nak tanulmanyozasaval. A pairs.panels() fÃ¼ggvÃ©ny sok hasznos diagrammal szolgÃ¡l, melyeken nem csak a vÃ¡ltozÃ³k kÃ¶zti korrelÃ¡ciÃ³t, de a vÃ¡ltozÃ³k eloszlÃ¡sÃ¡t, illetve a pÃ¡ronkÃ©nti kapcsolatuk scatter plotjait is lÃ¡thatjuk.	
+# Ennek okat megvizsgalhatjuk a prediktorok korrelációs mátrixának tanulmanyozasaval. A pairs.panels() függvény sok hasznos diagrammal szolgál, melyeken nem csak a változók közti korrelációt, de a változók eloszlását, illetve a páronkénti kapcsolatuk scatter plotjait is láthatjuk.	
 
-# A korrelÃ¡ciÃ³s mÃ¡trix alapjÃ¡n egyÃ©rtelmu, hogy az sqm_living Ã©s sqm_above korrelÃ¡ciÃ³ja igen magas.	
+# A korrelációs mátrix alapján egyértelmu, hogy az sqm_living és sqm_above korrelációja igen magas.	
 
 
 	
@@ -550,7 +550,7 @@ data_house %>%
     pairs.panels(col = "red", lm = T)	
 
 
-# A ket modell eredmenyenek Ã¶sszehasonlÃ­tÃ¡sa alapjÃ¡n mit Ã¡llapÃ­thatunk meg? Ertelmezd a ket modell regresszios egyutthatoit!	
+# A ket modell eredmenyenek összehasonlítása alapján mit állapíthatunk meg? Ertelmezd a ket modell regresszios egyutthatoit!	
 
 
 summary(mod_house5)	
@@ -559,20 +559,20 @@ summary(mod_house3)
 	
 
 
-# A multikollinearitÃ¡sbÃ³l fakadÃ³an nem bÃ­zhatunk a mod_house5 egyes egyutthatoiban, sem a prediktorokra vonatkozÃ³ t-prÃ³bÃ¡kban. 	
+# A multikollinearitásból fakadóan nem bízhatunk a mod_house5 egyes egyutthatoiban, sem a prediktorokra vonatkozó t-próbákban. 	
 
-# TÃ¶bb lehetosÃ©g is nyitva Ã¡ll a kollinearitÃ¡s megoldÃ¡sÃ¡ra:	
+# Több lehetoség is nyitva áll a kollinearitás megoldására:	
 
-# 1. a szorosan korrelÃ¡lÃ³ prediktorok valamelyikÃ©nek eltÃ¡volÃ­tÃ¡sa,	
-# 2. A prediktorok lineÃ¡ris kombinÃ¡lÃ¡sa, pl minden megfigyelÃ©shez kÃ©t adat Ã¡tlagÃ¡t hasznÃ¡lni. (pl a 3as esetben sqm_living = 1050, sqm_above = 950, azaz az Ã¡tlag ebben az esetben 1000). Ugyanakkor az nem egyÃ©rtelmu, hogy hogyan Ã©rtelmeznÃ©nk az egyes prediktorokat.	
-# 3. HasznÃ¡lhatÃ³ak akÃ¡r teljesen mÃ¡s statisztikai eljÃ¡rÃ¡sok is (pl.: parciÃ¡lis legkissebb nÃ©gzetek regressziÃ³ja, vagy fokomponens elemzes)	
+# 1. a szorosan korreláló prediktorok valamelyikének eltávolítása,	
+# 2. A prediktorok lineáris kombinálása, pl minden megfigyeléshez két adat átlagát használni. (pl a 3as esetben sqm_living = 1050, sqm_above = 950, azaz az átlag ebben az esetben 1000). Ugyanakkor az nem egyértelmu, hogy hogyan értelmeznénk az egyes prediktorokat.	
+# 3. Használhatóak akár teljesen más statisztikai eljárások is (pl.: parciális legkissebb négzetek regressziója, vagy fokomponens elemzes)	
 
-# Jelenleg a legkezenfekvobb talÃ¡n az elso mÃ³dszer, vagyis a ket problemas prediktor kozul az egyik eltavolitasa a modellbol, hiszen az sqm_living Ã©s sqm_above nagyon megegyeznek es konceptualisan sem igazan hordoznak kulonbozo informaciot. VÃ¡lasszuk ki azt, amelyik intuitÃ­ve tÃ¶bbet szÃ¡mÃ­t az ingatlan Ã¡rÃ¡ba! Jelen esetben talÃ¡n az sqm_living megtartÃ¡sa lehet cÃ©lravezeto, hiszen az az elmÃ©letÃ¼nk, hogy a lakhatÃ³ terÃ¼let mÃ©rete befolyÃ¡solja az ingatlan Ã¡rÃ¡t, a pince meglÃ©tÃ©rol szogÃ¡lÃ³ informÃ¡ciÃ³t pedig figyelembe vehetjÃ¼k a has_basement vÃ¡ltozÃ³val is egy kÃ©sobbi modellben. ha van valamifÃ©le ismeretÃ¼nk korÃ¡bbi, ingatlan Ã¡razÃ¡st Ã©rinto kutatÃ¡sokrÃ³l, Ãºgy azt is felhasznÃ¡lhatjuk annak eldÃ¶ntÃ©sÃ©ben, hogy melyik prediktort Ã©rdemes elhagyni. Praktikus szempontokat is figyekembevehetÃ¼nk, mint pÃ©ldÃ¡ul azt, hogy az Ã¶ssz lakÃ³terÃ¼let kÃ¶nnyebben hozzÃ¡fÃ©rheto informÃ¡ciÃ³, mint a fÃ¶ldfelszÃ­n feletti terÃ¼let, Ã­gy ha az Ã¶ssz lakÃ³terÃ¼letet vÃ¡lasztjuk ki mint prediktort, akkor tÃ¶bb esetben hasznÃ¡lhatjuk modellÃ¼nket az Ã¡rak elorejelzÃ©sÃ©re.	
+# Jelenleg a legkezenfekvobb talán az elso módszer, vagyis a ket problemas prediktor kozul az egyik eltavolitasa a modellbol, hiszen az sqm_living és sqm_above nagyon megegyeznek es konceptualisan sem igazan hordoznak kulonbozo informaciot. Válasszuk ki azt, amelyik intuitíve többet számít az ingatlan árába! Jelen esetben talán az sqm_living megtartása lehet célravezeto, hiszen az az elméletünk, hogy a lakható terület mérete befolyásolja az ingatlan árát, a pince meglétérol szogáló információt pedig figyelembe vehetjük a has_basement változóval is egy késobbi modellben. ha van valamiféle ismeretünk korábbi, ingatlan árazást érinto kutatásokról, úgy azt is felhasználhatjuk annak eldöntésében, hogy melyik prediktort érdemes elhagyni. Praktikus szempontokat is figyekembevehetünk, mint például azt, hogy az össz lakóterület könnyebben hozzáférheto információ, mint a földfelszín feletti terület, így ha az össz lakóterületet választjuk ki mint prediktort, akkor több esetben használhatjuk modellünket az árak elorejelzésére.	
 
-# Azt, hogy melyik prediktort hagyjuk fel, Ã©s melyiket tartsuk meg, elmÃ©leti alapon, vagy korÃ¡bbi kutatÃ¡si eredmÃ©nyek alapjÃ¡n kell eldÃ¶nteni, ezÃ©rt nem javasolt hogy ezt a dontest a modellek illeszkedesenek osszehasonlitasa alapjan hozzuk meg.	
+# Azt, hogy melyik prediktort hagyjuk fel, és melyiket tartsuk meg, elméleti alapon, vagy korábbi kutatási eredmények alapján kell eldönteni, ezért nem javasolt hogy ezt a dontest a modellek illeszkedesenek osszehasonlitasa alapjan hozzuk meg.	
 
 
-# TovÃ¡bbi anyagok az alÃ¡bbi linkeken:	
+# További anyagok az alábbi linkeken:	
 
 # https://statisticalhorizons.com/multicollinearity	
 
@@ -580,9 +580,9 @@ summary(mod_house3)
 
 # http://statisticsbyjim.com/regression/multicollinearity-in-regression-analysis/	
 
-# **_____________GyakorlÃ¡s______________***	
+# **_____________Gyakorlás______________***	
 
-# VÃ©gezzÃ¼nk modell diagnoztikÃ¡t a ma tanultak alapjÃ¡n, egy Ãºj lineÃ¡ris modellen, ahol az "sqm_living", "sqm_living15", "yr_built", Ã©s "condition" prediktorok alapjÃ¡n hatÃ¡rozzuk meg az ingatlan Ã¡rakat.	
+# Végezzünk modell diagnoztikát a ma tanultak alapján, egy új lineáris modellen, ahol az "sqm_living", "sqm_living15", "yr_built", és "condition" prediktorok alapján határozzuk meg az ingatlan árakat.	
 
 
 
