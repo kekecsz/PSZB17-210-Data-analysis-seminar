@@ -66,7 +66,7 @@ mod1 = lmer(pain ~ time + (1|ID), data = data_pain_long)
 # 5. A modell fix hatasu prediktora a fajdalom varianciajanak hany szazalekat tudja megmagyarazni? 
 # Szignifikansan jobb bejosloja a fajdalomnak ez a modell mint a null modell?
 
-r2beta(mod1)
+r2beta(mod1, method = "nsj")
 
 ### a modell ami tartalmazza a time prediktort szignifikansan jobb mint a null modell, 
 ### a fix hatasu prediktor a fajdalom varianciajanak 45.1%-at magyarazza (marginal R^2 = 0.45 (95%CI = 0.29, 0.60)). 
