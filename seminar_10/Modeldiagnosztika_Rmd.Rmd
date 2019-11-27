@@ -3,7 +3,8 @@ title: "Modeldiagnosztika"
 author: "Zoltan Kekecs"
 date: "26 November 2019"
 output:
-  pdf_document:
+  pdf_document: 
+    latex_engine : xelatex
     number_sections: yes
     toc: yes
   html_document:
@@ -11,6 +12,8 @@ output:
     toc: yes
   word_document:
     toc: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -37,6 +40,10 @@ library(lmtest) # bptest
 library(sandwich) # for coeftest vcovHC estimator
 library(boot) # for bootstrapping
 library(tidyverse) # for tidy code
+library(quantmod) # for actual foreign exhange rates
+library(measurements) # for converting measuement units
+library(ggfortify) # for diagnostic plots in ggplot
+library(broom) # for tidy statistical outputs
 ```
 
 ## Saját függvények
@@ -111,14 +118,19 @@ A következo kódrészletben atvaltjuk az USA dollar-t millio forint mertekegysegre
 data_house %>% 
   summary()
 
+# Aktuális Forint USD átváltás lekérése a Yahoo Finance-rol
+usd_in_huf <- 
+  getQuote(paste0("USD", "HUF","=X"))["Last"] %>% 
+  as.numeric()
+
 data_house = data_house %>% 
-  mutate(price_mill_HUF = (price * 293.77)/1000000,
-         sqm_living = sqft_living * 0.09290304,
-         sqm_lot = sqft_lot * 0.09290304,
-         sqm_above = sqft_above * 0.09290304,
-         sqm_basement = sqft_basement * 0.09290304,
-         sqm_living15 = sqft_living15 * 0.09290304,
-         sqm_lot15 = sqft_lot15 * 0.09290304
+  mutate(price_mill_HUF = (price * usd_in_huf)/1000000,
+         sqm_living = conv_unit(sqft_living, "ft2", "m2"),
+         sqm_lot = conv_unit(sqft_lot, "ft2", "m2"),
+         sqm_above = conv_unit(sqft_above, "ft2", "m2"),
+         sqm_basement = conv_unit(sqft_basement, "ft2", "m2"),
+         sqm_living15 = conv_unit(sqft_living15, "ft2", "m2"),
+         sqm_lot15 = conv_unit(sqft_lot15, "ft2", "m2")
          )
 
 
@@ -176,10 +188,10 @@ data_house %>%
   geom_smooth(method = "lm")
 
 mod_house2 %>% 
-  plot(which = 5)
+  autoplot(which = 5)
 
 mod_house2 %>% 
-  plot(which = 4)
+  autoplot(which = 4)
 
 ```
 
@@ -214,13 +226,16 @@ A skew és kurtosis statisztikákat is lekérdezhetjük a describe() függvény segíts
 ```{r normality diagnostic}
 # QQ plot
 mod_house2 %>% 
-  plot(which = 2)
-# histogram
+  autoplot(which = 2)
 
-residuals_mod_house2 = enframe(residuals(mod_house2))
-residuals_mod_house2 %>% 
+# histogram
+mode_house2_disg <-
+  mod_house2 %>% 
+  augment()
+
+mode_house2_disg %>% 
   ggplot() +
-  aes(x = value) +
+  aes(x = .resid) +
   geom_histogram()
 
 # skew and kurtosis
@@ -252,7 +267,8 @@ Esetünkben, lévén adataink mindössze néhány kiugro eset miatt sértik a normalitá
 Az alábbiakban a fenti két eset kizárásával újra illesztjük modellünket, és ujra ellenorizzük a normalitási feltételt. Látható, hogy a kiugró adatok nélkül a rezidualisok a normál eloszláshoz lényegesen hasonlóbb eloszlást mutatnak mint korábban. 
 
 ```{r normality exclude}
-data_house_nooutliers = data_house %>% 
+data_house_nooutliers = 
+  data_house %>% 
   slice(-c(186, 113))
 
 mod_house3 = lm(price_mill_HUF ~ sqm_living + grade, data = data_house_nooutliers)
@@ -260,12 +276,15 @@ mod_house3 = lm(price_mill_HUF ~ sqm_living + grade, data = data_house_nooutlier
 # recheck the assumption of normality of residuals
 describe(residuals(mod_house3))
 
-residuals_mod_house3 = enframe(residuals(mod_house3))
+mode_house3_disg <-
+  mod_house3 %>% 
+  augment()
 
-residuals_mod_house3 %>% 
+mode_house3_disg %>% 
   ggplot() +
-  aes(x = value) +
+  aes(x = .resid) +
   geom_histogram()
+
 ```
 
 Amikor a két modellt az érzékenységi elemzes módszerével hasonlítjuk össze, lathato hogy a kiugró adatok kizarasa nem változtatott a statisztikai következtetéseinket, hisz a korábban jelentos prediktorok továbbra is jelentosek, és a modell F próbája is szignifikás mindkét esetben. Az adjusted R^2 érték lényegesen javult, hisz a regressziós vonalunk mostmár sokkal jobban illeszkedik a megmaradó adatainkra. (Ugyanakkor a modell illeszkedését új adatokon, vagy egy test-seten is érdemes kipróbálnunk, hogy az elorejelzéseink hatékonyságáról tisztább képet alkothassunk, hiszen a kizártakhoz hasonló kiugró értékek az új adatok között is szerepelhetnek, melyek meghatározásában modellünk pontatlan lesz.)
@@ -299,11 +318,11 @@ confint.boot(mod_house3)
 summary(mod_house3)$adj.r.squared
 
 # bootstrapping with 1000 replications 
-results.boot <- boot(data=data_house, statistic=adjR2_to_boot, 
-                R=1000, model = mod_house3)
+results.boot <- boot(data=data_house, statistic = adjR2_to_boot, 
+                R = 1000, model = mod_house3)
                 
 # get 95% confidence intervals for the adjusted R^2
-boot.ci(results.boot, type="bca", index=1)
+boot.ci(results.boot, type = "bca", index = 1)
 ```
 
 
@@ -318,8 +337,7 @@ A residualPlots() függvény a linearitás serulesenek tesztjet is elvegzi. A teszt
 
 
 ```{r linearity test}
-mod_house3 %>% 
-  residualPlots()
+autoplot(mod_house3)
 ```
 
 Esetünkben, bár látható némi görbület az árákon, a tesztek egyike sem szignifikáns, vagyis a modellünk feltehetoen eleget tesz a linearitási elvárásnak.
@@ -346,8 +364,7 @@ Ezt a standardizált rezidualisokat és a prediktorokat ábrázoló diagramm vizsgála
 A fent említett tesztek alapján jelentos heteroszkedaszticitást talalunk a mod_house3 modellben, így ezt további vizsgálatnak kell alávetnünk.
 
 ```{r homoscedasticity test 1}
-mod_house3 %>% 
-  plot(which = 3)
+autoplot(mod_house3, which = 3)
 
 mod_house3 %>% 
   ncvTest() # NCV test
@@ -378,10 +395,10 @@ Ne feledkezzük meg azonban arról, hogy mostmár nem az árakat, hanem azok logarit
 data_house_nooutliers = data_house_nooutliers %>% 
   mutate(price_mill_HUF_transformed = log(price_mill_HUF))
 
-mod_house4 = lm(price_mill_HUF_transformed ~ sqm_living + grade, data = data_house_nooutliers)
+mod_house4 = lm(price_mill_HUF_transformed ~ sqm_living + grade, 
+                data = data_house_nooutliers)
 
-mod_house4 %>% 
-  plot(which = 3)
+autoplot(mod_house4, which = 3)
 
 mod_house4 %>% 
   ncvTest() # NCV test
@@ -394,7 +411,9 @@ A kapott eredményeket az exp() fügvénnyel transzformálhatjuk vissza az eredeti s
 
 ```{r homoscedasticity transformation preds, results='hide'}
 
-exp(predict(mod_house4))
+augment(mod_house4) %>% 
+  mutate(ext_fitted = exp(.fitted)) %>% 
+  pull(ext_fitted)
 
 ```
 
@@ -414,8 +433,8 @@ mod_house3_sandwich_test
 mod_house3_sandwich_se = unclass(mod_house3_sandwich_test)[,2]
 
 # compute robust confidence intervals
-CI95_lb_robust = coef(mod_house3)-1.96*mod_house3_sandwich_se
-CI95_ub_robust = coef(mod_house3)+1.96*mod_house3_sandwich_se
+CI95_lb_robust = coef(mod_house3) - 1.96*mod_house3_sandwich_se
+CI95_ub_robust = coef(mod_house3) + 1.96*mod_house3_sandwich_se
 
 cbind(mod_house3_sandwich_test, CI95_lb_robust, CI95_ub_robust)
 ```
@@ -427,7 +446,7 @@ cbind(mod_house3_sandwich_test, CI95_lb_robust, CI95_ub_robust)
 data_house_nooutliers %>% 
   ggplot() +
   aes(x = sqm_living, y = price_mill_HUF) +
-  geom_point()+
+  geom_point() +
   geom_vline(xintercept = 200, lty = "dashed")
 
 data_house_small = data_house_nooutliers %>% 
@@ -441,7 +460,7 @@ mod_house3_large = lm(price_mill_HUF ~ sqm_living + grade, data = data_house_lar
 
 
 mod_house3_small %>% 
-  plot(which = 3)
+  autoplot(which = 3)
 
 mod_house3_small %>% 
   ncvTest() # NCV test
@@ -451,7 +470,7 @@ mod_house3_small %>%
 
 
 mod_house3_large %>% 
-  plot(which = 3)
+  autoplot(which = 3)
 
 mod_house3_large %>% 
   ncvTest() # NCV test
