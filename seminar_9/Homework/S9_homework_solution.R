@@ -38,7 +38,7 @@ stdCoef.merMod <- function(object) {
 # - IQ: A szemely erteke egy intelligenciteszten a mutet elott egy hettel
 # - household_income: a viszgalati szemely haztartasanak osszesitett bevetele UA dollarban
 
-data_pain = read_csv("C:\\Users\\Lenovo\\Documents\\Statgyak\\seminar_9\\home_sample_5.csv")
+data_pain = read_csv("https://tinyurl.com/data-pain1")
 
 # 3. Alakitsd at az adatokat szeles formatumbol (wide format) hosszu formatumba (long format).
 # Vagyis a fajdalomszint minden megfigyelese legyen kulon sorban. Ehhez hasznalhatod a gather()
@@ -50,10 +50,10 @@ data_pain_long = data_pain %>%
 
 data_pain_long = data_pain_long %>% 
   mutate(time = recode(time,
-                       "pain1" = 1,
-                       "pain2" = 2,
-                       "pain3" = 3,
-                       "pain4" = 4))
+                       pain1 = 1,
+                       pain2 = 2,
+                       pain3 = 3,
+                       pain4 = 4))
 
 # 4. Epits egy kevert regresszios modellt amiben a fajdalom szintje a bejosolt valtozo.
 # A modellben szerepeljen az ido (a muteti nap) mint fix hatasu prediktor. Szinten szerepeljen
@@ -69,7 +69,7 @@ mod1 = lmer(pain ~ time + (1|ID), data = data_pain_long)
 r2beta(mod1, method = "nsj")
 
 ### a modell ami tartalmazza a time prediktort szignifikansan jobb mint a null modell, 
-### a fix hatasu prediktor a fajdalom varianciajanak 45.1%-at magyarazza (marginal R^2 = 0.45 (95%CI = 0.29, 0.60)). 
+### a fix hatasu prediktor a fajdalom varianciajanak 32.3%-at magyarazza (marginal R^2 = 0.32 (95%CI = 0.175, 0.48)). 
 
 # 6. Milyen az ido hatasa a fajdalomra? Ird le a legfontosabb adatokat a fajdalom regresszios egyutthatojaru\ol:
 # (regresszios egyutthato, 95%-os konfidencia intervallum, standardizalt beta)
