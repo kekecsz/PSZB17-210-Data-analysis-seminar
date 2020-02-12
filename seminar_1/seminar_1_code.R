@@ -179,4 +179,37 @@ data = gs_read
 View(data)	
 
 
+x_character <- "I love R" # character	
+x_numeric <- 2.34 # numeric	
+x_integer <- 2L # integer	
+x_logical <- TRUE # logical	
+x_complex <- 1+4i # complex	
 
+
+numbers <- c(5, 2, 3, 24, 6, 5, 9, 10)	
+
+numbers	
+
+
+my_matrix <- matrix(numbers, nrow = 2) 	
+
+my_matrix	
+
+
+my_dataframe <- data.frame(my_matrix)	
+
+my_dataframe	
+
+
+my_list <- list(my_dataframe, numbers, x_character)	
+
+my_list	
+
+
+class(my_dataframe)	
+typeof(my_dataframe)	
+length(numbers)	
+attributes(my_matrix)	
+
+1:5 # numbers from 1 to 5	
+letters[1:22] # first 22 letters of the english alphabet	
