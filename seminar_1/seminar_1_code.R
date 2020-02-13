@@ -170,9 +170,9 @@ library(googlesheets)
 # Most már le fog futni a parancs amit az előbb futtatni akartunk, és meg is nézhetjük az adatokat a View() funcióval.	
 
 
-gs_url("https://docs.google.com/spreadsheets/d/1uYMBbvdJVOAslbDWEO821xXaCzRAZ_oyAYTdUa_gEqA/edit?usp=sharing")	
+url = gs_url("https://docs.google.com/spreadsheets/d/1uYMBbvdJVOAslbDWEO821xXaCzRAZ_oyAYTdUa_gEqA/edit?usp=sharing")	
 	
-data = gs_read	
+data = gs_read(url)	
 
 
 
@@ -181,12 +181,12 @@ View(data)
 
 x_character <- "I love R" # character	
 x_numeric <- 2.34 # numeric	
-x_integer <- 2L # integer	
+x_integer <- -2L # integer	
 x_logical <- TRUE # logical	
 x_complex <- 1+4i # complex	
 
 
-numbers <- c(5, 2, 3, 24, 6, 5, 9, 10)	
+numbers <- c(5, 2, 3, 24, 6, 5, 9, "alma")	
 
 numbers	
 
@@ -212,4 +212,7 @@ length(numbers)
 attributes(my_matrix)	
 
 1:5 # numbers from 1 to 5	
+
+letters
+
 letters[1:22] # first 22 letters of the english alphabet	
