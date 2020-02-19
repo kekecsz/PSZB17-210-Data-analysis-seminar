@@ -5,9 +5,11 @@
 
 # 2.feladat
 ## Töltsd be a "titanic_train" nevű adattáblát és mentsd el egy "titanic_data" nevű objektumba.
+## Ha problémát jelentenek a hiányzó adatok (NA), akkor érdemes a drop_na() fügvényt használni 
+## azoknak a soroknak a kizárására amik hiányzó adatot tartalmaznak.
 
 # 3.feladat
-## A Titanic korának lenagyobb hajója volt. De hányan utaztak rajta? Számold ki az órán tenült függvényekkel.
+## A Titanic korának lenagyobb hajója volt. De hányan utaztak rajta? Számold ki az órán tanült függvényekkel.
 
 # 4.feladat:
 ## Hányan élték túl a katasztrófát és hányan vesztették az életüket?
