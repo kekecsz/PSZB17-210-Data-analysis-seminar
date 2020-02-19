@@ -288,7 +288,7 @@ x %>%
 # - Hány sor és hány oszlop van az adattáblában?	
 # - Mi az objektum osztálya?	
 # - Milyen típusú adatok szerepelnek az egyes oszlopokban?	
-# - Mi az átlaga a ToothGrowth változónak?	
+# - Mi az átlaga a "len" változónak?	
 
 # TIPP: A %>% operátort a Ctrl + Shift + M gombok megnyomásával gyorsan beírhatod, ha nem akarod a karaktereket egyenként begépelni.	
 
@@ -437,7 +437,8 @@ ToothGrowth %>%
 
 library(titanic)	
 	
-titanic_data <- titanic_train	
+titanic_data <- titanic_train %>% 	
+  drop_na()	
 ?titanic_train	
 
 
