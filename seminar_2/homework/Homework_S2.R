@@ -1,8 +1,4 @@
 # Házi feladat
-## Határidő: 2019.09.23. HÉTFŐ éjfél
-## Töltsd le ezt a kódot a saját számítógépedre
-## A kész házi feladatot mentsd el "vezeteknev_keresztnev_hazi_datum.R" néven a saját Drive mappádba.
-## A Drive mappa linkjét minden óra után a házifeladattal elküldjük nektek.
 
 # 1.feladat
 ## A házifeladat elkészítéséhez telepítsd és töltsd be a "dplyr" és a "titanic" nevű csomagokat.
