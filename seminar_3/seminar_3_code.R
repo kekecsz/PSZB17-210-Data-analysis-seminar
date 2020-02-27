@@ -1,11 +1,9 @@
 
-# # Adatvizualizáció	
-
-# ## Absztrakt	
+# # Absztrakt	
 
 # Ezen a gyakorlaton megtanuljuk hogyan készíthetünk szemléletes ábrákat az adatainkban található összefüggések megjelenítésére. A gyakorlat bemutatja az eloszlásfüggvények, hisztogram, pont-, oszlop-, vonal- és dobozdiagramok elkészítésének módját a ggplot2 package segítségével.	
 
-# ## Ismétlés	
+# # Ismétlés	
 
 # Az alábbi gyakorláshoz használd a Tidyverse pakcage-et és az alapvető funkciókat amit a dplyr-ből tanultunk!  	
 
@@ -15,13 +13,15 @@
 # - Töltsd be a gapminder adattáblát!	
 # - Szűrd meg az adatokat úgy hogy csak a 2007-ből (year) származó adatokkal dolgozzunk.	
 # - Számold ki az átalagos várható életkort (lifeExp) kontinensenként (continent) ezeken a 2007-es adatokon.	
-# - Nézd meg, hogy hány mérés tartozik az egyes országokhoz. (Segítség: Minden mérés egy sor.)	
+# - Nézd meg, hogy hány mérés tartozik az egyes kontinensekhez. (Segítség: Minden mérés egy sor.)	
 # - Hogy könnyebben átlássuk a populációt, hozz létre egy "pop_thousand" nevű változót, amiben a meglévő populáció értékek el vannak osztva ezerrel. Az adattáblát amiben már ez az új változó is benne van mentsd el egy új objektumba amit "gapminder_with_pop_thousand"-nak nevezz el.	
+
+
 
 
 # *__________________________________*	
 
-# ## Adatok ábrázolása	
+# # Adatábrázolás alapjai a ggplot2-vel	
 
 # A gyakorlat során egy movies nevű adatbázissal fogunk dolgozni ami filmekről szóló adatokat tartalmaz. Az adatok az IMDB és a Rottent Tomato film-review oldalakról származnak. Ezt az adatbázist betölthetjük az alábbi kóddal. A kód lefuttatása után a környezetben (environment) megjelenik a movies adattábla.	
 
@@ -162,6 +162,7 @@ movies %>%
 
 # *__________________________________*	
 
+# # Geomok	
 
 # ## Geomok eloszlás vizsgálatára	
 
@@ -238,6 +239,11 @@ movies %>%
 # *__________________________________*	
 
 
+# ## Geomok két változó kapcsolatának vizsgálatára.	
+
+# Fentebb láthattuk, hogy a geom_point segítségével két folytonos változó kapcsolatát ábrázolhatjuk.	
+# Alább megismerünk újabb geomokat, amik folytonos és egy kategorikus változók kapcsolatának ábrázolására is alkalmasak.	
+
 # ### Doboz ábra (boxplot)	
 
 # Az alábbi doboz ábra (boxplot) a nézői értékelést mutatja a Motion Picture Association of America (MPAA) film rating system kategóriái szerint. Ez az ábra típus a mediánt mutatja középen, és az adatok szóródását körülötte, a kvartilisek szerint felosztva.	
@@ -262,7 +268,31 @@ movies %>%
   geom_violin()	
 
 
+# ## Szóródás ábrázolása	
 
+# Adatok szóródásának ábrázolásához használhatjuk még a geom_pointrange. (Itt csak az utolsó 5 adatsorral dolgotzunk az adattáblában). 	
+
+
+	
+tail(movies, 5) %>% 	
+ggplot() + 	
+  aes(x = title, y = imdb_rating, ymin = imdb_rating - 1, ymax = imdb_rating + 1) +	
+  geom_pointrange() 	
+
+
+# vagy a geom_errorbar geomokat. (Itt csak az első 5 adatsorral dolgotzunk az adattáblában)	
+
+
+head(movies, 5) %>% 	
+ggplot() + 	
+  aes(x = title, y = imdb_rating) +	
+  geom_errorbar(aes(ymin = imdb_rating - 1, ymax = imdb_rating + 1)) 	
+
+
+# Itt a szóródás 1-re van állítva, a későbbi órákon megtanuljuk majd hogyan lehet a szóródást kiszámolni és ezekre az ábrákra rárakni.	
+
+
+# # Az ábrák testre szabása	
 
 # ## Adatok előkészítése ábra készítésre	
 
@@ -278,7 +308,7 @@ movies %>%
   aes(x = thtr_rel_year,	
       y = audience_score) +	
   geom_line() +	
-  geom_point(shape="\u2620", fill = "white", size = 5)	
+  geom_point(shape=16, fill = "white", size = 5)	
 
 
 
@@ -295,7 +325,7 @@ movies %>%
       y = audience_score,	
       label = title) +	
   geom_line() +	
-  geom_point(shape="\u2620", fill = "white", size = 5) + 	
+  geom_point(shape=16, fill = "white", size = 5) + 	
   geom_text()	
 
 
@@ -309,7 +339,7 @@ movies %>%
       y = audience_score,	
       label = title) +	
   geom_line() +	
-  geom_point(shape="\u2620", fill = "white", size = 5) + 	
+  geom_point(shape=16, fill = "white", size = 5) + 	
   geom_label()	
 
 
@@ -326,24 +356,99 @@ movies %>%
 # *__________________________________*	
 
 
-# ## szóródás ábrázolása	
 
-# Adatok szóródásának ábrázolásához használhatjuk még a geom_pointrange	
+# ## Pozíció (Position)	
 
-
-tail(movies, 5) %>% 	
-ggplot() + 	
-  aes(x = title, y = imdb_rating, ymin = imdb_rating - 1, ymax = imdb_rating + 1) +	
-  geom_pointrange() 	
+# Hozzunk létre egy halmozott barplotot (stacked bar), ami a mennyiséget mutatja	
 
 
-# vagy a geom_errorbar geomokat.	
+ggplot(data = movies) +	
+  aes(x = genre, group = critics_rating, fill = critics_rating) +	
+  geom_bar(position = "stack")	
+	
 
 
-tail(movies, 5) %>% 	
-ggplot() + 	
-  aes(x = title, y = imdb_rating) +	
-  geom_errorbar(aes(ymin = imdb_rating - 1, ymax = imdb_rating + 1)) 	
+# Arányként (proportion) is megmutathatjuk a csoportok mennyisége közti összefüggést, ha aa "stack" helyett a "fill" position-t adjuk meg.	
+
+
+ggplot(data = movies) +	
+  aes(x = genre, group = critics_rating, fill = critics_rating) +	
+  geom_bar(position = "fill")	
+
+
+# Vagy ábrázoljuk egymás mellett a mennyiséget, hogy könnyebben összehasonlíthatók legyenek a csoportok. Ezt a "dodge" beállítással érhetjük el a position paraméterben.	
+
+
+ggplot(data = movies) +	
+  aes(x = genre, group = critics_rating, fill = critics_rating) +	
+  geom_bar(position = "dodge")	
+
+
+# A szétszórás "jitter" pozíció segítségével random zajt adhatunk az adatokhoz, így az átfedéseket megszűntetve jobban látjuk az adatpontokat. Erre van egy külön geom is, a geom_jitter. Ez ugyan azt az eredményt adja, mintha a geom_point-ban a position-t "jitter"-ként specifikáltuk volna.	
+
+
+
+ggplot(data = movies) +	
+  aes(x = genre, y = audience_score) +	
+  geom_jitter()	
+
+
+
+# ## Koordináta rendszerek	
+
+# Cseréljük meg az x és y koordinátákat	
+
+
+ggplot(data = movies) +	
+  aes(x = genre, group = critics_rating, fill = critics_rating) +	
+  geom_bar(position = "dodge") +	
+  coord_flip()	
+
+
+
+# *____________Gyakorlás_____________*	
+
+# - Most ábrázoljuk a legnagyobb bevételt behozó filmeket csak.	
+# - Nézzük meg, hogy melyik film milyen imdb pontot kapott. A filmek címe szerepeljen az egyik tengelyen és legyen olvasható.	
+
+
+# *__________________________________*	
+
+
+# ## Polar ábra	
+
+# A polar ábra a pie chart és a proportion oszlopdiagram kombinációjaként fogható fel.	
+
+
+ggplot(data = movies) +	
+  aes(x = genre, group = critics_rating, fill = critics_rating) +	
+  geom_bar(position = "fill") +	
+  coord_polar()	
+
+
+
+# ## Ábra panelekre osztása (faceting)	
+
+# A facetelésnél valamilyen adatokban lévő szempont alapján több ábrát vizsgálunk meg egyszerre.	
+# Figyelj rá, hogy a faceteléshez felhasznált változó elé "~" jelet kell tenni!	
+
+
+ggplot(data = movies) +	
+  aes(y = imdb_rating, x = imdb_num_votes) +	
+  geom_point(size = 2) +	
+  facet_wrap(~title_type)	
+
+
+# Két változót is használhatunk a faceteléshez, az első a sor, a második az oszlop	
+
+
+	
+ggplot(data = movies) +	
+  aes(y = imdb_rating, x = runtime) +	
+  geom_point() +	
+  facet_grid(title_type ~ critics_rating)	
+
+
 
 
 
