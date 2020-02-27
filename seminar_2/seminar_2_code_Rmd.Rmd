@@ -1,0 +1,512 @@
+---
+title: "Data management in R"
+author: "Zoltan Kekecs, Marton Kovacs"
+date: "February 18, 2020"
+output:
+  pdf_document:
+    number_sections: yes
+    toc: yes
+  html_document:
+    number_sections: yes
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+\pagebreak
+
+# Adatmenedzsment
+
+## Absztrakt
+
+Ezen a gyakorlaton megtanuljuk az adatkezelés alapjait az R programban. A gyakorlat bemutatja hogyan lehet adattáblát létrehozni és külső fájlból beolvasni, hogyan lehet az adattábla egyes részeire (bizonyos soraira vagy oszlopaira) hivatkozni (subsetting), és azt, hogy hogyan tudjuk az adatokat formázni és módosítani. 
+
+
+
+## Ismétlés
+
+Az előző órán tanultuk hogy az R többféle adatosztályt és típust különböztet meg.
+
+Vektorok:
+
+- karakter vektor (character): "Ez egy karakter érték"
+- faktor (factor): Egy olyan karater vektor ami csak rögzített értékeket vehet fel 
+- szám vektor (numeric): 2 vagy 13.5. A szám vektornak két típusa van: egész szám vektor (integer): 2L (Az L mondja meg az R-nek, hogy az - előtte lévő számot, mint egész számot kezelje), vagy racionális szám (double): pl.: 13.5 
+- logikai vektor (logical): csak TRUE vagy FALSE értékeket vehet fel (nagybetű is számít)
+- complex szám vektor (complex): 1+5i
+
+Komplexebb adatstruktúrák:
+
+- mátrix (matrix): a vektorok egy táblázatot alkotnak. A mátrixban minden vektor/adat típusa csak ugyan az lehet.
+- adattábla (data.frame): egy olyan mátrix, aminben megengedett hogy az oszlopokban egymáshoz képest más adat típus szerepeljen 
+- lista (list): egy olyan vektor, aminek az elemei lehetnek más adatstruktúrák.
+
+Az adat osztályát a class() függvénnyel tudjuk ellenőrizni, az adott osztályon belüli típusát pedig a typeof() függvénnyel.
+
+De nem csak általánosságban tudjuk megnézni hogy milyen típusú változó egy objektum. Ha szeretnénk tudni hogy egy változó egy adott típusba tartozik-e, as is.[változótípus]() függvénnyel erre rákérdezhetünk. Így például az is.vector() kód rákérdez hogy az adott objektum vektor-e, és az is.integer() kód rákérdez hogy a változó integer típusú-e.
+
+
+```{r practice 1}
+number <- c(3, 4)
+
+class(number)
+typeof(number)
+
+is.numeric(number)
+is.integer(number)
+is.vector(number)
+
+```
+
+
+
+*_________________Gyakorlás__________________*
+
+
+Ellenőrizd hogy mi az is.character(number) kód **eredménye** milyen osztályba tartozik.
+
+
+*____________________________________________*
+
+
+
+# Alapvető parancsok az adatok megismeréséhez
+
+## Beípített adattáblák
+
+Az R-ben vannak előre beépített adattáblák. Ezekkel jól lehet gyakorolni az adatkezelést. 
+
+Most az egyik ilyen beépített adatbázissal fogunk majd dolgozni, a USArrests adatbázissal, ami különböző bűntényekkel kapcsolatos letartóztatások statisztikáit tartalmazza az Egyesült Államok különböző államaira lebontva.
+
+A ?USArrests lefuttatásával további információkat kaphatsz az adatokról.
+
+## Nyers adatok és meta-adatok megtekintése
+
+A következő parancsok futtatásával megnézhetjük a nyers adatokat táblázatos formában és meta-adatokat kaphatunk az adatbázisról.
+
+
+```{r USArrests, eval=F}
+View(USArrests)
+
+USArrests
+
+?USArrests
+
+```
+
+## Alapvető parancsok az adattábla struktúrájának megértéséhez
+
+Gyakran megesik hogy nem akarjuk az egész adattáblát megnézni, hanem csak annak valamelyik részéről szeretnénk információt kapni, vagy ezt az adatot valahogy felhasználni. Erre számos hasznos funkció áll rendelkezésünkre.
+
+- **str()**: információt ad arról hogy milyen olytályba tartozik az adott objektum, hány sora és hány oszlopa van, és az egyes oszlopokban milyen típusú adatokat tartalmaznak, és egy kis mintát is kapunk az adatokból.
+- **names()** : oszlopok neveit listázza ki (column names, headers)
+- **row.names()**: sorok/megfigyelések neveit adja meg
+- **nrow()**: sorok száma
+- **ncol()**: oszlopok száma
+- **head()**: kilistázza az adattábla első x sorát (alapértelmezett 5 sor, de változtathatjuk)
+- **tail()**: kilistázza az adattábla utolsó x sorát (alapértelmezett 5 sor, de változtathatjuk)
+
+
+```{r basic data structure exploration functions 1}
+str(USArrests) 
+
+names(USArrests)
+
+row.names(USArrests)
+
+nrow(USArrests)
+
+ncol(USArrests)
+```
+
+```{r basic data structure exploration functions 2, eval = F}
+head(USArrests)
+
+tail(USArrests, 10)
+```
+
+
+## Hivatkozás objektumok rész-elemeire (Subsetting)
+
+Gyakran előfordul hogy az objektumoknak csak egy részét szeretnénk használni. Mondjuk tegyük fel hogy szeretnénk a USArrests adatbázisban azt megvizsgálni hogy az USÁban átlagosan hány embert tartóztattak le gyilkosságért 1973-ban. A mean() funkcióval tudjuk az átlagot meghatárizni, de ennek csak numerikus vektor lehet a bemenete, adattábla objektumot nem adhatunk meg ebben a függvényben. Vagyis itt csak az adatbázisnak a "Murder" oszlopára van szükségünk.
+
+Ennek a megoldására két lehetőségünk is van a base R-ben. Az egyik a $ jel használata. Ez viszonylag tiszta kódot eredményez, de kevésbé felxibilis mint a paraméterezés (lásd alább).
+
+```{r subsetting 1}
+USArrests$Murder
+class(USArrests$Murder)
+is.vector(USArrests$Murder)
+
+mean(USArrests$Murder)
+
+```
+
+A másik pedig lehetőség a paraméterezés. Ebben a megoldásban az objektum neve után egy szögletes zárójelet rakunk, és azon belül határozzuk meg, az objektum melyik részét szeretnénk megtartani, vagy éppen elvetni. 
+
+```{r subsetting 2}
+USArrests[,"Murder"]
+class(USArrests[,"Murder"])
+is.vector(USArrests[,"Murder"])
+
+mean(USArrests[,"Murder"])
+```
+
+Itt fontos, hogy ha ha többdimenziós objektumról van szó (mint például egy adattábla, data.frame), pontosan meg tudjuk jelölni, melyik dimenzió mentén szeretnénk az adott hivatkozást használni. Az általános szabály az, hogy a szögletes zárójelben egy vesszővel elválasztva először a sorokra vonatkozó kiválasztási szabályt adjuk meg, majd a vessző után az oszlopokra vonatkozó kiválasztási szabályt.
+
+Így például a USArrests[2, "Murder"] azt jelenti, hogy a USArrests adattábla 2. sorában a "Murder" nevű oszlopban szereplő adatot szeretnénk használni.
+
+Néhány további példa segíthet a megértésben:
+
+```{r subsetting 3}
+USArrests[1:3, "Assault"]
+USArrests[c("Illinois", "Arkansas"), "UrbanPop"]
+USArrests[c("Illinois", "Arkansas"), 2:4]
+```
+
+A paraméteres subsetting arra is lehetőséget ad, hogy kizárjunk bizonyos elemeket, amikre nincs szükségünk. Ezt általában a minusz jellel tehetjük meg. Sajnos itt a nevek használata nem olyan egyszerű mint a kiválasztásnál, így ilyenkor általában a sorok vagy oszlopok számaival dolgozunk.
+
+Ez a függvény például kihagyja a negyediktől az ötvenedik sorig a sorokat (vagyis csak az első három sort hagyja meg), 
+
+```{r subsetting 4}
+USArrests[-c(4:50),]
+```
+
+Ez a parancs pedig ezen felül még kihagyja a második oszlopot is (az Assault oszlopot). Az alábbi két parancs ugyan azt éri el:
+
+```{r subsetting 5}
+USArrests[-c(4:50),-2]
+USArrests[-c(4:50),-which(names(USArrests) == "Assault")]
+```
+
+# Combine függvény
+
+A fenti példákban erősen hagyatkozunk a c() függvényre. Ez azt jelenti, "combine", és azok az elemek amit a c()-n belül vannak, egy vektorba rendezüdnek. 
+
+```{r create a vector 1}
+my_vector <- c(1, 3, 2, -3, 3)
+my_vector
+```
+
+Emlékezz vissza hogy a vektorokkal kapcsolatban az a megkötés, hogy csak ugyan olyan típusú adatok lehetnek a vektor elemei! Amikor megpróbálunk olyan elemeket kombinálni amik más típusúak, akkor az R kiválasztja az egyik típust, és olyan típusúként használja az összes elemet az új vektorban. Szám típusú adatok és karakter típusú adatok összekombinálásával karakter típusú elemeket kapunk.
+
+A típusváltás akár az adott elem átalakításához is vezethet. Például logikai adatokat számadatokkal kombinálva egy számvektort kapunk, és ilyenkor a TRUE-ból 1, a FALSE-ból 0 lesz.
+
+
+```{r create a vector 2}
+my_other_vector <- c(1, 3, "two", "three")
+my_other_vector
+class(my_other_vector)
+
+my_new_vector <- c(1, 3, TRUE)
+my_new_vector
+class(my_new_vector)
+```
+
+Természetesen vektor objektumokat is kombinálhatunk a c() függvénnyel (a fenti megkötés figyelembevételéve).
+
+```{r create a vector 3}
+my_final_vector <- c(my_vector, my_new_vector)
+my_final_vector 
+```
+
+
+*_________________Gyakorlás__________________*
+
+- Mentsd el a **USArrests** adattábla sorainak neveit egy új objektumként aminek az a neve hogy **row_names**
+- egy fügvénnyel nézd meg hány elemből áll ez a **row_names** objektum
+- egy fügvénnyel nézd meg milyen ennek az objektumnak az osztálya
+- Csinálj egy új objektumot, ami egy olyan adattáblát tartalmaz, ami a **USArrests** objektumnak csak az "UrbanPop" és "Rape" oszlopait tartalmazza (legyen az objektum neve **USArrests_UrbanPop_Rape**).
+- Listázd ki az **USArrests_UrbanPop_Rape** adattáblának az utolsó 8 sorát
+- Nézd meg hogy populáció hány százaléka lakik városokban "Colorado" és "Mississippi" államokban?
+- csinálj egy számvektort aminek elemei: 1.3, 4, 25, 2.13
+
+*____________________________________________*
+
+
+
+# Tidyverse
+
+Az adatmenedzsmentet az R közösség gyakran "Data wrangling"-nek nevezi. Ezt a base R funciókkal is meg lehet csinálni, de általában egy egy nagyobb adatelemzési projekt végére ez nehezen átlátható kódot eredményez. A tiszta és átlátható kódolás elősegítésére a **Tidyverse** package gyűjtemény használhatjuk. Ez olyan R package-ek gyűjteménye, melyek mind egy standardizált és átlátható kód-írási rendszert támogatnak. Az egésznek az alapja a tiszta adatmenedzsmentet elősegítő *dplyr pakcage*.
+
+Először töltsük be a Tidyverse package-et a library() funkcióval. (Ha a package még nincs felinstallálva, akkor ekőször fel kell installálni az install.packages() funkcióval, lásd az előző óra anyagát.)
+
+
+```{r load package}
+library(tidyverse)
+```
+
+Most hozzunk létre egy vektort néhány számmal.
+
+```{r example vector 1}
+x <- c(55:120, 984, 552, 17, 650)
+```
+
+Az egyik legfontosabb eleme a Tidy kódolásnak a %>% (pipe operátor) használata. A pipe operátort arra találták ki hogy függvények sorát egymás után egyszerűen le lehessen futtatni egy rövid átlátható kód segítségével.
+
+Például ha a fenti vektor átlagának 10-es alapú logaritmusát akarjuk kiszámolni, majd az eredményt egy tizedesjegy pontossággal megadni, használhatjuk a round(log(mean(x)), digits = 1) függvény-sorozatot, de a sok egymásba foglalt zárójel miatt a végeredmény nehezen átlátható. Ehelyett alább látható hogy a %>% segítségével ugyanezt hogyan lehet megoldani. 
+
+A pipe-ot talán elképzelhetjük úgy mint egy csővezetéket vagy futószalagot, ami egy gyár különböző munkaállomásain vezeti végig a terméket. Az adat a termék, a függvények pedig a munkaállomások, és a pipe azt jelenti, hogy a pipe utáni függvény bemenete a pipe előtti eredmény legyen. Így a kódon tisztán látható, hogy az x vektor volt a kiindulópontunk, és hogy azon sorrendben milyen funkciókat hajtottunk végre hogy megkapjuk a végeredményt.
+
+Ezt függvények láncba kapcsolásának, vagy chaining-nek is hívják.
+
+```{r example vector 2}
+round(log(mean(x)), digits = 1)
+
+
+x %>%
+  mean() %>%
+    log() %>% 
+      round(digits = 1)
+
+
+```
+
+Nem minden funkció alkalmazható Tidyverse-ben, de a legtöbb funkciónak van egy Tidyverse kompatibilis változata valamelyik pacage-ben.
+
+Például a sima összeadás és kivonás függvények nem használhatóak önállóan a %>% után. (Ez általában akkor jelent problémát amikor a matematikai művelettel kezdődik a sor. Amint a matematikai művelet valamilyen funció után következik akkor már általában lefut.)
+
+
+
+```{r notrun 1, eval=F}
+
+x %>%
+  mean() %>%
+    log() %>% 
+      round(digits = 1) %>% 
+        -3 %>% 
+          +5 %>% 
+            /2
+```
+
+A magrittr package-ben található subtract(), add(), divide_by() stb. függvények lehetőséget adnak az ilyen alapvető matematikai műveletek Tidy kódban való megírására:
+
+```{r Tidy math}
+library(magrittr)
+
+
+x %>%
+  mean() %>%
+    log() %>% 
+      round(digits = 1) %>% 
+        subtract(3) %>% 
+          add(5) %>% 
+            divide_by(2)
+
+
+```
+
+
+Most a ToothGrowth nevű beépített adattáblát fogjuk használni, hogy megtanuljuk a függvények használatát.
+
+*_________________Gyakorlás__________________*
+
+- Használd a korábban tanult függvényeket hogy megismerd a ToothGrowth adatbázist (Egyelőre nem szükséges a %>% használata, de használhatod ha akarod).
+- Hány sor és hány oszlop van az adattáblában?
+- Mi az objektum osztálya?
+- Milyen típusú adatok szerepelnek az egyes oszlopokban?
+- Mi az átlaga a "len" változónak?
+
+TIPP: A %>% operátort a Ctrl + Shift + M gombok megnyomásával gyorsan beírhatod, ha nem akarod a karaktereket egyenként begépelni.
+
+*____________________________________________*
+
+## A négy dplyr alapfunkció
+
+A dplyr pakcage-ben 4 alapvető funció van, amit mindenképpen ismerni kell:
+
+- **filter()**: ezzel választjuk ki melyik megfigyelésekkel (sorokkal) szeretnénk dolgozni
+- **mutate()**: módosíthatunk meglévő adatokat, vagy létrehozhatunk új adatokat az adattáblában
+- **group_by()**: valamilyen szempont szerint tudjuk csoportosítani az adataink. *FONTOS: ezután az R a csoportokonként külön végzi el a láncban később jövő függvényeket.*
+- **summarise()**: összesíti az adatokat valamilyen másik függvény szerint
+
+Példák az alkalmazásra:
+
+**filter()**: Válasszunk ki azokat az eseteket, ahol narancslével adták be a C-vitamint:
+
+```{r filter}
+ToothGrowth %>%
+  filter(supp == "OJ")
+```
+
+**mutate()**: Hozzunk létre egy új oszlopot, ami nem mm-ben, hanem cm-ben tárolja a fogak hosszát
+
+*FONTOS: a módosítások csak akkor mentődnek ha az eredményt egy új objektumhoz rendeljük!*
+
+```{r mutate}
+my_ToothGrowth <- ToothGrowth %>%
+  mutate(len_cm = len / 10)
+```
+
+**summarise()**: Most nézzük meg, hogy mennyi a fogak átlag hossza cm-ben.
+
+```{r summarise 1}
+my_ToothGrowth %>%
+  summarise(mean_len_cm = mean(len_cm))
+```
+
+
+
+A summarise() függvényben az **n()** függvényt használva meg tudjuk számolni azt is, hogy hány eset van. Mivel ez még mindig egy összefoglaló statisztika, a betehetjük ezt is a summarise() függvénybe egy vesszővel elválasztva a mean()-től. Az eredmény egy táblázat lesz
+
+```{r summarise}
+
+my_ToothGrowth %>%
+  summarise(mean_len_cm = mean(len_cm),
+            n_cases = n())
+```
+
+
+A **group_by()** függvényt használva az R a csoportokon belül végzi el a summarise()-ban előírt függvényeket.
+
+```{r group_by}
+ToothGrowth %>%
+  mutate(len_cm = len / 10) %>% 
+    group_by(supp) %>%
+      summarise(mean_len_cm = mean(len_cm),
+                cases = n())
+```
+
+## Egyéb hasznos dplyr funkciók
+
+**select()**: Változók kiválasztása
+
+Kiválaszhatunk bizonyos változókat, ha csak azokat szeretnénk megtartani. A mínusz jellel pedig törölhetünk egy adott változót. Választhatunk pozíció alapján is változót, de ez kevésbé ajánlott mert nehezebben érthető kódot eredményez, és később a bemeneti adat változásaival hibákhoz is vezethet. A select() függvénynek vannak segítő függvényei is, amivel szöveg részletek alapján tudunk választani több változót.
+
+```{r select}
+ToothGrowth %>%
+  select(supp, len) %>% 
+  summary()
+
+ToothGrowth %>%
+  select(-dose)
+
+ToothGrowth %>% 
+  select(1, 2) 
+
+ToothGrowth %>% 
+  select(2:3)
+
+ToothGrowth %>%
+  select(starts_with("d", ignore.case = TRUE)) 
+```
+
+
+**arrange**: Értékek sorba rendezése bizonyos változók alapján
+
+Egy bizonyos változó értékei mentén sorba is rendezhetjük az adatokat. 
+
+```{r arrange 1}
+ToothGrowth %>%
+  mutate(len_cm = len / 10) %>% 
+    group_by(supp) %>%
+      summarise(mean_len_cm = mean(len_cm),
+                cases = n()) %>% 
+        arrange(mean_len_cm)
+```
+
+Ha a mínusz jelet a változó elé rakjuk, akkor csökkenő sorrendbe rakja az értékeket, növekvő helyet.
+
+```{r arrange 2}
+ToothGrowth %>%
+  mutate(len_cm = len / 10) %>% 
+    group_by(supp) %>%
+      summarise(mean_len_cm = mean(len_cm),
+                cases = n()) %>% 
+        arrange(-mean_len_cm)
+```
+
+**rename()**: A átnevezhetünk változókat
+
+```{r rename}
+ToothGrowth %>%
+  rename(new_name = dose)
+```
+
+
+## Változók újrakódolása
+
+**recode()**: diszkrét változókat tudunk vele újra kódolni.
+
+```{r recode}
+ToothGrowth %>% 
+  mutate(dose_recode = recode(dose, 
+                              "0.5" = "small",
+                              "1.0" = "medium",
+                              "2.0" = "large"))
+```
+
+
+
+**case_when()**: diszkrét változókat tudunk vele generlálni akár folytonos akár diszkrét változókból.
+```{r case_when}
+ToothGrowth %>% 
+  mutate(dose_descriptive = case_when(dose == 0.5 ~ "small",
+                                      dose > 0.5 ~ "medium_to_large"))
+```
+
+
+                                      
+*_________________Gyakorlás__________________*
+
+Most a titanic adattáblán fogunk gyakorolni. (Installáld fel a titanic package-et ha még nincs meg.)
+
+```{r titanic}
+library(titanic)
+
+titanic_data <- titanic_train %>% 
+  drop_na()
+?titanic_train
+```
+
+- Mennyi volt a hajón utazó utasok közül a férfiak és nők átlag életkora?
+- Hozz létre egy age_group nevű változót, amiben a következő csoportokba kerülnek életkoruk szerint az utasok:
+0-14, 15-21, 22-35, 36-50, 50-63, 64+
+- Nézd meg, hogy hányan élték túl a különböző osztályokon utazó utasok közül?
+- Osztályonként melyik korcsoportban élték túl a legtöbben?
+
+*____________________________________________*
+
+
+
+## A mutate() függvény változatai (ajánlott anyag)
+
+A mutate függvény különböző változataival több változót is megváltozhtathatunk egyszerre! A mutate_all() az összes változót egyszerre megváltoztathatjuk
+
+```{r mutate_all, eval = F}
+ToothGrowth %>% 
+  mutate_all(.funs = list(~ as.character(.)))
+```
+
+A mutate_at bizonyos változókra használ egy függvényt
+
+```{r mutate_at 1}
+ToothGrowth_factor <- 
+  ToothGrowth %>% 
+    mutate_at(list(~ as.factor(.)), .vars = vars(supp, dose))
+
+```
+
+Most leelenőrizhetjük, hogy tényleg faktor típusra változtattuk-e a supp és dose változókat.
+
+```{r mutate_at 2}
+is.factor(ToothGrowth_factor$dose)
+```
+
+A mutate_if() függvény csak azokra a változókra használ egy függvényt, amelyek eleget tesznek egy feltételnek.
+
+```{r mutate_if}
+ToothGrowth %>% 
+  mutate_if(.predicate = is.factor, .funs = list( ~ stringr::str_to_lower(.)))
+```
+
+
+
+
+
+
+
