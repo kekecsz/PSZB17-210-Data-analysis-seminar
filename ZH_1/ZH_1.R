@@ -29,10 +29,6 @@
 # faktorszinteket a droplevels() funcióval
 # A javított adatfájlt mentsd el egy uj objektumba, és a következő lépésekben már ezzel a javított adattáblával dolgozz.
 
-# hiba 1 felfedezése és javítása (droplevels ha kell) - 2p
-# hiba 2 felfedezése és javítása (droplevels ha kell) - 2p
-# ellenőrzés - 1p
-# elmentés új objektumba - 1p
 
 #4. Készíts egy új faktor változót ami a diákok évfolyamát mutatja a következők alapján: 
 # a 8 évesek másodikosok, a 9 évesek harmadikosok, a 10 évesek negyedikesek,
