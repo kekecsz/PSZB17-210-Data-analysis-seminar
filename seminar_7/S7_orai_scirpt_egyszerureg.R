@@ -1,17 +1,4 @@
-# ---	
-# title: "Linearis regresszio"	
-# author: "Kekecs Zoltan"	
-# date: "March 31 2020"	
-# output:	
-#   html_document: default	
-#   word_document: default	
-#   pdf_document: default	
-# ---	
-# 	
-# 	
-knitr::opts_chunk$set(echo = T, tidy.opts=list(width.cutoff=60), tidy=TRUE)	
-# 	
-# 	
+	
 # # A linearis regresszio alapjai	
 # 	
 # Ennek az oranak a celja hogy megismerkedjunk a linearis regresszioval, annak logikajaval, es az ertelmezesehez szukseges alapfogalmakkal.	
