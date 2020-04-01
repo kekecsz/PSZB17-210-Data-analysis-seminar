@@ -1,24 +1,4 @@
-# ---	
-# title: "Exercise 12 - Multiple regression"	
-# author: "Zoltan Kekecs"	
-# date: "31 March 2018"	
-# output:	
-#   pdf_document:	
-#     number_sections: yes	
-#     toc: yes	
-#   html_document:	
-#     number_sections: yes	
-#     toc: yes	
-#   word_document:	
-#     toc: yes	
-# ---	
-# 	
-# 	
-knitr::opts_chunk$set(echo = T, tidy.opts=list(width.cutoff=60), tidy=TRUE)	
-# 	
-# 	
-# \pagebreak	
-# 	
+	
 # # Tobbszoros regresszio	
 # 	
 # ## Abstract	
