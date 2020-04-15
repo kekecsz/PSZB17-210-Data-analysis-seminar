@@ -1,8 +1,3 @@
-# ---	
-# title: "Kevert modellek - Ismetelt mereses elemzesek"	
-# author: "Zoltan Kekecs"	
-# date: "03 december 2019"	
-# ---	
 
 # # Absztrakt	
 
@@ -16,9 +11,12 @@
 
 
 library(psych) # for describe	
-library(tidyverse) # for tidy code and ggplot	
+library(tidyverse) # for tidy code and ggplot		
+library(lme4) # for lmer() mixed models	
+library(lmerTest)  # for significance test on lmer() mixed models	
 library(cAIC4) # for cAIC	
 library(r2glmm) # for r2beta	
+library(MuMIn) # for r.squaredGLMM	
 
 
 
@@ -42,7 +40,7 @@ stdCoef.merMod <- function(object) {
 
 # ## Sebgyogyulas adat betoltese	
 
-# A gyakorlat soran a sebgyogyulas adatbazissal fogunk dolgozni. Ez egy szimulat adatbazis, ami a mutet soran ejtett bemetszesek gyogyulasat vizsgaljuk annak fuggvenyeben hogy a paciensek agya milyen kozel van az ablakhoz, es hogy mennyi napfeny eri oket a felepules idoszak alatt. Mondjuk hogy az az elmeletunk hogy a korhazi betegeknek szukseguk van a kulvilaggal valo kapcsolatra ahhoz hogy gyorsan felepuljenek. Egy ablak ami a szabadba nyilik megteremtheti ezt a kapcsolatot a kulvilaggal, ezert a kutatasunk azt vizsgalja, hogy befolyasolja-e a sebgyogyulas merteket az, hogy a szemelynek milyen kozel van az agya a legkozelebbi ablakhoz. Az elmelet egy valtozata azt allitja, hogy az ablak nem csak a kulvilaggal valo szorosabb kapcsolat megteremtesen keresztul vezet gyorsabb gyogyulashoz, hanem azon keresztul is hogy tobb napfenyt enged a szobaba, es az elmelet szerint a napfeny is jotekony hatassal van a gyogyulasra. 	
+# A gyakorlat soran a sebgyogyulas adatbazissal fogunk dolgozni. Ez egy szimulat adatbazis, ami a mutet soran ejtett bemetszesek gyogyulasat vizsgaljuk annak fuggvenyeben hogy a paciensek Ã¡gya milyen kozel van az ablakhoz, es hogy mennyi napfeny eri oket a felepules idoszak alatt. Ez a kutatas azt az elmeletet teszteli, hogy a korhazi betegeknek szukseguk van a kulvilaggal valo kapcsolatra ahhoz hogy gyorsan felepuljenek. Egy ablak ami a szabadba nyilik megteremtheti ezt a kapcsolatot a kulvilaggal, ezert a kutatasunk azt vizsgalja, hogy befolyasolja-e a sebgyogyulas merteket az, hogy a szemelynek milyen kozel van az Ã¡gya a legkozelebbi ablakhoz. Az elmelet egy valtozata azt allitja, hogy az ablak nem csak a kulvilaggal valo szorosabb kapcsolat megteremtesen keresztul vezet gyorsabb gyogyulashoz, hanem azon keresztul is hogy tobb napfenyt enged a szobaba, es az elmelet szerint a napfeny is jotekony hatassal van a gyogyulasra. 	
 
 # Valtozok az adatbazisban:	
 
@@ -76,7 +74,7 @@ table(data_wound$location)
 	
 
 
-# Az alabbi abra elkeszitesehez eloszor a day1-day7 valtozokban kulon-kulon kiszamoljuk az atlagokat es a standard hibat, majd a standard hibat megszorozva 1.96-al megkapjuk a konfidencia intervallumot. Vegul mindezt egy uj adat objektumba tesszuk, es a geom_errorbar, geom_point, es geom_line segitsegevel viualizaljuk. Lathato hogy a seb allapot ertek egyre csokken ahogy telnek a napok.	
+# (Az alabbi abra elkeszitesehez eloszor a day1-day7 valtozokban kulon-kulon kiszamoljuk az atlagokat es a standard hibat, majd a standard hibat megszorozva 1.96-al megkapjuk a konfidencia intervallumot. Vegul mindezt egy uj adat objektumba tesszuk, es a geom_errorbar, geom_point, es geom_line segitsegevel vizualizaljuk. Lathato hogy a seb allapot ertek egyre csokken ahogy telnek a napok.)	
 
 
 
@@ -100,30 +98,39 @@ data_for_plot %>%
 
 
 
-# #Ismételt mérések eredményinek vizsgálata kevert lineáris modellekkel	
+# # Ismetelt meresek eredmenyenek vizsgalata kevert linearis modellekkel	
 
-# ## Klaszteres szerkezet keresése az adatokban	
+# ## Klaszteres szerkezet keresese az adatokban	
 
-# Vizsgáljuk meg a továbbiakban a sebgyógyulásra vonatkozó ismételt mérések eredményeit! Ehhez eloször mentsük el az adatokhoz tartozó változóneveket egy repeated_variables elnevezésu objektumba, hogy késobb könnyen hivatkozhassunk rájuk az álltalunk írt függvényekben! A változók közötti korrelációt a cor() függvénnyel tudjuk megvizsgálni. Figyeljük meg, hogy az ismételt mérések adatponjai között eros korreláció fedezheto fel, azaz az egyes seb-állapot értekekre vonatkozó megfigyelések nem függetlenek egymástól. Ez várható is, hiszen a seb-állapot érték, az eredeti bemetszés mérete és a seb gyógyulásának üteme mind függenek a vizsgált betegtol. Adataink tehát klaszteres szerkezetet mutatnak, hasonlóan a korábbi példánkhoz. Azonban mígo ott osztály szerinti klaszterek fordultak elo, itt most a klaszterek résztvevo szerintiek.	
+# Vizsgaljuk meg a tovabbiakban a sebgyogyulasra vonatkozo ismetelt meresek eredmenyeit! Ehhez eloszor mentsuk el az adatokhoz tartozo valtozoneveket egy repeated_variables elnevezesu objektumba, hogy kesobb konnyen hivatkozhassunk rajuk az alltalunk irt fuggvenyekben! 	
+
+# A valtozok kozotti korrelaciot a cor() fuggvennyel tudjuk megvizsgalni. Figyeljuk meg, hogy az ismetelt meresek adatponjai kozott eros korrelacio fedezheto fel, azaz az egyes seb-allapot ertekekre vonatkozo megfigyelesek nem fuggetlenek egymastol. Ez varhato is, hiszen a seb-allapot ertek, az eredeti bemetszes merete es a seb gyogyulasanak uteme mind fuggenek a vizsgalt betegtol. Adataink tehet klaszteres szerkezetet mutatnak, hasonloan a korabbi peldankhoz. Azonban mig ott osztaly szerinti klaszterek fordultak elo, itt most a klaszterek resztvevo szerintiek.	
 
 
-	
 # correlation of repeated variables	
 	
-cor(data_wound[,repeated_variables])	
+data_wound %>% 	
+  select(repeated_variables) %>% 	
+  cor()	
 
 
-# ## Dataframe átrendezése	
+# ## Az adattabla atformazasa szelesbol hosszu formatumba	
 
-# A klaszteres szerkezetbol kifolyólag hasonlóan kezelhetjük adatainkat mint ahogy azt a bántalmazással kapcsolatos adatsornál tettük. Ehhez azonban eloször át kell rendeznünk az adatainkat, hogy használhassuk a lineáris kevert hatás regressziós (lmer()) függvényt.	
+# A klaszteres szerkezetbÅ‘l kifolyÃ³lag hasonlÃ³an kezelhetjÃ¼k adatainkat mint ahogy azt a bÃ¡ntalmazÃ¡ssal kapcsolatos adatsornÃ¡l tettÃ¼k. Ehhez azonban elÅ‘szÃ¶r Ã¡t kell rendeznÃ¼nk az adatainkat, hogy hasznÃ¡lhassuk a lineÃ¡ris kevert hatÃ¡s regressziÃ³s (lmer()) fÃ¼ggvÃ©nyt.	
 
-# Jelenleg a dataframe-ünk minden sora egy adott pácienshez tartozó seb-állapot értékre vonatkozó 7 (vagyis az adatgyüjtés alatt napi egy) megfigyelésbol áll. Erre az elrendezésre **wide format**-ként (széles formátum) is szokás hivatkozni.	
+# Jelenleg a dataframe-Ã¼nk minden sora egy adott pÃ¡cienshez tartozÃ³ seb-Ã¡llapot Ã©rtÃ©kre vonatkozÃ³ 7 (vagyis az adatgyÃ¼jtÃ©s alatt napi egy) megfigyelÃ©sbÅ‘l Ã¡ll. Erre az elrendezÃ©sre **wide format**-kÃ©nt (szÃ©les formÃ¡tum) is szokÃ¡s hivatkozni.	
 
-# Az lmer() függvény megelelo muködéséhez a bemenet minden sorához csak egyetlen megfigyelés tartozhat. Jelen esetben ez azt jelentené, hogy az egyes résztvevokhöz tartozó sorok száma 1 helyett 7 kell legyen. Így az ID, distance_window, és location változók az adott pácienshez tartozó sorokban egyeznének, és csak az egyes seb-állapot értekek különböznének, melyekhez minden sorban mindössze egyetlen oszlop tartozna így. Erre az elrendezésre álltalában **long format**-ként (hosszú formátum) szokás hivatkozni.	
+# Az lmer() fÃ¼ggvÃ©ny megelelÅ‘ mÅ±kÃ¶dÃ©sÃ©hez a bemenet minden sorÃ¡hoz csak egyetlen megfigyelÃ©s tartozhat. Jelen esetben ez azt jelentenÃ©, hogy az egyes rÃ©sztvevÅ‘khÃ¶z tartozÃ³ sorok szÃ¡ma 1 helyett 7 kell legyen. Ãgy az ID, distance_window, Ã©s location vÃ¡ltozÃ³k az adott pÃ¡cienshez tartozÃ³ sorokban egyeznÃ©nek, Ã©s csak az egyes seb-Ã¡llapot Ã©rtekek kÃ¼lÃ¶nbÃ¶znÃ©nek, melyekhez minden sorban mindÃ¶ssze egyetlen oszlop tartozna Ã­gy. Erre az elrendezÃ©sre Ã¡lltalÃ¡ban **long format**-kÃ©nt (hosszÃº formÃ¡tum) szokÃ¡s hivatkozni.	
 
-# A fenti átalakítás elvégzésének egy egyszeru módja, ha a gather() függvényt alkalmazzuk a tidyr csomagból. Ennek használatához eloször meg kell határoznunk az ismételt megfigyelések indexét tartalmazó változó nevét, vagyis itt azt hogy melyik nap végezték az adott megfigyelést. Ez nálunk a "days" változót jelenti. Az indexeket tartalmazó változón kívül a vizsgált mennyiséget tartalmazó változót is meg kell határoznunk. Ez nálunk a "wound_rating", vagyis a seb-állapot érték. Végül meg kell még határoznunk azt is, hogy a jelenleg használt széles formátumban mely nevek jelölik azokat a változókat amellyekben az adatainkat tároljuk. A day_1:day_7 kifejezés a day_1 és day_7 közötti oszlopok neveit jelöli. Az arrange() függvény használatával az adatok rendezhetoek a hozzájuk tartozó azonosító ("ID") alapján. Bár az adott feladat elvégzéséhez nem sükséges rendezni az adatainkat, de mégis segít a hosszú formátum átláthatóbbá tételében.	
+# A fenti Ã¡talakÃ­tÃ¡s elvÃ©gzÃ©sÃ©nek egy egyszerÅ± mÃ³dja, ha a **gather()** fÃ¼ggvÃ©nyt alkalmazzuk a tidyr csomagbÃ³l. 	
 
-# Az eredeti adatokat változatlanul hagyva most is új objektumot hozunk létre adatainknak, a már megszokott módon. Az új objektum neve data_wound_long lesz.	
+# 1. meghatÃ¡rozunk egy vÃ¡ltozÃ³nevet, amiben az ismÃ©telt megfigyelÃ©sek indexÃ©t tÃ¡roljuk majd az Ãºj formÃ¡tumÃº adabÃ¡zisban. Ez nÃ¡lunk az alÃ¡bbi pÃ©ldÃ¡ban "days"-nek neveztÃ¼k el (key = days).	
+# 2. meghatÃ¡rozunk egy vÃ¡ltozÃ³nevet, amiben az ismÃ©telten megfigyelt adatok kerÃ¼lnek majd. Mivel nekÃ¼nk a megfigyelt adatunk a seb Ã¡llapota, ezÃ©rt ezt "wound_rating"-nek neveztÃ¼k el (value = wound_rating).	
+# 3. meghatÃ¡rozzuk, hogy a jelenleg hasznÃ¡lt szÃ©les formÃ¡tumban mely oszlopok tartalmazzÃ¡k az ismÃ©telten megfigyelt adatot. Ez a szÃ©les adatbÃ¡zisunkban a day_1, day_2 ... day_7 oszlopok. Ezt a tidyverse-ben kÃ¶nnyen lerÃ¶vidÃ­thetjuk, a day_1:day_7 kifejezÃ©s a day_1 Ã©s day_7 kÃ¶zÃ¶tti oszlopok neveit jelÃ¶li.	
+
+# Az arrange() fÃ¼ggvÃ©ny hasznÃ¡latÃ¡val az adatok rendezhetÅ‘ek a hozzÃ¡juk tartozÃ³ azonosÃ­tÃ³ ("ID") alapjÃ¡n. BÃ¡r az adott feladat elvÃ©gzÃ©sÃ©hez nem sÃ¼ksÃ©ges rendezni az adatainkat, de mÃ©gis segÃ­t a hosszÃº formÃ¡tum Ã¡tlÃ¡thatÃ³bbÃ¡ tÃ©telÃ©ben.	
+
+# Az eredeti adatokat vÃ¡ltozatlanul hagyva most is Ãºj objektumot hozunk lÃ©tre adatainknak, a mÃ¡r megszokott mÃ³don. Az Ãºj objektum neve data_wound_long lesz.	
 
 
 	
@@ -134,9 +141,9 @@ data_wound_long = data_wound %>%
 data_wound_long	
 
 
-# Tovább növelhetjük az adataink átláthatóságát, ha az adott beteghez tartozó megfigyelések egymás után következnek.	
+# TovÃ¡bb nÃ¶velhetjÃ¼k az adataink Ã¡tlÃ¡thatÃ³sÃ¡gÃ¡t, ha az adott beteghez tartozÃ³ megfigyelÃ©sek egymÃ¡s utÃ¡n kÃ¶vetkeznek.	
 
-# A fontos megjegyezni, hogy a 'days' változó jelenleg a széles formátumból származó változó neveket tartalmazza ('day_1', 'day_2' stb.). Az egyszerubb kezelhetoség érdekében ezeket egyszeruen az egyes napokat jelölo számokra (1-7) cseréljük. Ezt legkönyebben a mutate() és recode() fügvényekkel valósíthatjuk meg.	
+# A fontos megjegyezni, hogy a 'days' vÃ¡ltozÃ³ jelenleg a szÃ©les formÃ¡tumbÃ³l szÃ¡rmazÃ³ vÃ¡ltozÃ³ neveket tartalmazza ('day_1', 'day_2' stb.). Az egyszerÅ±bb kezelhetÅ‘sÃ©g Ã©rdekÃ©ben ezeket egyszerÅ±en az egyes napokat jelÃ¶lÅ‘ szÃ¡mokra (1-7) cserÃ©ljÃ¼k. Ezt legkÃ¶nyebben a mutate() Ã©s recode() fÃ¼gvÃ©nyekkel valÃ³sÃ­thatjuk meg.	
 
 
 	
@@ -153,36 +160,37 @@ data_wound_long = data_wound_long %>%
                        ))	
 
 
-# Tekintsük most meg, hogyan néz ki az új dataframe-ünk!	
+# TekintsÃ¼k most meg, hogyan nÃ©z ki az Ãºj dataframe-Ã¼nk!	
 
 
 View(data_wound_long)	
 
 
-# ## Kevert lineáris modell kialakítása	
+# ## Kevert lineÃ¡ris modell kialakÃ­tÃ¡sa	
 
-# Most, hogy megfelelo alakba hoztuk adatainkat, eloállíthatjuk az elorejelzésekhez szükséges modellt. Ezzel a modellel a mutét utáni nap (days), az ablaktól való távolság ('distance_window') és északi vagy déli elhelyezés ('location') alapján megbecsülheto lesz a seb-állapot érték ('wound_rating').	
+# Most, hogy megfelelÅ‘ alakba hoztuk adatainkat, elÅ‘Ã¡llÃ­thatjuk az elÅ‘rejelzÃ©sekhez szÃ¼ksÃ©ges modellt. Ezzel a modellel a mÅ±tÃ©t utÃ¡ni nap (days), az ablaktÃ³l valÃ³ tÃ¡volsÃ¡g ('distance_window') Ã©s Ã©szaki vagy dÃ©li elhelyezÃ©s ('location') alapjÃ¡n megbecsÃ¼lhetÅ‘ lesz a seb-Ã¡llapot Ã©rtÃ©k ('wound_rating').	
 
-# Mivel az elorejelzésünk kimenete a résztvevok szerinti klaszteres szerkezetet mutat, ezért a véletlen hatás prediktora a résztvevo azonosítója ('ID') lesz. Az korábbi gyakorlathoz hasonlóan, most is két modellt fogunk illeszteni, a random intercept és a random slope modelleket.	
+# Mivel az elÅ‘rejelzÃ©sÃ¼nk kimenete a rÃ©sztvevÅ‘k szerinti klaszteres szerkezetet mutat, ezÃ©rt a vÃ©letlen hatÃ¡s prediktora a rÃ©sztvevÅ‘ azonosÃ­tÃ³ja ('ID') lesz. Az korÃ¡bbi gyakorlathoz hasonlÃ³an, most is kÃ©t modellt fogunk illeszteni, a random intercept Ã©s a random slope modelleket.	
 
-# Említést érdemel, hogy a **random intercept model** esetében azt feltételezzük, hogy minden résztvevo eltér a teljes vagy baseline seb-állapot értékeit tekintve, de a fix hatás elorejelzok ('days', 'distance_window', és 'location') azonosak az egyes résztvevok esetében. Ezzel szemben, a **random slope model** esetében nem csak a baseline seb-állapot érték, de a fix hatás elorejelzok is résztvevonként változóak.	
+# EmlÃ­tÃ©st Ã©rdemel, hogy a **random intercept model** esetÃ©ben azt feltÃ©telezzÃ¼k, hogy minden rÃ©sztvevÅ‘ eltÃ©r a teljes vagy baseline seb-Ã¡llapot Ã©rtÃ©keit tekintve, de a fix hatÃ¡s elÅ‘rejelzÅ‘k ('days', 'distance_window', Ã©s 'location') azonosak az egyes rÃ©sztvevÅ‘k esetÃ©ben. Ezzel szemben, a **random slope model** esetÃ©ben nem csak a baseline seb-Ã¡llapot Ã©rtÃ©k, de a fix hatÃ¡s elÅ‘rejelzÅ‘k is rÃ©sztvevÅ‘nkÃ©nt vÃ¡ltozÃ³ak.	
 
-# Mivel 3 különbözo fix hatás elorejelzo is rendelkezésünkre áll, ezért alkalmazhatjuk a random slope modellt, ami az elorejelzok mellett a résztvevokbol származó véletlen hatástól is függeni fog. A véletlen hatás kifejezését (random effect term) + (days|ID) alakban definiálva elérhetjük, hogy az ido múlása más mértékben hasson az egyes résztvevokre.	
+# Mivel 3 kÃ¼lÃ¶nbÃ¶zÅ‘ fix hatÃ¡s elÅ‘rejelzÅ‘ is rendelkezÃ©sÃ¼nkre Ã¡ll, ezÃ©rt alkalmazhatjuk a random slope modellt, ami az elÅ‘rejelzÅ‘k mellett a rÃ©sztvevÅ‘kbÅ‘l szÃ¡rmazÃ³ vÃ©letlen hatÃ¡stÃ³l is fÃ¼ggeni fog. A vÃ©letlen hatÃ¡s kifejezÃ©sÃ©t (random effect term) + (days|ID) alakban definiÃ¡lva elÃ©rhetjÃ¼k, hogy az idÅ‘ mÃºlÃ¡sa mÃ¡s mÃ©rtÃ©kben hasson az egyes rÃ©sztvevÅ‘kre.	
 
-# További lehetoségként felmerül, hogyha a másik két elorejelzo szerinti véletlen meredekséget is szeretnénk bevezetni a modellbe, akkor azt a + (days|ID) + (distance_window|ID) + (location|ID) kifejezéssel érhetjük el, ha azt szeretnénk hogy ne legyen köztük korreláció, és a  + (days + distance_window + location|ID) kifejezéssel, ha azt szeretnénk hogy korreláljanak. Most maradjunk egyelore a korábban leírt, egyszerubb  + (days|ID) modellnél.	
+# TovÃ¡bbi lehetÅ‘sÃ©gkÃ©nt felmerÃ¼l, hogyha a mÃ¡sik kÃ©t elÅ‘rejelzÅ‘ szerinti vÃ©letlen meredeksÃ©get is szeretnÃ©nk bevezetni a modellbe, akkor azt a + (days|ID) + (distance_window|ID) + (location|ID) kifejezÃ©ssel Ã©rhetjÃ¼k el, ha azt szeretnÃ©nk hogy ne legyen kÃ¶ztÃ¼k korrelÃ¡ciÃ³, Ã©s a  + (days + distance_window + location|ID) kifejezÃ©ssel, ha azt szeretnÃ©nk hogy korrelÃ¡ljanak. Most maradjunk egyelÅ‘re a korÃ¡bban leÃ­rt, egyszerÅ±bb  + (days|ID) modellnÃ©l.	
 
 
 mod_rep_int = lmer(wound_rating ~ days + distance_window + location + (1|ID), data = data_wound_long)	
 mod_rep_slope = lmer(wound_rating ~ days + distance_window + location + (days|ID), data = data_wound_long)	
+	
 
 
-# ## Az eltéro modellek összehasonlítása	
+# ## Az eltÃ©rÅ‘ modellek Ã¶sszehasonlÃ­tÃ¡sa	
 
-# Hasonlítsuk most össze a különbozo modellek alapján alkotott elorejelzéseket!	
+# HasonlÃ­tsuk most Ã¶ssze a kÃ¼lÃ¶nbÅ‘zÅ‘ modellek alapjÃ¡n alkotott elÅ‘rejelzÃ©seket!	
 
-# A könnyebb összehasonlíthatóság kedvéért, vizualizáljuk adatainkat! Ehhez eloször tároljuk el predikciónk eredményeit egy új változóban, majd ábrázolhatjuk az egyes elorejelzett értékeket a valódi értékek függvényében, az egyes (random intercept és random slope) modellekre vonatkozó külön-külön ábrákon. 	
+# A kÃ¶nnyebb Ã¶sszehasonlÃ­thatÃ³sÃ¡g kedvÃ©Ã©rt, vizualizÃ¡ljuk adatainkat! Ehhez elÅ‘szÃ¶r tÃ¡roljuk el predikciÃ³nk eredmÃ©nyeit egy Ãºj vÃ¡ltozÃ³ban, majd Ã¡brÃ¡zolhatjuk az egyes elÅ‘rejelzett Ã©rtÃ©keket a valÃ³di Ã©rtÃ©kek fÃ¼ggvÃ©nyÃ©ben, az egyes (random intercept Ã©s random slope) modellekre vonatkozÃ³ kÃ¼lÃ¶n-kÃ¼lÃ¶n Ã¡brÃ¡kon. 	
 
-# (Az alábbiakban létrehoztunk egy másolatot az adatokat tartalmazó objektumról, hogy az eredeti adatok változatlanul megmaradhassanak.)	
+# (Az alÃ¡bbiakban lÃ©trehoztunk egy mÃ¡solatot az adatokat tartalmazÃ³ objektumrÃ³l, hogy az eredeti adatok vÃ¡ltozatlanul megmaradhassanak.)	
 
 
 
@@ -204,9 +212,9 @@ ggplot(data_wound_long_withpreds, aes(y = wound_rating, x = days, group = ID))+
 	
 
 
-# Látható, hogy az eltéro modellek alapján kapott eredmények között nincs számottevo eltérés.	
+# LÃ¡thatÃ³, hogy az eltÃ©rÅ‘ modellek alapjÃ¡n kapott eredmÃ©nyek kÃ¶zÃ¶tt nincs szÃ¡mottevÅ‘ eltÃ©rÃ©s.	
 
-# A cAIC() és anova() függvények segítségével további megállapításokat tehetünk az egyes modellek illeszkedésérol, ami egy újabb lehetséges szempont lehet a modellek összehasonlításánál. 	
+# A cAIC() Ã©s anova() fÃ¼ggvÃ©nyek segÃ­tsÃ©gÃ©vel tovÃ¡bbi megÃ¡llapÃ­tÃ¡sokat tehetÃ¼nk az egyes modellek illeszkedÃ©sÃ©rÅ‘l, ami egy Ãºjabb lehetsÃ©ges szempont lehet a modellek Ã¶sszehasonlÃ­tÃ¡sÃ¡nÃ¡l. 	
 
 
 cAIC(mod_rep_int)$caic	
@@ -216,27 +224,27 @@ anova(mod_rep_int, mod_rep_slope)
 
 
 
-# A fenti módszerek egyikével se találunk jelentos eltérést a két modell használata között, így a jelenlegi minta esetén semmiféle elonnyel sem jár a random slope módszer. Ez persze magában még nem elegendo ahhoz, hogy feltételezhessük, hogy más mintánál is hasonló lenne a helyzet. Látható tehát, hogy az adatelemzés során fontos tisztában lennünk a korábbi kutatások eredményeivel, és a vizsgált kérdéskörre vonatkozó elméletekkel.	
+# A fenti mÃ³dszerek egyikÃ©vel se talÃ¡lunk jelentÅ‘s eltÃ©rÃ©st a kÃ©t modell hasznÃ¡lata kÃ¶zÃ¶tt, Ã­gy a jelenlegi minta esetÃ©n semmifÃ©le elÅ‘nnyel sem jÃ¡r a random slope mÃ³dszer. Ez persze magÃ¡ban mÃ©g nem elegendÅ‘ ahhoz, hogy feltÃ©telezhessÃ¼k, hogy mÃ¡s mintÃ¡nÃ¡l is hasonlÃ³ lenne a helyzet. LÃ¡thatÃ³ tehÃ¡t, hogy az adatelemzÃ©s sorÃ¡n fontos tisztÃ¡ban lennÃ¼nk a korÃ¡bbi kutatÃ¡sok eredmÃ©nyeivel, Ã©s a vizsgÃ¡lt kÃ©rdÃ©skÃ¶rre vonatkozÃ³ elmÃ©letekkel.	
 
-# Jelenleg,-híjján bármiféle korábbi ismeretnek,- folytassuk a random intercept modell használatával.	
+# Jelenleg,-hÃ­jjÃ¡n bÃ¡rmifÃ©le korÃ¡bbi ismeretnek,- folytassuk a random intercept modell hasznÃ¡latÃ¡val.	
 
-# ## A modell kiegészítése a napokból származó négyzetes járulékkal	
+# ## A modell kiegÃ©szÃ­tÃ©se a napokbÃ³l szÃ¡rmazÃ³ nÃ©gyzetes jÃ¡rulÃ©kkal	
 
-# Az egyes ábrákat vizsgálva megfigyelhetjük, hogy a napok és a seb-állapot értékek közötti összefüggés nem lineáris. A sebek látszólag gyorsabban gyógyulnak az elso néhány napban, mint késobb.	
+# Az egyes Ã¡brÃ¡kat vizsgÃ¡lva megfigyelhetjÃ¼k, hogy a napok Ã©s a seb-Ã¡llapot Ã©rtÃ©kek kÃ¶zÃ¶tti Ã¶sszefÃ¼ggÃ©s nem lineÃ¡ris. A sebek lÃ¡tszÃ³lag gyorsabban gyÃ³gyulnak az elsÅ‘ nÃ©hÃ¡ny napban, mint kÃ©sÅ‘bb.	
 
-# A nem lineáris viselkedés figyelembevétele érdekében, adjuk hozzá a napokból származó négyzetes járulékot a modellünkhöz!	
+# A nem lineÃ¡ris viselkedÃ©s figyelembevÃ©tele Ã©rdekÃ©ben, adjuk hozzÃ¡ a napokbÃ³l szÃ¡rmazÃ³ nÃ©gyzetes jÃ¡rulÃ©kot a modellÃ¼nkhÃ¶z!	
 
 
 mod_rep_int_quad = lmer(wound_rating ~ days + I(days^2) + distance_window + location + (1|ID), data = data_wound_long)	
 
 
-# Mentsük elorejelzéseinket egy új dataframe-be, amely a korábbi elorejelzéseket is tartalmazza!	
+# MentsÃ¼k elÅ‘rejelzÃ©seinket egy Ãºj dataframe-be, amely a korÃ¡bbi elÅ‘rejelzÃ©seket is tartalmazza!	
 
 
 data_wound_long_withpreds$pred_int_quad = predict(mod_rep_int_quad)	
 
 
-# Most pedig hasonlítsuk össze a négyzetes tagokkal bovített, és az eredeti modellt a modellek összehasonlításánál korábban tárgyalt módon!	
+# Most pedig hasonlÃ­tsuk Ã¶ssze a nÃ©gyzetes tagokkal bÅ‘vÃ­tett, Ã©s az eredeti modellt a modellek Ã¶sszehasonlÃ­tÃ¡sÃ¡nÃ¡l korÃ¡bban tÃ¡rgyalt mÃ³don!	
 
 
 data_wound_long_withpreds$pred_int_quad = predict(mod_rep_int_quad)	
@@ -256,28 +264,31 @@ cAIC(mod_rep_int_quad)$caic
 anova(mod_rep_int, mod_rep_int_quad)	
 
 
-# Az összehasonlítás alapján úgy tunik, hogy a négyzetes tagokat is megengedo modell elorejelzései lényegesen pontosabbak mint a csak lineáris tagokat használóé.	
+# Az Ã¶sszehasonlÃ­tÃ¡s alapjÃ¡n Ãºgy tÅ±nik, hogy a nÃ©gyzetes tagokat is megengedÅ‘ modell elÅ‘rejelzÃ©sei lÃ©nyegesen pontosabbak mint a csak lineÃ¡ris tagokat hasznÃ¡lÃ³Ã©.	
 
-# Mivel modellünk látszólag jól illeszkedik az adatokra, nem bovítjük tovább tagokkal azt.	
+# Mivel modellÃ¼nk lÃ¡tszÃ³lag jÃ³l illeszkedik az adatokra, nem bÅ‘vÃ­tjÃ¼k tovÃ¡bb tagokkal azt.	
 
-# A négzetes elemek felhasználásából következoen várható, hogy problémák fognak jelentkezni a collinearitás tekintetében. A 'days' változó centrálásával ez a probléma a model diagnosztika c. gyakorlatban tárgyalt módon kiküszöbölheto, hiszen megszünteti a 'days' és 'days^2' közötti korrelációt.	
+# A nÃ©gzetes elemek felhasznÃ¡lÃ¡sÃ¡bÃ³l kÃ¶vetkezÅ‘en vÃ¡rhatÃ³, hogy problÃ©mÃ¡k fognak jelentkezni a collinearitÃ¡s tekintetÃ©ben. A 'days' vÃ¡ltozÃ³ centrÃ¡lÃ¡sÃ¡val ez a problÃ©ma a model diagnosztika c. gyakorlatban tÃ¡rgyalt mÃ³don kikÃ¼szÃ¶bÃ¶lhetÅ‘, hiszen megszÃ¼nteti a 'days' Ã©s 'days^2' kÃ¶zÃ¶tti korrelÃ¡ciÃ³t.	
 
-# Végezzük el a centrálást, és illesszük újra modellünket az így kapott prediktorokat használva.	
+# VÃ©gezzÃ¼k el a centrÃ¡lÃ¡st, Ã©s illesszÃ¼k Ãºjra modellÃ¼nket az Ã­gy kapott prediktorokat hasznÃ¡lva.	
 
 
-data_wound_long_centered_days = data_wound_long	
-data_wound_long_centered_days$days_centered = data_wound_long_centered_days$days - mean(data_wound_long_centered_days$days)	
 	
+data_wound_long = data_wound_long %>% 	
+  mutate(days_centered = days - mean(days))	
 	
-mod_rep_int_quad = lmer(wound_rating ~ days_centered + I(days_centered^2) + distance_window + location + (1|ID), data = data_wound_long_centered_days)	
+mod_rep_int_quad = lmer(wound_rating ~ days_centered + I(days_centered^2) + distance_window + location + (1|ID), data = data_wound_long)	
 
 
-# Az elozo gyakorlathoz hasonlóan kérjük eredményeink bemutatását!	
+# Az elÅ‘zÅ‘ gyakorlathoz hasonlÃ³an kÃ©rjÃ¼k eredmÃ©nyeink bemutatÃ¡sÃ¡t!	
 
 
 
 # Marginal R squared	
-r2beta(mod_rep_int_quad, method = "nsj", data = data_wound_long_centered_days)	
+r2beta(mod_rep_int_quad, method = "nsj", data = data_wound_long)	
+	
+# marginal and conditional R squared values	
+r.squaredGLMM(mod_rep_int_quad)	
 	
 # Conditional AIC	
 cAIC(mod_rep_int_quad)$caic	
@@ -292,37 +303,37 @@ confint(mod_rep_int_quad)
 stdCoef.merMod(mod_rep_int_quad)	
 
 
-# Mielott elfogadnánk eredményeinket véglegesnek, mindig futassunk modell diagnosztikát is. Ennek módjára a következo gyakorlatban fogunk kitérni.	
+# MielÅ‘tt elfogadnÃ¡nk eredmÃ©nyeinket vÃ©glegesnek, mindig futassunk modell diagnosztikÃ¡t is. Ennek mÃ³djÃ¡ra a kÃ¶vetkezÅ‘ gyakorlatban fogunk kitÃ©rni.	
 
-# **_____________Gyakorlás______________**	
+# **_____________GyakorlÃ¡s______________**	
 
-# Olvassuk be a mutéti fájdalom adatsort!	
+# Olvassuk be a mÅ±tÃ©ti fÃ¡jdalom adatsort!	
 
-# Ez az adatsor a mutét utáni fájdalom mérékérol, és az ezzel feltételezhetoen összefüggo néhány egyéb értékekrol tartallmaz információkat.	
+# Ez az adatsor a mÅ±tÃ©t utÃ¡ni fÃ¡jdalom mÃ©rtÃ©kÃ©rÅ‘l, Ã©s az ezzel feltÃ©telezhetÅ‘en Ã¶sszefÃ¼ggÅ‘ nÃ©hÃ¡ny egyÃ©b Ã©rtÃ©kekrÅ‘l tartalmaz informÃ¡ciÃ³kat.	
 
-# Változóink:	
+# VÃ¡ltozÃ³ink:	
 
-# - ID: résztvevo azonosítója	
-# - pain1, pain2, pain3, pain4: A használt adatsorban a fájdalom a mutét utáni négy egymást követo napon volt mérve egy 0tól-10ig terjedo folytonos vizuális skálán.	
-# - sex: a résztvevo bejelentett neme	
-# - STAI_trait: A résztvevo State Trait Anxiety Inventroy-n elért pontszáma	
-# - pain_cat: fájdalom katasztrofizálása	
-# - cortisol_serum; cortisol_saliva: A kortizol egy a stress hatására eloállított hormon. A kortizol szintet vérbol és nyálból, közvetlenül a mutét után határozták meg.	
-# - mindfulness: A Mindfulness kérdoív alapján a résztvevore jellemzo Mindfulness érték	
-# - weight: résztvevo tömege kg-ban.	
-# - IQ: Résztvevo IQ-ja a mutét elott egy héttel felvett IQ teszt alapján	
-# - household_income: résztvevo háztartásának bevétele USD-ben	
+# - ID: rÃ©sztvevÅ‘ azonosÃ­tÃ³ja	
+# - pain1, pain2, pain3, pain4: A hasznÃ¡lt adatsorban a fÃ¡jdalom a mÅ±tÃ©t utÃ¡ni nÃ©gy egymÃ¡st kÃ¶vetÅ‘ napon volt mÃ©rve egy 0tÃ³l-10ig terjedÅ‘ folytonos vizuÃ¡lis skÃ¡lÃ¡n.	
+# - sex: a rÃ©sztvevÅ‘ bejelentett neme	
+# - STAI_trait: A rÃ©sztvevÅ‘ State Trait Anxiety Inventroy-n elÃ©rt pontszÃ¡ma	
+# - pain_cat: fÃ¡jdalom katasztrofizÃ¡lÃ¡sa	
+# - cortisol_serum; cortisol_saliva: A kortizol egy a stress hatÃ¡sÃ¡ra elÅ‘Ã¡llÃ­tott hormon. A kortizol szintet vÃ©rbÅ‘l Ã©s nyÃ¡lbÃ³l, kÃ¶zvetlenÃ¼l a mÅ±tÃ©t utÃ¡n hatÃ¡roztÃ¡k meg.	
+# - mindfulness: A Mindfulness kÃ©rdÅ‘Ã­v alapjÃ¡n a rÃ©sztvevÅ‘re jellemzÅ‘ Mindfulness Ã©rtÃ©k	
+# - weight: rÃ©sztvevÅ‘ tÃ¶mege kg-ban.	
+# - IQ: RÃ©sztvevÅ‘ IQ-ja a mÅ±tÃ©t elÅ‘tt egy hÃ©ttel felvett IQ teszt alapjÃ¡n	
+# - household_income: rÃ©sztvevÅ‘ hÃ¡ztartÃ¡sÃ¡nak bevÃ©tele USD-ben	
 
 
-# Gyakorló feladatok:	
+# GyakorlÃ³ feladatok:	
 
-# 1. Olvassuk be az adatokat (egy .csv kiterjesztésu file-ból). Az adatokat az alábbi linkrol tölthetjük le: "https://tinyurl.com/data-pain1".	
-# 2. Alakítsuk adatainkat hosszú formátumúvá (célszeru a gather() fvagy a melt() függvények valamelyikét használni erre a célra), hogy az egyes megfigyelések külön sorba kerüljenek.	
-# 3. Állítsunk össze egy kevert lineáris modellt, hogy amivel képesek vagyunk a mutét utáni fájdalom varianciájának leheto legszélesebb köru lefedésére. (A mutét utáni fájdalom meghatározásához tetszoleges fix elorejelzot választhatunk, amennyiben annak feltehetoen van valami köze a fájdalom mértékéhez.) Mivel adataink a résztvevok szerinti klaszteres szerkezetet mutatnak, modellünkben vegyük figyelembe a résztvevok azonosítója szerinti véletlen hatást. 	
-# 4. Kísérletezzünk mind a random intercept, mind pedig a random slope modellekkel, majd hasonlítsuk össze oket a cAIC() függvény felhasználásával.	
-# 5. Alkossunk olyan random intercept és random slope modelleket, ahol az egyetlen prediktor az ido (mutét óta eltellt napok száma). Vizualizáljuk a modelljeink alapján kapott regressziós vonalakat, minden résztvevore külön-külön, és hasonlítsuk össze hogyan illeszkednek a megfigyeléseinkre. Van bármi elonye ha az idot külön változó hatásként vizsgáljuk a random slope modellben?	
-# 6. Hasonlítsuk össze az 5. pont modelljeit a cAIC() függvény eredményei alapján is!	
-# 7. Mi a határ R^2 érték a random intercept modell esetében? Pontosabb-e a konfidencia intervallum alapján a fájdalom elorejelzésében ez a modell, mint a null modell?	
+# 1. Olvassuk be az adatokat (egy .csv kiterjesztÃ©sÅ± file-bÃ³l). Az adatokat az alÃ¡bbi linkrÅ‘l tÃ¶lthetjÃ¼k le: "https://tinyurl.com/data-pain1".	
+# 2. AlakÃ­tsuk adatainkat hosszÃº formÃ¡tumÃºvÃ¡ (cÃ©lszerÅ± a gather() vagy a melt() fÃ¼ggvÃ©nyek valamelyikÃ©t hasznÃ¡lni erre a cÃ©lra), hogy az egyes megfigyelÃ©sek kÃ¼lÃ¶n sorba kerÃ¼ljenek.	
+# 3. ÃllÃ­tsunk Ã¶ssze egy kevert lineÃ¡ris modellt, hogy amivel kÃ©pesek vagyunk a mÅ±tÃ©t utÃ¡ni fÃ¡jdalom varianciÃ¡jÃ¡nak lehetÅ‘ legszÃ©lesebb kÃ¶rÅ± lefedÃ©sÃ©re. (A mÅ±tÃ©t utÃ¡ni fÃ¡jdalom meghatÃ¡rozÃ¡sÃ¡hoz tetszÅ‘leges fix elÅ‘rejelzÅ‘t vÃ¡laszthatunk, amennyiben annak feltehetÅ‘en van valami kÃ¶ze a fÃ¡jdalom mÃ©rtÃ©kÃ©hez.) Mivel adataink a rÃ©sztvevÅ‘k szerinti klaszteres szerkezetet mutatnak, modellÃ¼nkben vegyÃ¼k figyelembe a rÃ©sztvevÅ‘k azonosÃ­tÃ³ja szerinti vÃ©letlen hatÃ¡st. 	
+# 4. KÃ­sÃ©rletezzÃ¼nk mind a random intercept, mind pedig a random slope modellekkel, majd hasonlÃ­tsuk Ã¶ssze Å‘ket a cAIC() fÃ¼ggvÃ©ny felhasznÃ¡lÃ¡sÃ¡val.	
+# 5. Alkossunk olyan random intercept Ã©s random slope modelleket, ahol az egyetlen prediktor az idÅ‘ (mÅ±tÃ©t Ã³ta eltellt napok szÃ¡ma). VizualizÃ¡ljuk a modelljeink alapjÃ¡n kapott regressziÃ³s vonalakat, minden rÃ©sztvevÅ‘re kÃ¼lÃ¶n-kÃ¼lÃ¶n, Ã©s hasonlÃ­tsuk Ã¶ssze hogyan illeszkednek a megfigyelÃ©seinkre. Van bÃ¡rmi elÅ‘nye ha az idÅ‘t kÃ¼lÃ¶n vÃ¡ltozÃ³ hatÃ¡skÃ©nt vizsgÃ¡ljuk a random slope modellben?	
+# 6. HasonlÃ­tsuk Ã¶ssze az 5. pont modelljeit a cAIC() fÃ¼ggvÃ©ny eredmÃ©nyei alapjÃ¡n is!	
+# 7. Mi a hatÃ¡r R^2 Ã©rtÃ©k a random intercept modell esetÃ©ben? Pontosabb-e a konfidencia intervallum alapjÃ¡n a fÃ¡jdalom elÅ‘rejelzÃ©sÃ©ben ez a modell, mint a null modell?	
 
 
 
