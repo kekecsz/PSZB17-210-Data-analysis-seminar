@@ -1,3 +1,4 @@
+	
 # # Absztrakt	
 
 # Ebben a gyakorlatban arra térünk ki, hogyan ellemorizhetjük hogy a lineáris regresszió elofeltetelei teljesülnek-e	
@@ -81,7 +82,8 @@ confint.boot <- function(model, data = NULL, R = 1000){
 
 
 
-data_house = read.csv("https://bit.ly/2DpwKOr")
+data_house = read.csv("https://bit.ly/2DpwKOr")	
+
 
 # ## Az adatsor megtekintése	
 
@@ -262,8 +264,7 @@ describe(residuals(mod_house2))
 # eloszlása közelebb legyen a normál eloszláshoz. Ekkor azonban fontos figyelembe venni, hogy az így	
 # kapott egyutthatok is transzformálva lesznek. Ugyan ez vonatkozik a hiba feltételekre, azaz ha a modell	
 # transzformált értékekre vonatkozó RSS-je nem lesz összehasonlítható az transzformalatlan értékekével.	
-# Az átalakításról további információk az alábbi linken találhatóak: http://abacus.bates.edu/~ganderso/	
-# biology/bio270/homework_files/Data_Transformation.pdf (a file szerzoje számomra ismeretlen, de a	
+# Az átalakításról további információk az alábbi linken találhatóak: http://abacus.bates.edu/~ganderso/biology/bio270/homework_files/Data_Transformation.pdf (a file szerzoje számomra ismeretlen, de a	
 # dokumentum tartalmilag pontos, és megfelelo hivatkozásokkal ellátott).	
 # 3. Ha mindössze néhány eset okozza a normalitástól való eltérést, úgy hasznos lehet a **kiugró értékek kizárása**.	
 # Formális hipotézisteszt esetén a változók kizárása nem alapulhat a p-értéken. A kizárás feltételei	
@@ -413,7 +414,7 @@ mod_house3 %>%
   bptest() # Breush-Pagan test	
 
 
-# ### Mi a helyzet a heteroszkedaszticitási feltétel sérülése esetén?	
+# ### Mi a helyzet a heteroszkedaszticitás esetén?	
 
 # Amennyben heteroszkedaszticitás lép fel, úgy **modellünk pontatlan lehet**. Ettol függetlenül **használható marad**	
 # a modell, egyszeruen csak pontatlanabbul határozhatjuk meg az új adatainkat.	
@@ -425,7 +426,7 @@ mod_house3 %>%
 # heteroszkedaszticitás fennállása mellett is megtehetjük, de az egyes egyutthatok és a konfidencia intervallumok	
 # megbizhatosaga serul.	
 
-# ### Mit tehetünk ha a heteroszkedaszticitási feltétel sérül?	
+# ### Mit tehetünk a heteroszkedaszticitás orvoslására?	
 
 # Ebben az esetben az alábbi módszerek bizonyulhatnak célravezetonek:	
 
