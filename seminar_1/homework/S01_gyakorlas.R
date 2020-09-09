@@ -5,9 +5,9 @@
 ## Töltsd le ezt a kódot.
 ## Oldd meg a feladatokat úgy hogy a kódot amit a megoldáshoz használsz az adott
 ## feladat kommentje alá másolod.
-## A kész gyakorló feladatot mentsd el a saját Drive mappádba. 
+## A kész gyakorlófeladatot mentsd el a saját Drive mappádba. 
 ## A fájl neve ez legyen: 
-## Családnév Utónév házi feladat ÉÉÉÉHHNN, pl.: “Példa Géza házi feladat 20200212.R” ! 
+## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20200912.R” ! 
 
 
 # 1. Rendeld hozzá a 4-et egy új number nevű objektumhoz.
