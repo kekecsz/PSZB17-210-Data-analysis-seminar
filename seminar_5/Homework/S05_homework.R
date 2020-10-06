@@ -1,3 +1,7 @@
+####################################
+#          Hazi feladat            #
+####################################
+
 # 1. toltsd be a hazi feladat megoldasahoz hasznalt package-eket 
 # (az alabbi feladatok a tidyverse es a psych packagekkel megoldhatoak)
 
@@ -32,12 +36,12 @@
 # 3. Jelold faktorkent azokat a valtozokat, amiket faktor valtozonak itelsz
 
 # 4. Vegezz az adatokon alapveto adatellenorzo muveleteket (mondjuk a summary, es describe fuggvenyekkel, es abrakkal, ha szukseges)
-# Ellenorizd hogy vannake-e furcsa vagy hibas adatok, es ha vannak ilyenek, javitsd ki oket. (Egyes adatpontok atjavitasara peldat a nagyedik orai script-ben es hazi feladatban talalsz)
+# Ellenorizd hogy vannak-e furcsa vagy hibas adatok, es ha vannak ilyenek, javitsd ki oket. (Egyes adatpontok atjavitasara peldat a negyedik orai script-ben es hazi feladatban talalsz)
 # Van olyan, hogy egy numerikus valtozot karaktervektorkent eszlel az R, ha van benne akar egy szoveges ertek is. Ilyenkor a szoveges ertek szamra vagy NA-ra cserelese utan is karaktervektor marad a valtozo. Ebben az esetben a hiba javitasa utan erdemes az adott valtozot az as.numeric() fugvennyel numerikus valtozokent megjelolni.
 # Erdemes ellenorizni, hogy sikerult-e minden adatot helyesen javitani azzal, hogy ujra lefuttatjuk az adatellenorzo muveleteket.
 
 # 5. Teszteld a kovetkezo hipoteziseket: 
-# Minden egyes hipotezis eseten eloszor vegezz leiro elemzest a megfelfelo tablazatokkal es abrakkal.
+# Minden egyes hipotezis eseten eloszor vegezz leiro (exploratoros) elemzest a megfelfelo tablazatokkal es abrakkal.
 # Az elemzes elvegzese utan roviden ird le hogy hogyan ertelmezhetjuk az eredmenyeket.
 # Az egyes statisztikai tesztek eredmenyenek leirasahoz hasznald az irai jegyzet pdf. valtozatat:
 # https://osf.io/4tvd2/
