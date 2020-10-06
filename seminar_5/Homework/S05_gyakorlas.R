@@ -1,5 +1,5 @@
 ######################################
-# Az 4. gyakorlat gyakorló script-je #
+# Az 5. gyakorlat gyakorló script-je #
 ######################################
 
 ## Töltsd le ezt a kódot.
