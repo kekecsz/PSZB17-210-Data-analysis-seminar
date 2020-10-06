@@ -1,5 +1,4 @@
 
-	
 # # 4. Ora - Adatexploracio	
 
 # Az ora celja az adatexploracios modszerek elsajatitasa.	
@@ -426,9 +425,22 @@ ggplot() +
 
 
 
+# *______________________________* 	
+
+# ### Gyakorlas	
+
+# Hasznald a fent tanult modszereket, hogy megvizsgald a COVID_adat_tegnap adatbazisban a **new_cases_per_million_kat** es a **continent** valtozok kozotti osszefuggest.	
+# - hasznalj **geom_bar()** geomot a megjeleniteshez	
+# - probald meg mind a **szamossagot**, mind a **reszaranyt** kifejezo abrat megvizsgalni geom_bar(position = "fill")	
+# - milyen **kovetkeztetest** tudsz levonni az abrakrol?	
 
 
+# *______________________________*	
 
+
+	
+# a fenti gyakorlashoz a new_cases_per_million_kat valtozot igy lehet legeneralni:	
+	
 COVID_adat = COVID_adat %>%	
   mutate(new_cases_per_million_kat = factor(	
                                       case_when(new_cases_per_million < 20 ~ "small",	
@@ -445,21 +457,324 @@ COVID_adat_tegnap = COVID_adat_tegnap %>%
 
 
 
+# geom_bar() megjelenitesnel fontos hogy ha az egyes megfigyelesek **keves megfigyelesbol allnak**, az abra megteveszto lehet, mert az abra nem jelzi a megfigyelesek szamat es igy azt, hogy milyen biztosak lehetunk az eredmenyben. Ilyen esetekben az egyik kategoriat ki lehet venni az abrarol, vagy a **szamossagot es a reszaranyt abrazolo abrakat egymas mellet** lehet bemutatni, hogy igy kiegeszitsek egymast. Ehhez hasznalhatjuk a **grid.arrange()** funkciot.	
+
+
+
+szamossag_plot <- 	
+COVID_adat_tegnap %>%	
+ggplot() +	
+  aes(x = continent, fill = gdp_per_capita_kat) +	
+  geom_bar()	
+	
+reszarany_plot <- 	
+COVID_adat_tegnap %>%	
+ggplot() +	
+  aes(x = continent, fill = gdp_per_capita_kat) +	
+  geom_bar(position = "fill") +	
+  ylab("proportion")	
+	
+grid.arrange(szamossag_plot, reszarany_plot, nrow=2)	
+	
+
+
+
+# A theme(legend.position) es a guides() funciok hasznalataval kontrollalhatjuk hogy hol es hogyan jelenjen meg a **jelmagyarazat** az abran. Az abra **interpretalhatosaga** attol fuggoen is **valtozhat**, hogy melyik valtozot tesszuk az x-tengelyre es melyiket szinkent abrazolva.	
+# Az alabbi abrakon az egymillio fore vetitett uj esetek szamanak kapcsolatat nezzuk meg a gdp-vel. Mindket valtozo eseten a csoportositott valtozot (_kat) hasznaljuk.	
+
+
+
+	
+	
+barchart_plot_3 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+  aes(x = new_cases_per_million_kat, fill = gdp_per_capita_kat) +	
+  geom_bar()	
+  	
+	
+barchart_plot_4 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+  aes(x = new_cases_per_million_kat, fill = gdp_per_capita_kat) +	
+  geom_bar(position = "fill") +	
+  ylab("proportion")	
+	
+grid.arrange(barchart_plot_3, barchart_plot_4, ncol=2)	
+	
+	
+	
+# a theme(legend.position) es a guides() funciok 	
+# hasznalataval kontrollalhatjuk hogy hol es hogyan 	
+# jelenjen meg a jelmagyarazat az abran	
+	
+barchart_plot_3 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+    aes(x = new_cases_per_million_kat, fill = gdp_per_capita_kat) +	
+    geom_bar() +	
+    theme(legend.position="bottom") +	
+    guides(fill = guide_legend(title.position = "bottom"))	
+  	
+	
+barchart_plot_4 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+  aes(x = new_cases_per_million_kat, fill = gdp_per_capita_kat) +	
+  geom_bar(position = "fill") +	
+  theme(legend.position="bottom") +	
+  guides(fill = guide_legend(title.position = "bottom")) +	
+  ylab("proportion")	
+	
+grid.arrange(barchart_plot_3, barchart_plot_4, ncol=2)	
+	
+
+
+# Ujabb modja a barchart segitsegevel valo megjelenitesnek ha az oszlopok nem egymasra tornyozva, hanem **egymas mellett** jelennek meg, vagy ha a masodik valtozo szerint **kulon paneleken (facet)** jelennek meg.	
+
+
+	
+barchart_plot_5 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+  aes(x = gdp_per_capita_kat, fill = new_cases_per_million_kat) +	
+  geom_bar(position = "dodge")	
+	
+barchart_plot_6 <- 	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million_kat, gdp_per_capita_kat) %>% 	
+  drop_na() %>% 	
+ggplot() +	
+  aes(x = gdp_per_capita_kat) +	
+  geom_bar() +	
+  facet_wrap(~ new_cases_per_million_kat)	
+	
+grid.arrange(barchart_plot_5, barchart_plot_6, nrow=2)	
+	
+
+
+
+
+# ### Egy kategorikus es egy numerikus valtozo kapcsolata	
+
+# Vizsgaljuk meg hogy hogyan alakul az egy fore juto GDP kontinensenkent. A GDP ebben az esetben egy folytonos valtozó (gdp_per_capita), es ennek az osszefuggeset szeretnenk megvizsgalni egy kategorikus valtozoval (continent).	
+
+# Az exploraciot kezdhetjuk leiro statisztikak lekerdezesevel csoportonkent. Peldaul ha arra vagyunk kivancsiak, milyen a GDP atlaga es szorasa kontinensenkent, ezt megvizsgalhatjuk a **group_by()** es a **summarize()** segitsegevel. 	
+
+
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>% 	
+  group_by(continent) %>% 	
+    summarize(mean = mean(gdp_per_capita),	
+              sd = sd(gdp_per_capita))	
+	
+
+
+
+# A ket valtozo kapcsolatat megvizsgalhatjuk **abrakkal** is. Pl. hasznalhatjuk a 	
+
+# - **facet_wrap()** fuggvenyt egy **geom_histogram()** vagy **geom_dotplot()** -al kobinalva	
+# - a **geom_boxplot()** -ot	
+# - esetleg hasznalhatunk egy egymasra illesztett **geom_density()** plot-ot. 	
+# - talan ebben az esetben a legtisztabb kepet a **geom_violin()** mutatja, ami a geom_boxplot() es a geom_density() keverekenek tekintheto. Ezt kiegeszithetunk egy **geom_point()** -al, hogy pontosan latsszon, hany megfigyelesen alapulnak az abra adatai.	
+
+# Mindig erdemes **tobb megkozelitest** is hasznalni az adat-exploracio kozben, hogy minel reszletesebb kepet kaphassunk, es csokkentsuk a valoszinuseget hogy egyik vagy masik megkozelites hianyossagai felrevezetnek minket.	
+
+
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = gdp_per_capita) +	
+    geom_histogram() +	
+    facet_wrap(~ continent)	
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = gdp_per_capita) +	
+    geom_dotplot() +	
+    facet_wrap(~ continent)	
+	
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = continent, y = gdp_per_capita) +	
+    geom_boxplot()	
+	
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = gdp_per_capita, fill = continent) +	
+    geom_density(alpha = 0.3)	
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = gdp_per_capita, fill = continent) +	
+    geom_density()+	
+  facet_wrap(~continent)	
+	
+
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = continent, y = gdp_per_capita, fill = continent) +	
+    geom_violin() +	
+    geom_jitter(width = 0.1)	
+
+
+
+
+# A fenti abran latszik, hogy Azsiaban a legtobb orszagban viszonylag alacsony a gdp, viszont van nehany **kiurgo ertek**, az atlagot felhuzza ebben a csoportban.	
+
+
+# Ha szeretnenk **kizarni az elemzesunkbol** az extrem ertekekt, a **filter()** funkcio beekelesevel a pipe-ba megepithetjuk a fenti abrankat es tablazatokat ugy, hogy csak a 50000-nel alancsonyabb GDP-ju orszagok keruljenek az abrara.	
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  filter(gdp_per_capita < 50000) %>% 	
+    ggplot() +	
+      aes(x = continent, y = gdp_per_capita) +	
+      geom_violin() +	
+      geom_jitter(width = 0.1)	
+	
+COVID_adat_tegnap %>%	
+  select(continent, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  filter(gdp_per_capita < 50000) %>% 	
+    group_by(continent) %>% 	
+      summarize(mean = mean(gdp_per_capita),	
+                sd = sd(gdp_per_capita))	
+	
+
+
+# Ha szeretnenk latni hogy a kisebb vagy nagyobb uj esetszammal jellemezheto orszagok (new_cases_per_million_kat) hogyan kulonboznek a GDP tekinteteben kontinensenkent akkor mar **harom valtozo** kapcsolatat kell abrazolnunk. Ehhez a facet_grid() funkciot lehet hasznalni, vagy kulonbozo esztetikai elemeket (aes()) lehet a kulonbozo valtozokhoz rendelni. (Az alabbi peldanal csak Europara es Eszak Amerikara korlatoztuk az adatbazist, hogy az abrak szemleletesebbek legyenek.)	
+
+
+
 
 
 # *______________________________* 	
 
 # ### Gyakorlas	
 
-# Hasznald a fent tanult modszereket, hogy megvizsgald a COVID_adat_tegnap adatbazisban a **new_cases_per_million_kat** es a **continent** valtozok kozotti osszefuggest.	
-# - hasznalj **geom_bar()** geomot a megjeleniteshez	
-# - probald meg mind a **szamossagot**, mind a **reszaranyt** kifejezo abrat megvizsgalni geom_bar(position = "fill")	
-# - milyen **kovetkeztetest** tudsz levonni az abrakrol?	
+# Hasznald a fent tanult modszereket, hogy megvizsgald a **total_cases_per_million** es a **gdp_per_capita_kat** valtozok kozotti osszefuggest.	
+
+# - hasznald a fenti geomokat, es keszits legalabb ket kulonbozo abrat mas-mas geomokkal	
 
 
 # *______________________________*	
 
 
-# Ennel a megjelenitesnel fontos hogy ha az egyes megfigyelesek **keves megfigyelesbol allnak**, az abra megteveszto lehet, mert az abra nem jelzi a megfigyelesek szamat es igy azt, hogy milyen biztosak lehetunk az eredmenyben. Ilyen esetekben az egyik kategoriat ki lehet venni az abrarol, vagy a **szamossagot es a reszaranyt abrazolo abrakat egymas mellet** lehet bemutatni, hogy igy kiegeszitsek egymast. Ehhez hasznalhatjuk a **grid.arrange()** funkciot.	
+# ### Ket numerikus valtozo kapcsolata	
 
+# **Ket numerikus valtozo** kozotti kapcsolat jellemzesere altalaban a korrelacios egyutthatot szoktuk hasznalni (cor()).	
+# A **cor()** funkciot akar tobb mint ket valtozo paronkenti korrelaciojanak meghatarozasara is lehet hasznalni.	
+
+# A **drop_na()** funkcioval kiejthetjuk azokat a megfigyeleseket, ahol a valtozok barmelyikeben hianyzo adat (NA) van. Ha ezt nem tesszuk meg, a cor() fuggveny NA eredmenyt adhna ha valamelyik valtozoban NA-val talalkozik.	
+
+
+
+	
+	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million, gdp_per_capita) %>% 	
+  drop_na() %>%	
+      cor()	
+	
+	
+COVID_adat_tegnap %>%	
+  select(new_cases_per_million, gdp_per_capita, hospital_beds_per_thousand) %>% 	
+  drop_na() %>%	
+      cor()	
+	
+
+
+
+# A numerikus valtozok kozotti kapcsolatot altalaban pont diagrammal szoktuk abrazolni (**geom_point()**)	
+
+# A **geom_smooth()** layer hozzaadasaval kaphatunk a pontok kozott meghuzodo trendrol egy kepet. A kek vonal az ugyevezett trendvonal, a szurke sav a konfidencia intervallum. Ezekrol kesobb meg reszletesebben beszelunk majd	
+
+
+
+	
+COVID_adat_tegnap %>%	
+  select(hospital_beds_per_thousand, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = hospital_beds_per_thousand, y = gdp_per_capita) +	
+    geom_point()	
+	
+COVID_adat_tegnap %>%	
+  select(hospital_beds_per_thousand, gdp_per_capita) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = hospital_beds_per_thousand, y = gdp_per_capita) +	
+    geom_point() +	
+    geom_smooth() 	
+
+
+# *______________________________* 	
+
+# ### Gyakorlas	
+
+# Milyen eros a kapcsolat a aged_70_older es a gdp_per_capita kozott?	
+
+# - hatarozd meg a korrelacios egyutthatot a valtozok kozott	
+# - abrazold a valtozok kapcsolatat	
+
+
+# *______________________________*	
+
+# Tobb folytonos valtozo kapcsolata megjelenitheto peldaul ugy, hogy az egyik valtozot egy szinskalahoz rendeljuk az alabbi modon.	
+
+
+COVID_adat_tegnap %>%	
+  select(hospital_beds_per_thousand, gdp_per_capita, aged_70_older) %>% 	
+  drop_na() %>%	
+  ggplot() +	
+    aes(x = hospital_beds_per_thousand, y = gdp_per_capita, col = aged_70_older) +	
+    geom_point()+ 	
+  scale_colour_gradientn(colours=c("green","black"))	
+	
 
