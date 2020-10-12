@@ -1,0 +1,1 @@
+# Ez egy helyfoglaló fájl a ZH mappájában. Ebbe a mappába lesz feltöltve a ZH feladat 2020.10.13. 14:30-kor.
