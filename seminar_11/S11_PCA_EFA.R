@@ -1,0 +1,701 @@
+# ---	
+# title: "Fokomponenselemzes es exploratoros faktorelemzes"	
+# author: "Zoltan Kekecs"	
+# date: "November 24 2020"	
+# output:	
+#   html_document:	
+#     number_sections: yes	
+#     toc: yes	
+#   pdf_document:	
+#     number_sections: yes	
+#     toc: yes	
+#   word_document:	
+#     toc: yes	
+# ---	
+# 	
+# 	
+knitr::opts_chunk$set(echo = T, tidy.opts=list(width.cutoff=60), tidy=TRUE)	
+# 	
+# 	
+# \pagebreak	
+# 	
+# # Absztrakt	
+# 	
+# Ebben a gyakorlatban a "dimenzionalitás átkaval" birkozunk meg. Ezt a valtozok szamanak csokkentesevel oldjuk meg a fokomponenselemzes (PCA) es az exploratoros faktorelemzes (EFA) segitsegevel.	
+# 	
+# Ez a gyakorlat nagy mertekben a DataCamp Dimensionality Reduction in R kurzusa alapjan lett osszeallitva.	
+# https://www.datacamp.com/courses/dimensionality-reduction-in-r	
+# 	
+# # Adat kezeles es leiro statisztikak	
+# 	
+# ## Csomagok betoltese	
+# 	
+# Ennek a gyakorlatnak a soran az alabbi csomagokat fogjuk hasznalni:	
+# 	
+# 	
+library(GGally) # for ggcorr	
+library(corrr) # network_plot	
+library(ggcorrplot) # for ggcorrplot	
+library(FactoMineR) # multiple PCA functions	
+library(factoextra) # visualisation functions for PCA (e.g. fviz_pca_var)	
+library(paran) # for paran	
+	
+library(psych) # for the mixedCor, cortest.bartlett, KMO, fa functions	
+library(car) # for vif	
+library(GPArotation) # for the psych fa function to have the required rotation functionalities	
+library(MVN) # for mvn function	
+library(ICS) # for multivariate skew and kurtosis test	
+library(tidyverse) # for tidy code	
+	
+# 	
+# 	
+# ## Sajat funkciok betoltese	
+# 	
+# Az alabbi fviz_loadnings_with_cor() a PCA es a faktorelemzes eredmenyeinke vizualizalasara szolgal.	
+# 	
+# 	
+fviz_loadnings_with_cor <- function(mod, axes = 1, loadings_above = 0.4){	
+  require(factoextra)	
+  require(dplyr)	
+  require(ggplot2)	
+	
+	
+	
+if(!is.na(as.character(mod$call$call)[1])){	
+  if(as.character(mod$call$call)[1] == "PCA"){	
+  contrib_and_cov = as.data.frame(rbind(mod[["var"]][["contrib"]], mod[["var"]][["cor"]]))	
+	
+vars = rownames(mod[["var"]][["contrib"]])	
+attribute_type = rep(c("contribution","correlation"), each = length(vars))	
+contrib_and_cov = cbind(contrib_and_cov, attribute_type)	
+contrib_and_cov	
+	
+plot_data = cbind(as.data.frame(cbind(contrib_and_cov[contrib_and_cov[,"attribute_type"] == "contribution",axes], contrib_and_cov[contrib_and_cov[,"attribute_type"] == "correlation",axes])), vars)	
+names(plot_data) = c("contribution", "correlation", "vars")	
+	
+plot_data = plot_data %>% 	
+  mutate(correlation = round(correlation, 2))	
+	
+plot = plot_data %>% 	
+  ggplot() +	
+  aes(x = reorder(vars, contribution), y = contribution, gradient = correlation, label = correlation)+	
+  geom_col(aes(fill = correlation)) +	
+  geom_hline(yintercept = mean(plot_data$contribution), col = "red", lty = "dashed") + scale_fill_gradient2() +	
+  xlab("variable") +	
+  coord_flip() +	
+  geom_label(color = "black", fontface = "bold", position = position_dodge(0.5))	
+	
+	
+}	
+} else if(!is.na(as.character(mod$Call)[1])){	
+  	
+  if(as.character(mod$Call)[1] == "fa"){	
+    loadings_table = mod$loadings %>% 	
+      matrix(ncol = ncol(mod$loadings)) %>% 	
+      as_tibble() %>% 	
+      mutate(variable = mod$loadings %>% rownames()) %>% 	
+      gather(factor, loading, -variable) %>% 	
+      mutate(sign = if_else(loading >= 0, "positive", "negative"))	
+  	
+  if(!is.null(loadings_above)){	
+    loadings_table[abs(loadings_table[,"loading"]) < loadings_above,"loading"] = NA	
+    loadings_table = loadings_table[!is.na(loadings_table[,"loading"]),]	
+  }	
+  	
+  if(!is.null(axes)){	
+  	
+  loadings_table = loadings_table %>% 	
+     filter(factor == paste0("V",axes))	
+  }	
+  	
+  	
+  plot = loadings_table %>% 	
+      ggplot() +	
+      aes(y = loading %>% abs(), x = reorder(variable, abs(loading)), fill = loading, label =       round(loading, 2)) +	
+      geom_col(position = "dodge") +	
+      scale_fill_gradient2() +	
+      coord_flip() +	
+      geom_label(color = "black", fill = "white", fontface = "bold", position = position_dodge(0.5)) +	
+      facet_wrap(~factor) +	
+      labs(y = "Loading strength", x = "Variable")	
+  }	
+}	
+	
+	
+	
+	
+	
+	
+return(plot)	
+	
+}	
+# 	
+# 	
+# ## A Human Styles Questionnaire betoltese	
+# 	
+# Alabb betoltjuk a "Human Styles Questionnaire" adatbazist, ami a Martin et. al. (2003). kutatasabol szarmazik, akik a HSQ kerdoivet vettek fel 1071 szemellyel.	
+# 	
+# Az adatbazis elso 32 oszlopa Q1-Q32 a kerdoiv egyes teteleire adott valaszokat tartalmazza minden szemelytol. A valaszadoknak mind a 32 allitasrol ertekelnie kellett, hogy mennyire igaz az ra nezve. A valaszok ordinalis skalan mozognak, 1-tol 5-ig: 1="soha vagy nagyon ritkan igaz"", 5="nagyon gyakran vagy soha nem igaz". Ilyen allitasok szerepelnek a kerdoivben mint: "Q1: Altalaban nem nevetek vagy viccelodok masokkal." (Q1: "I usually don't laugh or joke around much with other people.")	
+# 	
+# A kerdoiv itemei a kovetkezoek:	
+# 	
+# - Q1. I usually don’t laugh or joke around much with other people.	
+# - Q2. If I am feeling depressed, I can usually cheer myself up with humor.	
+# - Q3. If someone makes a mistake, I will often tease them about it.	
+# - Q4. I let people laugh at me or make fun at my expense more than I should.	
+# - Q5. I don’t have to work very hard at making other people laugh—I seem to be a naturally humorous person.	
+# - Q6. Even when I’m by myself, I’m often amused by the absurdities of life.	
+# - Q7. People are never offended or hurt by my sense of humor.	
+# - Q8. I will often get carried away in putting myself down if it makes my family or friends laugh.	
+# - Q9. I rarely make other people laugh by telling funny stories about myself.	
+# - Q10. If I am feeling upset or unhappy I usually try to think of something funny about the situation to make myself feel better.	
+# - Q11. When telling jokes or saying funny things, I am usually not very concerned about how other people are taking it.	
+# - Q12. I often try to make people like or accept me more by saying something funny about my own weaknesses, blunders, or faults.	
+# - Q13. I laugh and joke a lot with my closest friends.	
+# - Q14. My humorous outlook on life keeps me from getting overly upset or depressed about things.	
+# - Q15. I do not like it when people use humor as a way of criticizing or putting someone down.	
+# - Q16. I don’t often say funny things to put myself down.	
+# - Q17. I usually don’t like to tell jokes or amuse people.	
+# - Q18. If I’m by myself and I’m feeling unhappy, I make an effort to think of something funny to cheer myself up.	
+# - Q19. Sometimes I think of something that is so funny that I can’t stop myself from saying it, even if it is not appropriate for the situation.	
+# - Q20. I often go overboard in putting myself down when I am making jokes or trying to be funny.	
+# - Q21. I enjoy making people laugh.	
+# - Q22. If I am feeling sad or upset, I usually lose my sense of humor.	
+# - Q23. I never participate in laughing at others even if all my friends are doing it.	
+# - Q24. When I am with friends or family, I often seem to be the one that other people make fun of or joke about.	
+# - Q25. I don’t often joke around with my friends.	
+# - Q26. It is my experience that thinking about some amusing aspect of a situation is often a very effective way of coping with problems.	
+# - Q27. If I don’t like someone, I often use humor or teasing to put them down.	
+# - Q28. If I am having problems or feeling unhappy, I often cover it up by joking around, so that even my closest friends don’t know how I really feel.	
+# - Q29. I usually can’t think of witty things to say when I’m with other people.	
+# - Q30. I don’t need to be with other people to feel amused – I can usually find things to laugh about even when I’m by myself.	
+# - Q31. Even if something is really funny to me, I will not laugh or joke about it if someone will be offended.	
+# - Q32. Letting others laugh at me is my way of keeping my friends and family in good spirits.	
+# 	
+# A HSQ-n kivul az adatbazis tartalmaz mas valtozokat is: 	
+# 	
+# - gender - Faktor valtozo: 1=male, 2=female, 3=other)	
+# - accuracy - Mennyire ereztek pontosnak a valasazikat a HSQ keredeskre. 0-100-as skalan ertekelve. (A vizsgalati szemelyeknek azt mondtak hogy az irjon 0-t aki nem szeretne hogy a kiserletben felhasznaljak az adatat).	
+# - life_stress - Ez egy uj valtozo ami em volt benne az eredeti kutatasban (szimulalt adat). Arra utal, hogy altalanossagban mennyire stresszesnek erzi az eletet a valaszado 0-9-es skalan, ahol a 0 azt jelenti hogy semennyire, 9 azt jelenti, hogy extremen stresszes.	
+# 	
+# Az adatbazis tartalmaz hianyzo adatokat. Az egyszeruseg kedveert most zarjuk ki azokat a valaszadokat akiknek akar egy adatpont is hianyzik a sorabol.	
+# 	
+# 	
+	
+hsq <- read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_11/Humor%20Style%20Questionnaire.csv")	
+	
+hsq <- hsq %>% 	
+  drop_na()	
+	
+	
+hsq %>% 	
+describe()	
+	
+	
+	
+# 	
+# 	
+# 	
+# ## Az adatsor megtekintese	
+# 	
+# Vizsgaljuk meg az adatok strukturajat es az alapveto leiro statisztikakat.	
+# 	
+# 	
+	
+str(hsq)	
+	
+summary(hsq)	
+	
+	
+# 	
+# 	
+# 	
+# 	
+# 	
+# 	
+# Let’s say we would like to determine which are the most important features in humor style that could help us determine life_stress. One way for doing this would be to fit a linear regression model with life_stress as a dependent and Q1-Q32 of the questions as predictors.	
+# If we run this model, in the Coefficients table we find that there are multiple variables that seem to have a significant added predictive power to the model. However, we also know that we have performed 32 statistical tests, which leads to an inflated risk for type I error. There is a large probability that at least one (or multiple) of these predictors are not really related to the outcome, the finding is just a “chance finding” due to sampling error (the luck of the draw in our sample). We have the same problem if we test the correlation of all of the predictors and the outcome variable.	
+# 	
+# 	
+# 	
+	
+mod_allitems = lm(life_stress ~ Q1 + Q2 + Q3 + Q4 + Q5 + Q6 + Q7 + Q8 + Q9 + Q10 +	
+                     Q11 + Q12 + Q13 + Q14 + Q15 + Q16 + Q17 + Q18 + Q19 + Q20 +	
+                     Q21 + Q22 + Q23 + Q24 + Q25 + Q26 + Q27 + Q28 + Q29 + Q30 + 	
+                     Q31 + Q32,	
+                     data = hsq)	
+  	
+summary(mod_allitems)	
+	
+# 	
+# 	
+# 	
+# In fact, if we run the correlation matrix (Anlalyse > Correlate > Bivariate) of all predictors, we see that almost every predictor variable is also correlated significantly with the other predictors. The collinearity diagnostics (VIF in the regression output) tells us that this multicollinearity is not problematic in our particular model (The VIFs are all below 3), but we can imagine that the correlation of the variables could lead to issues with multicollinearity as well in another similar study. 	
+# 	
+# 	
+# 	
+# 	
+# 	
+	
+hsq_items_only = hsq %>% 	
+                  select(Q1:Q32)	
+	
+cor = hsq_items_only %>% 	
+  cor()	
+	
+cor	
+	
+vif(mod_allitems)	
+	
+# 	
+# 	
+# 	
+# 	
+# ## The curse of dimensionality	
+# 	
+# 	
+# So entering 32 intercorrelated predictors into our model is not ideal, especially if we have a small sample size. This is sometimes referred to in the literature as the curse of dimensionality. Dimensionality refers to the fact that in statistical models such as regression, the more variables we have in the model, the higher dimensions are used in the math. For example, in simple regression, the regression line is truly a line that can be depicted in a two dimensional space: the dependent variable on the y axis and the predictor on the x axis. However, if we have two predictors (multiple regression), the regression line is actually a regression plane, that can only be depicted in a 3 dimensional space: the dependent variable on the y axis and the predictors on the x and z axes, and so on. In a linear regression with 32 predictors, the regression plane is 33 dimensional. The more dimensions we have, the more flexible our model is, able to fit to the nooks and crannies of the sampling error, leading to higher and higher risk of overfitting.	
+# 	
+# This problem gets more and more problematic as the number of dimensions or parameters in the model is getting close to the number of observations. If we fit a simple regression line (using only 1 predictor) on data with only 2 observations, there is a line that fits the data perfectly, since there is always a straight line that can connect two points. Since the regression will find the line which passes closest to the observations, with 2 observations we will end up with a regression model that has 0 error. This might seem good at first, but this is actually bad. This means that our model can perfectly fit the error in our sample, and will have almost no resemblance of the actual pattern in the population. The same goes if we have 3 observations and a model with 2 predictors: there is a plane (sheet) that can perfectly fit 3 points in a 3 dimensional space, sothe model can again fit to the error and we don’t know how much information we gain about the actual pattern in the whole population. So it is easy to see that the closer the number of dimensions is to the number of observations, the more flexible the model is, and the less informative the model coefficients would be for new data due to overfitting.	
+# 	
+# ## A korrelacios struktura vizualizacioja	
+# 	
+# Nehany valtozo osszefuggeset konnyen atlathatova tehetjuk vizualizacion keresztul. Azonban ha **sok valtozoval van dolgunk**, a vizualizacio es egyeb korabban tanult feltaro adatelemzesi technikak kudarcot vallhatnak egyszeruen azert mert tul sok az informacio amit nehez atlatni es vizualizalni. Ez jol latszik az alabbi abrakon.	
+# 	
+# 	
+# 	
+	
+ggcorr(cor)	
+	
+ggcorrplot(cor(hsq_items_only), p.mat = cor_pmat(hsq_items_only), hc.order=TRUE, type='lower')	
+	
+	
+# from a different dataset, mtcars, because there are too many variables in hsq to be displayed here	
+cor(mtcars) %>% network_plot(min_cor=0.6)	
+	
+cor(hsq_items_only) %>% network_plot(min_cor=0.6)	
+	
+	
+# 	
+# 	
+# 	
+# # Fokomponenselemzes	
+# 	
+# ## A fokomponenselemzes modell megepitese	
+# 	
+# Amikor a dimenzionalitas atkaval szembesulunk, az egyik megoldasi lehetoseg a valtozok (dimenziok) szamanak csokkentese. Ha szimplan kizarnak nehany valtozot, mondjuk a valtozok modellhez hozzaadott bejoslo erteke alapjan, az szinten hozzajarulna a tulilleszteshez (ezt korabbi orakon lathattuk). 	
+# 	
+# Ehelyett egy masik lehetoseg, hogy osszevonjuk a modellben levo valtozokat valamilyen szempontrendszer szerint. Ha ranezunk a korrelacios matrixra es a korrelacios abrakra, lathatjuk hogy vanak klaszterek a valtozok kozott, es a klasztereken belul a valtozok jobban korrelalnak, mint klaszterek kozott. Idealis lenne, ha azokat a valtozokat vonnank ossze amelyek ugyanazon klaszteren belul vannak. A **fokomponenselemzes** egy matematikai megoldast jelent arra, hogy ezt hogyan tehetjuk meg.	
+# 	
+# A **fokomponenselemzest**, hasznalhatjuk arra, hogy lecsokkentsuk a valtozok szamat amivel dolgoznunk kell, ugy, hogy kozben **a leheto legtobb informaciot tartunk meg az adatok variabilitasarol**.	
+# 	
+# ## How does PCA work?	
+# 	
+# In principal component analysis our goal is to reduce the number of dimensions. Nevertheless, in PCA we start by creating the same number of dimensions as we previously had. What we do is we re-define the orientation of the coordinate axes that we previously had defined by our variables. Basically what we do is shift our perspective of the observations, while the observations keep their original relations to each other. But we do this shift in the dimensions systematically with a purpose: we first find a dimension on which the data has the most variance, this dimension captures the most variance from the data. We start from this initial dimension/axis, then find another dimension which captures most of the **remaining** variance. The variance that is not already captured by the first dimension, and so on, until we reach the number of dimensions we started out with. It turns out that we can maximize the amount of variance explained by each consecutive dimension if the dimension is perpendicular (orthogonal, at a 90 degree angle) to the previous dimensions. So we end up with a new coordinate system with the same number of dimensions as before, but with a different orientation. 	
+# 	
+# Importantly, the new set of dimensions are systematically different from each other in the amount of variance captured by them. The amount of variance on a given dimension is called the **eigenvalue** of that dimension, and going from the first dimension we identified to the last, the eigenvalue (amount of variance in that particular dimension) decreases. This is the fact that allows us to reduce the number of dimensions in the end, because as the amount of variance on the dimensions decreases, the dimensions get less and less useful, less and less informative for us. A dimension (variable) on which almost all observatrions take the same or very similar values is less important to consider, so we might disregard some of the dimensions extracted this way and still be able to retain most of the information about the variability in our dataset. Imagine that we did a study among children in the first grade of primary school, and we record their age among ther variables. Imagine that it turns out that almost everyone in the sample is age 6 with just a few months between all the children. We might decide to ignore this variable in our study, since there is almost no variability in it in our sample. In PCA we artificially generate such variables, and variables that are extremely informative in comparison, in order to make it easier for us to decide which ones to retain and which ones to exclude from our analysis.	
+# 	
+# ## PCA hasznalata R-ben	
+# 	
+# A fokomponenselemzest a **PCA() (principal component analysis)** funkcioval tudjuk elvegezni a FactoMineR package-bol. Az elemzes eredmenyet egy pca_mod modell objektumba mentettem el. Ami egybol kiad ket **abrat a ket legfontosabb fokomponensrol (dimenziorol)** amik a leghatekoonyabban irjak le az adatokat.	
+# 	
+# Az egyik abran az latszik, hogy **az egyes megfigyelesek** (ebben az esetben az egyes auto-modellek) **hol helyezkednek el a ket dimenzio menten**. A masodik abra pedig arrol szol, hogy a **dimenziok milyen korrelaciot mutatnak az eredeti valtozokkal**. A szaggatott vonalak mutatjak a fokomponenseket. A nyilak minel kozelebb fekszenek a szaggatott vonalhoz, a valtozo annal inkabb egyuttjar az adott dimenzioval a masik dimenzioval szemben.	
+# 	
+# 	
+# 	
+# Peladaul a Q9 es a Q10 itemeket sokkal jobban leirja a Dim1 mint a Dim2. (a nyil iranya alapjan megallapithato hogy a Q9 negativan, a Q10 pozitivan korrelal a Dim1-el.) Ezzel szemben a Q8 valtozo nyila a ket dimenzio kozott helyezkedik el, ami azt jelenti hogy vagy midkettovel nagyjabol azonos mertekben korrelal (ez lehet nagyon kicsi, vagy akar nagyon nagy korrelacio is).	
+# 	
+# 	
+# 	
+	
+pca_mod <- PCA(hsq_items_only)	
+	
+# 	
+# 	
+# 	
+# Arra oda kell figyelnunk hogy kategorikus valtozok ne keruljenek a fokomponenselemzes valtozoi koze. 	
+# 	
+# A PCA() funkcioban lehetosegunk van arra hogy meghatarozzunk olyan valtozokat az adatbazisban, amiket nem szeretnenk beepiteni a PCA modellbe. 	
+# 	
+# Azokat a folytonos valtozokat, amiket nem szeretnenk figyelembevenni a PCA soran, a quanti.sup parameterben kell megadnunk, azokat pedig amik kategorikusak a quali.sup parameterben. Itt az addott valtozo oszlopszamat kell megadnunk, nem pedig a nevet, igy ezt eloszor ki kell keresnunk. Ezt megtehetjuk a which(names(hsq) == "valtozo neve") funkcioval.	
+# 	
+# Az alabbi peldaban a drat folytonos, es a cyl, vs, es az am kategorikus valtozokat kiemeljuk a modellbol, igy azok nincsenek figyelembe veve a pca_mod3 fokomponenseinek meghatarozasa soran, de az abrakon ettol meg szerepelnek. Ebben az esetben termeszetesen a modell ujra illesztesre kerul, es a szamszeru ertekek megvaltoznak a korabbi futtatashoz kepest amikor ezek a valtozok meg szerepeltek a modellben.	
+# 	
+# 	
+# 	
+	
+which(names(hsq) == "gender")	
+	
+which(names(hsq) == "affiliative")	
+which(names(hsq) == "life_stress")	
+	
+	
+pca_mod2 <- PCA(hsq, quanti.sup = c(32, 33, 34, 35, 36, 37, 39, 40), quali.sup = 38)	
+	
+summary(pca_mod2)	
+# 	
+# 	
+# 	
+# ## Hany fokemponenst nyerjunk ki?	
+# 	
+# A fokomponenselemzes egy dimenzioredukcios technika, vagyis **celunk hogy kevesebb dimenzionk legyen** az elemzes vegere, mint ahany valtozoval kezdtuk az elemzest. Viszont hogyha ranezunk a model summary-ra, lathatjuk hogy a PCA funkcio alapertelmezett modon **pontosan annyi dimenziot generalt mint amennyi valtozonk volt**. 	
+# 	
+# **Meg kell adnunk a PCA funkcionak, hany dimenaziot akarunk** kinyerni. De hogyan tudjuk eldonteni, mennyi az idealis szamu dimenzio?	
+# 	
+# Erre szamos modszer letezik. 	
+# 	
+# **1. Scree test**	
+# 	
+# A legismertebb talan a scree-test, ami a megmagyarazott varianciaaranyt abrazolo abra alapjan vegezheto el. Ehhez eloszor a fviz_screeplot() funkcioval abrazolnunk kell az egyes fokomponensek altal megmagyarazott variancia merteket, majd az abra alapjan meg kell allapitanunk, hol van a **"tores" a scree-plotban**, vagyis hol talalhato az a pont, ami utan mar ellaposodik a megmagyarazott varianciaaranyt abrazolo gorbe. **A torespont elotti dimenzional** kell hogy megalljon a dimenzio-extrakcio, vagyis annal a dimenzional, ami meg szignifikansan tobb varianciat kepes megmagyarazni, mint a kesobb kinyerd dimenziok. Ezt a megallasi szabalyt ugy is nevezik hogy a **"konyok kriterium"**, mivel a scree plot egy konyokre emlekeztet, es mi a konyokpontot keressuk a gorbeben.	
+# 	
+# Ezen az abran ugy tunik, hogy a **negyedik dimenzio** utan mar nem erdemes tovabbmennunk, hiszen az otodik dimenzional megtorik a gorbe es onnantol mar nagyon alacsony a megmagyarazott varianciaarany. Vagyis az idealis dimenzioszam ezen az adaton 4.	
+# 	
+# 	
+	
+fviz_screeplot(pca_mod2, addlabels = TRUE, ylim = c(0, 85))	
+	
+	
+# 	
+# 	
+# **The Kaiser-Guttman szabaly**	
+# 	
+# Egy masik jol ismert kriterium, hogy azokat a dimenziokat kell megtartanunk, amelyeknek az **eigenvalue erteke 1-nel magasabb**. Ez azert van, mert **az 1-nel alacsonyabb** eigenvalue azt jelenti, hogy **a dimenzio kevesebb varianciat magyaraz meg mint az eredeti valtozok atlagosan**. A fokomponens elemzes lenyege hogy **hasznos osszefoglalo valtozokat** generaljunk amik **tobb valtozo informaciojat tartalmazzak osszevonva**. Azt pedig nem szeretnenk hogy meg az eredeti valtozoinknal is haszontalanabb valtozokat generaljunk, ezert az atlagos valtozoinknal kisebb varianciat megmagyarazo dimenziokat elutasitjuk.	
+# 	
+# A peldankban ez az elemzes is azt sugallja, hogy het dimenziot tartsunk meg, hiszen a nyolcadik dimenziohoz tartozo eigenvalue mar 1-nel kisebb.	
+# 	
+# 	
+# 	
+	
+get_eigenvalue(pca_mod2)	
+	
+	
+# 	
+# 	
+# **Parallel elemzes**	
+# 	
+# A harmadik (es egyben jelenleg a legelfogadottabb) technika a **parallel elemzes** technika. Ennek a lenyege hogy az eredeti adattablankhoz hasonlo karakterisztikakkal rendelkezo **adatokat generalunk veletlenszeruen**, de ugy, hogy abban a **valtozok ne korrelaljanak egymassal**. Ezt nagyon sokszor megismeteljuk, es ez alapjan a nagy mennyisegu random minta alapjan kiszamoljuk, **mi a veletlenszeruen varhato eigenvalue mintazat**. Ez egyfajta **"null modelkent"** funkcional, amihez hasonlithatjuk a sajat adatainkon kapott eignevalue-kat. Azokat a dimenziokat tartjuk meg, amiknek az **eigenvalue-ja magasabb mint a random mintakban az adott dimenziohoz tartozo null-eigenvalue**. 	
+# 	
+# Ezt a parallel elemzest vegezhetjuk el a **paran()** funkcioval a paran package-bol. Ez a funkcio a null eigenvalue gorbe vizualizalasara is kepes a graph = TRUE prameter beallitasaval, melyet osszehasonlithatunk az adatainkban kapott eigenvalue-val. Az output objektum $Retained komponense megmutatja, az elemzes hany dimenzio megtartasat javasolja.	
+# 	
+# 	
+# 	
+# 	
+	
+pca_ret = paran(hsq_items_only, 	
+                    graph = TRUE)	
+	
+pca_ret$Retained	
+	
+	
+# 	
+# 	
+# 	
+# 	
+# Amint meghataroztuk az idealis dimenziok szamat, ujra lefuttathatjuk az elemzesunket, de ezuttal mar specifikalmva, mennyi dimenziot szeretnenk, a npc parameter beallitasaval.	
+# 	
+# 	
+	
+pca_mod3 <- PCA(hsq_items_only, ncp = 4)	
+	
+summary(pca_mod3)	
+	
+	
+# 	
+# 	
+# 	
+# ## Fokomponenselemzes eredmenyeinek ertelmezese	
+# 	
+# ### a PCA modell opjektum reszei	
+# 	
+# A modell osszefoglalobol **(model summary)** tovabbi hasznos informaciok olvashatok ki. 	
+# 	
+# Az **Eigenvalues** reszben megtudhatjuk hogy az egyes dimenziok az **adatok teljes varianciajanak hany szazalekat magyarazzak meg (% of var)**, es hogy a legfontosabbtol a legalacsonyabbig egyesevel osszevonva mekkora a tobb dimenzio altal megmagyarazott **osszesitett varianciaarany (Cumulative % of var)**. Vagyis a Dim.3-hoz tartozo % of variance ertek (`r round(pca_mod3[["eig"]][,"percentage of variance"][3],2)`) azt mutatja, hogy a harmadikkent kinyert dimenzio az adatok varianciajanak `r round(pca_mod3[["eig"]][,"percentage of variance"][3],2)*100`%-at tudja megmagyarazni onmagaban. Az Dim.3-hoz tartozo dim Cumulative % of var ertek (`r round(pca_mod3[["eig"]][,"cumulative percentage of variance"][3],2)` pedig azt mutatja, hogy a Dimenzio 3 a Dim.1 es Dim.2-vel egyutt kozosen az adatok varianciajanak (`r round(pca_mod3[["eig"]][,"cumulative percentage of variance"][3],2)*100`%-at kepesek megmagyarazni. Ha csak az eigenvalue-t es a megmagyarazaott varianaciaaranyokat tartalmazo tablazat erdekel minket, ezt kinyerhetjuk ugy hogy csak a  pca_mod3$eig komponenst listazzuk ki.	
+# 	
+# A model summary arrol is tartalmaz informaciot a Variables reszeben, hogy az egyes **valtozok hogyan korrelalnak az egyes uj dimenziokkal** (a Dim.1, Dim.2, Dim.3 ... oszlopokaban), es hogy mekkora a hozzajarulasuk az adott valtozo altal megmagyarazott varianciahoz (a ctr oszlopban). Ez egy nagyon fontos tablazat, mert innen tudjuk leolvasni (az abrak mellett) hogy az egyes valtozokat mely dimenziok (faktorok) irjak le leginkabb. Bovebb informaciot talalunk ha kilistazzuk a pca_mod3$var komponenst.	
+# 	
+# 	
+# 	
+# Get the summary the outputs.	
+summary(pca_mod3)	
+	
+pca_mod3$eig	
+	
+pca_mod3$var	
+# 	
+# 	
+# ### Az eredmenyek vizualizalasa	
+# 	
+# Az eredmenyek vizualizalasa segithet a komponensek ertelmezeseben. A fviz_pca_var()  es a fviz_pca_ind() segitsegevel reprodukalhatjuk a PCA funcio altal eredetileg general abrakat. Sot, a kettot ossze is vonhatjuk a fviz_pca_biplot() funkcioval. Igy egyszerre lathatjuk hogy a ket legfontosabb dimenzio menten hol helyezkednek el az egyes megfigyelesek (az autok), es hogy a dimenziok foleg mely valtozokat reprezentaljak. (A repel = T parameterbeallitas arra jo hogy a feliratok ne fedjek egymast hanem elcsusztatva szerepeljenek az abran ha tul kozel lennenek egymashoz) 	
+# 	
+# 	
+fviz_pca_var(pca_mod3, repel = T)	
+fviz_pca_ind(pca_mod3)	
+fviz_pca_biplot(pca_mod3)	
+	
+# 	
+# 	
+# Az abrakat tovabb tunningolhatjuk azzal, hogy abrazoljuk rajtuk az egyes valtozok vagy megfigyelesek hozzajarulasat (contribution) az abrazolt dimenziohoz a , col.var = "contrib" es , col.ind = "contrib" parametereken keresztul. 	
+# 	
+# Azt is megtehetjuk, hogy a select.ind = parameteren keresztul hogy csak bizonyos megfigyeleseket teszunk az abrara.Pl. cos^2 ertek azt mutatja, hogy az adott megfigyeles vagy valtozo menyire jol reprezentalt az adott dimenzio altal. A select.ind = list(cos2 = 10) parameter beallitasaval meghatarozhatjuk, hogy csak az a 10 megfigyeles szerepeljen az abran, akiknek a ket diemnziora vonatkozo cos^2 osszege a legmagasabb. Vagyis a ket dimenzio altal leirt dimenzioter 10 legreprezentativabb megfigyelese.	
+# 	
+# 	
+fviz_pca_var(pca_mod3, repel = T, col.var = "contrib")	
+fviz_pca_ind(pca_mod3, select.ind = list(cos2 = 10))	
+fviz_pca_biplot(pca_mod3, select.ind = list(cos2 = 10), col.var = "contrib")	
+	
+# 	
+# 	
+# Ez az abra azt mutatja hogy a magas Dim.1, kozepes Dim.2 legtipikusabb tagjai pl. az 573-as es a 900-as megfigyelesek, az alacsony Dim.2. kozepes Dim.1 legtipikusabb tagja talan a 738-as szemely, es az alacsony Dim.1. es magas Dim.2. legtipikusabb tagja a 822-es megfigyeles. Ez fontos lehet a dimenziok ertemezeseben.	
+# 	
+# 	
+# 	
+# 	
+	
+fviz_pca_ind(pca_mod3, select.ind = list(cos2 = 10), repel = T)	
+	
+# 	
+# 	
+# Egy masik fontos abratipus az egyes dimenziok ertelmezesenek elosegitesehez a  **fviz_contrib() altal generalt barchart**, ami az egyes valtozok egyes dimenziokhoz valo hozzajarulasat mutatja meg. 	
+# 	
+# Az **axes = parameterrel allithatjuk be, melyik dimenziora** vagyunk kivancsiak. **A piros szaggatott vonal** azt mutatja, hogy mi lenne az **elvart hozzajarulas szazaleka** abban az esetben ha minden valtozo azonos mertekben jarulna hozza a dimenzio megmagyarazasahoz.	
+# 	
+# Ez az abra akkor lenne igazan informativ ha a korrelacio merteke es iranya is egyertelmu lenne rola. Ezt onmagaban nem tartalmazza a fviz_contrib() funkcio, ezert a **fviz_loadnings_with_cor() sajat funkcio** hasznalataval helyettesitjuk, melyen az oszlopok a korrelacio szerint vannak szinezve es a korrelacio feliratkent is szerepel az abran.	
+# 	
+# Ezek az abra azt mutatjak, hogy a Dim.1-hez elsosorban Q14, Q17, Q5, Q1 valtozok jarulnak hozza, mig a Dim.2-hoz elsosorban a Q20, Q8, Q4 es Q24 valtozok jarulnak hozza, mig a Dim.3-hoz a Q31, Q15, Q7.	
+# 	
+# Ezek alapjan az abrak alapjan, es a reprezentativ esetek abraja alapjan mit gondolsz, hogyan nevezhetnek el az egyes dimenziokat?	
+# 	
+# 	
+# original functions in factoextra	
+# fviz_contrib(pca_mod3, choice = "var", axes = 1)	
+# fviz_contrib(pca_mod3, choice = "var", axes = 2)	
+# fviz_contrib(pca_mod3, choice = "var", axes = 3)	
+	
+# using custom function for correlation color gradient	
+fviz_loadnings_with_cor(mod = pca_mod3, axes = 1)	
+fviz_loadnings_with_cor(mod = pca_mod3, axes = 2)	
+fviz_loadnings_with_cor(mod = pca_mod3, axes = 3)	
+	
+	
+	
+# 	
+# 	
+# A vizualizaciot arra is hasznalhatjuk, hogy csoportositsuk a megfigyeleseket a dimenziokon mutatott ertekuk alapjan. Ezt az addEllipses = T parameterrel adhatjuk meg.	
+# 	
+# Hogyan jellemezned az egyes elipszisekben talalhato embereket az alapjan, hogy az 1. es 2. dimenzion milyen ertekekt vesznek fel?	
+# 	
+# 	
+	
+fviz_pca_ind(pca_mod3, 	
+             label = "ind",	
+    habillage=factor(hsq$gender),	
+    addEllipses = T)	
+	
+# 	
+# 	
+# # Bevezetes a feltaro faktorelemzesbe (Exploratory Factor Analysis - EFA)	
+# 	
+# A faktorelemzes egy masik dimenzioredukcios technika ami hasonlit a fokomponenselemzeshez. A ketto kozott fontos kulonbseg hogy a faktorelemzest akkor hasznaljuk, ha feltetelezzuk hogy a sok valtozonk hattereben kozos okok, ugynevezett latens faktorok allnak, es ez okozza, hogy a megfigyelt valtozoink korrelalnak egymassal.	
+# 	
+# Amikor egy feltaro faktorelemzesi (EFA) modellt epitunk, nem probaljuk megmagyarazni a teljes varianciat az adatokban, mert megengedjuk hogy a latens faktorok csak reszben magyarazzak a megfigyelt valtozok varianciajat. A **fennmarado varianciat vagy meresi hiba, vagy olyan faktorok befolyasoljak, amik egyediak a megfigyelt valtozora**. Ezert az EFA-ban minden egyes megfigyelt valtozohoz tartozik egy "kommunalitas" **(communality)** ertek. Ez az ertek azt mutatja meg, hogy **az adott valtozoban megfigyelheto variancia mekkora hanyadat magyarazzak a latens faktorok**. A fennmarado varianciat a valtozora egyedi faktor vagy meresi hiba magyarazza (ezt egyedisegnek, vagy uniqueness-nek is nevezzuk).	
+# 	
+# A faktorelemzes legfontsabb lepesei:	
+# 	
+# - Faktoralhatosag ellenorzese	
+# - Faktorkinyeres	
+# - Idealis faktorszam kivalasztasa	
+# - Faktorforgatas	
+# - Faktorok ertelmezese	
+# 	
+# 	
+# ## Adatok faktoralhatosaga	
+# 	
+# Az adatfaktoralhatosag tesztelesekor azt a kerdest valaszoljuk meg, hogy van-e elegendo egyuttjaras (korrelacio) a megfigyelheto valtozok kozott, ami lehetove teszi az EFA elvegzeset. Ennek tesztelesere ket modszert is alkalmazunk: a Bartlett sphericity tesztet es a Kaiser-Meyer-Olkin tesztet.	
+# 	
+# Mindenek elott azonban **az adatok korrelacios matrixara van szuksegunk**, amin ezeket a teszteket lefuttathatjuk. Ezt megkaphatnank a cor() funkcioval ha folytonos valtozokkal dolgoznank, de ebben az adatbazisban **ordinalis adatokkal van dolgunk**, igy egy masik funkciot hasznalunk aminek a neve **mixedCor() a psych package-bol**. Ez a funkcio kepes az ordinalis adatok eseten hasznalatos **"Polychoric Correlation"** meghatarozasara. A mixedCor() funkcioban meghatarozzuk hogy melyek a folytonos valtozok, es melyek az ordinalis valtozok. A Q1-Q32 mind ordinalis, ezert csak a p = 1:32-t hatarozzuk meg, a c=-t pedig NULL-ra allitjuk, mert nincs folytonos skalan mozgo (continuous) valtozo.	
+# 	
+# Fontos, hogy a korrelacios matrixot a mixedCor() **a $rho komponenseben tarolja**, ezert ezt kell elmentenunk egy uj adatobjektumba. Mentsuk el ezt a hsq_correl nevu objektumba.	
+# 	
+# 	
+	
+hsq_mixedCor <- mixedCor(hsq, c=NULL, p=1:32)	
+hsq_correl = hsq_mixedCor$rho	
+	
+# 	
+# 	
+# **___________________Gyakorlas (opcionalis) ___________________**	
+# 	
+# A fentebb tanultak alapjan vizualizald a valtozok kozotti korrelaciot. Hasznalj tobb modszert is, pl. ggcorr(), ggcorrplot() hc.order=TRUE-val kombinalva, vagy network_plot().	
+# 	
+# 	
+# **_____________________________________________________________**	
+# 	
+# 	
+# **Bartlett sphericity teszt**	
+# 	
+# A bartlett teszt lenyege hogy a **valos korrelacios matrixot** osszehasonlitjuk egy **hipotetikus null-korrelacios matrix-al**, amiben minden korrelacio 0 erteket vesze fel (identity matrix). A null hipotezis amit itt tesztelunk az, hogy a ket korrelacios matrix nem kulonbozik egymastol. Ha a teszt szignifikans, az azt jelenti hogy **az adattabla valtozoi korrelalnak egymassal**.	
+# 	
+# Azonban fontos megjegyezni, hogy a Bartlett tesztnek van egy hatulutoje, megpedig hogy **nagy elemszamoknal szinte biztosan szignifikans** eredmenyt ad. Csak olyankor erdemes erre a mutatora hagyatkozni a faktoralhatosag megallapitasakor amikor amikor a megfigyelesek szama es a megfigyelt valtozok szamanak **aranya kisebb mint 5**. A mi esetunkben ez az arany 1071/32 = 33.5, vagyis a Bartlett teszt eredmenye nem megbizhato.	
+# 	
+# 	
+# 	
+# 	
+	
+bfi_factorability <- cortest.bartlett(hsq_correl)	
+bfi_factorability	
+	
+# 	
+# 	
+# **Kaiser-Meyer-Olkin (KMO) teszt**	
+# 	
+# A KMO teszt a **parcialis korrelacios matrixot** hasonlitja ossze a szokasos korrelacios matrixal. A parcialis korrelacio soran meghatarozzuk hogy **mekkora ket valtozo kozotti korrelacio, ha kivonjuk a tobbi valtozo hatasat a korrelaciobol**. A KMO ertek azt mutatja, hogy mekkora a kulonbseg a parcialis korrelaciok es a szokasos korrelaciok kozott. A KMO egy kulonbseg ertek, a parcialis korrelaciok es a szokasos korrelaciok kozotti kulonbseget jelzi. Azokban az esetekben ahol a valtozok sok kozos varianciat hordoznak (vagyis valoszinu hogy mogottuk egy kozos latens faktor all), a parcialis korrelaciok alacsonyak, vagyis a KMO index magas. A KMO tesztben az 1-hez kozeli ertekek jok jo faktoralhatosagot mutatnak. A KMO index-nek legalabb 0.6-nak kell lennie hogy ugy iteljuk hogy a valtozok faktoralhatoak.	
+# 	
+# A mi peldankban a **KMO minden valtozo eseten magasabb 0.6-nal, es az osszesitett KMO is magasabb 0.6-nal**, igy faktoralhatonak tekinthetok a valtozok.	
+# 	
+# 	
+	
+KMO(hsq_correl)	
+	
+# 	
+# 	
+# ## Faktorextrakcio	
+# 	
+# A faktorokat az fa() funkcioval fogjuk kinyerni. Ez a funkcio tobb faktorextrakcios modszert is kinal. A leggyakrabban hasznalt modszer a **Maximum Likelihood Estimation** (mle) akkor ha a megfigyelt valtozok megfelelnek a tobbvaltozos normalitas feltetelenek, mig a **Principal Axis Factoring** (paf) a preferalt modszer akkor, ha a valtozok nem mutatnak tobbvaltozos normalis eloszlast.	
+# 	
+# Az mvn() funkcio az MVN package-bol es a mvnorm.kur.test() es a mvnorm.skew.test() funkciok az ICS package-bol segithet eldonteni, hogy tobbvaltozos normalis eloszlast mutatnak-e az adatok. Ha ezeknek a teszteknek a **p-erteke alacsonyabb 0.05-nel, akkor az a tobbvaltozos normalitas serulesere utal**.	
+# 	
+# 	
+	
+	
+result <- mvn(hsq[,1:32], mvnTest = "hz")	
+result$multivariateNormality	
+	
+mvnorm.kur.test(na.omit(hsq[,1:32]))	
+mvnorm.skew.test(na.omit(hsq[,1:32]))	
+	
+# 	
+# 	
+# Fent lathato hogy mind a Henze-Zirkler teszt mind a tobbvaltozos ferdeseg es csucsossag tesztek a normalitas feltetelenek serulesere utal. Igy a **paf extrakcios modszert** hasznaljuk majd. 	
+# 	
+# A faktorextrakciora a psych package fa() funkciojat hasznaljuk. Ezen belul megadhatjuk a faktoreztrakcios modszert az fm = parameteren belul. Itt fm = "pa"-t hatarozunk meg, mert a paf modszert szeretnenk hasznalni, de ha a tobbvaltozos normalitas nem serult volna, akkor ehelzett "mle"-t hasznaltunk volna. Az alabbi peldaban meg nem akartam faktorforgatast alkalmazni, hogy lepesrol lepesre tudjam bemutatni a faktorelemzes modszeret, igy a rotate = erteket "none"-ra allittam, de altalaban a faktorokat egybol el is forgatjuk valamelyik modszerrel (lasd alabb). Az nfactors = parameterrel adhatjuk meg, hany faktort szeretnenk kinyerni. Egyelore allitsuk ezt 5-re, lentebb tartgyaljuk majd, hogyan valasztjuk ki az idealis faktormennyiseget.	
+# 	
+# A modell objektum $communality komponenseben talaljuk a valtozokhoz tartozo kommunalitas ertekekt. Ezt legmagasabbtol legalacsonyabbig sorbarendezzuk es kilistazzuk. Ahogy fentebb emlitettuk a kommunalitas azt jelzi, hogy az egyes megifigyelt valtozokban tapasztalhato variancia mekkora hanyadat magyarazzak a kinyert faktorok.  Az output azt mutatja, hogy a Q17  "Altalaban nem szeretek viccelodni, vagy masokat szorakoztatni" ("I usually don't like to tell jokes or amuse people.") a legjobban reprezentalt item az 5 faktoros strukturaban, aminek 68%-at kepesek megmagyarazni az uj faktorok. Ezzel szemben a Q22 "Amikor szomoru vagy ideges vagyok altalaban elvesztem a humorerzekemet" ("If I am feeling sad or upset, I usually lose my sense of humor.") a legkevesbe reprezentalt item, varianciajanak csak 25%-at magyarazza a jelenlegi faktorstruktura.	
+# 	
+# Neha ahhoz hogy a faktorstruktura jol mukodjon, erdemes a rosszul reprezentalt itemeket kizarni. Ez foleg akkor fontos, ha kicsi a mintaelemszam. **Ha a megfigyelesek szama 250 alatti, akkor MacCallum et al. szerint elvarhato hogy az itemek atlagos kommunalitasa legalabb 0.6 legyen.** A mi esetunkben ennel megengedobbek is lehetunk, mert az elemszamunk nagyobb, de egy melyebb faktorelemzes eseten igy is erdemes lehet elgondolkodni a rosszul reprezentalt itemek kizarasan.	
+# 	
+# MacCallum, R. C., Widaman, K. F., Zhang, S., & Hong, S. (1999). Sample size in factor analysis. Psychological methods, 4(1), 84.	
+# 	
+# 	
+	
+EFA_mod1 <- fa(hsq_correl, nfactors = 5, fm="pa")	
+	
+# Sorted communality 	
+EFA_mod1_common <- as.data.frame(sort(EFA_mod1$communality, decreasing = TRUE))	
+EFA_mod1_common 	
+	
+mean(EFA_mod1$communality)	
+	
+# 	
+# 	
+# 	
+# ## Idealis faktorszam kivalasztasa	
+# 	
+# A fokomponenselemzeshez hasonloan meg kell hataroznunk, hany faktort szeretnenk kinyerni az adatokbol. Ahogy azt a fokomponenselemzesnel is lattuk, ennek az eldontesere hasznalhatjuk a scree-tesztet, a Kaiser-Guttman kriteriumot, vagy a parallel tesztet. Ezen felul a psych pacakge ket ujabb modszert is felkinal a donteshozas elosegitesere: a very simple structure (VSS) kriteriumot, es a Wayne Velicer's Minimum Average Partial (MAP) kriteriumot. (A vss() funkcio a psych package-ben)	
+# 	
+# Az alabbi peldaban a psych package fa.parallel funciojat es az nfactors funkciot hasznaljuk arra, hogy a kulonbozo kriteriumok szerint eldonthessuk, hany faktor megtartasa lenne idealis.	
+# 	
+# A kulonbozo technikak altal javasolt idealis faktorszamok a kovetkezok:	
+# 	
+# - scree-tesztet: 4	
+# - Kaiser-Guttman kriterium: 4	
+# - Parallel tesztet: 7	
+# - VSS: 3-4	
+# - MAP: 4	
+# 	
+# Ezek alapjan ugy tunik, a legtobb technika szerint 4 latens faktor irja le az adatok variabilitasat a legjobban. Alabb meg is epitjuk ezt a 4-faktoros modellt, es megvizsgaljuk a kommunalitas-tablazatot. A faktorelemzes soran nagyon gyakori, hogy a folyamatot ujra es ujra megismeteljuk kulonbozo bemeneti valtozokkal es kulonozo faktorszamokkal es rotacios modszerekkel, amig elerjuk a veglegesnek tekintheto faktorstrukturat. A vegleges faktorstruktura idealis esetben jol ertelmezheto a faktorok es a hozzajuk tartozo valtozo-toltesek alapjan.	
+# 	
+# 	
+	
+	
+fa.parallel(hsq_correl, n.obs = nrow(hsq),	
+        fa = "fa", fm = "pa")	
+	
+nfactors(hsq_correl, n.obs = nrow(hsq))	
+	
+EFA_mod2 <- fa(hsq_correl, nfactors = 4, fm="pa")	
+	
+EFA_mod2_common <- as.data.frame(sort(EFA_mod2$communality, decreasing = TRUE))	
+EFA_mod2_common 	
+	
+mean(EFA_mod2$communality)	
+	
+	
+# 	
+# 	
+# 	
+# 	
+# ## Faktorforgatas	
+#  	
+# A faktorforgatas celja hogy megkonnyitse a faktorok ertelmezeset. Igy elkerulheto hogy az egesz faktorstruktura 1 vagy ket nagyon dominans faktorbol alljon, amire angyon erosek a toltesek, mig a tobbi faktor ertelmezese kodos. A faktorforgatas soran az eredeti valtozok ugyan ott maradnak a "faktorterben", viszont a faktorok dimenzio tengelyeit elforgatjuk, hogy jobban railleszkedjenek egyes valtozocsoportokra. 	
+# 	
+# A faktorforgatasnak szamos modszere ismert, de ezek ket fo csoportba sorolhatok: ortogonalis es oblique modszerek koze. Az ortogonalis modszerek (mint pl. Quartimax, Equimax, vagy a pszichologiaban leggyakrabban hasznalt **Varimax** modszer) soran a faktor dimenziok egymasra merolegesek maradnak (ez azt jelenti hogy egymassal nem korrelalnak majd a vegso faktorok). Az oblique modszerek (mint pl. **Direct Oblimin** vagy a Promax) eseten viszont megengedett hogy a vegso faktorok valamellyest korrelaljanak egymassal. Az exploratoros faktorelemzes soran tobb modszert is kiprobalhatunk, de itt fontos az elmeleti megalapozottsag is. Elkepzelheto hogy a faktorok korrelaljanak egymassal? Ha igen, akkor az oblique modszerekre erdemes hagyatkozni. (Altalaban a korrelalatlan faktorokat konnyebb ertelmezni).	
+# 	
+# Az alapertelmezett faktorforgatasi modszer a Direct Oblimin ("oblimin"). Probaljuk ki a Promax ("promax) es a Varimax ("varimax") modszereket is.	
+# 	
+# 	
+# 	
+	
+EFA_mod2$rotation	
+	
+EFA_mod_promax <- fa(hsq_correl, nfactors = 4, fm="pa", rotate = "promax")	
+	
+EFA_mod_varimax <- fa(hsq_correl, nfactors = 4, fm="pa", rotate = "varimax")	
+	
+# 	
+# 	
+# ## Faktorok interpretacioja	
+# 	
+# A faktorok ertelmezese nem konnyu feladat. Sok teruletspecifikus tudasra van szuseg a helyes faktrostruktura kivalasztasahoz es a helyes faktorertelmezeshez. Itt ezert csak a kulonbozo vizualizacios modszereket mutatjuk be amik segithetnek a faktorok ertelmezeseben.	
+# 	
+# Az fa.diagram() funkcio kirajzolja a model objektum alapjan a faktorstrukturat, es azt, hogy melyik valtozo melyik faktorra mutatja a legnagyobb faktortoltest (melyik faktorral a legnagyobb a korrelacioja). Az abran lathatoak az egyes korrelacios egyutthatok is. A fekete nyilak pozitiv, mig a piros nyilak negativ korrelaciokat jeleznek. 	
+# 	
+# Tovabbi segitseget nyujthat a sajat funkcio amit a fokomponsneselemzesnel is hasznaltunk: fviz_loadnings_with_cor(). Itt a fa() modelek eseten megadhatjuk a loading_above = parameterst is, ahol specifikalhatjuk, hogy csak a bizonyos abszolut faktortoltes (korrelacio) feletti megfigyelt valtozokat abrazoljuk. Ez megkonnyitheti az abra atlathatosagat.	
+# 	
+# 	
+	
+fa.diagram(EFA_mod2)	
+	
+fviz_loadnings_with_cor(EFA_mod2, axes = 1, loadings_above = 0.4)	
+	
+fviz_loadnings_with_cor(EFA_mod2, axes = 2, loadings_above = 0.4)	
+	
+fviz_loadnings_with_cor(EFA_mod2, axes = 3, loadings_above = 0.4)	
+	
+fviz_loadnings_with_cor(EFA_mod2, axes = 4, loadings_above = 0.4)	
+	
+	
+# 	
+# 	
+# 	
+# 	
+# **___________________Gyakorlas (opcionalis)___________________**	
+# 	
+# A fent tanult technikakat a Big Five Inventory (bfi) adatbazison gyakorolhatod. Ez a psych package-be beepitett adatbazis, ami 2800 szemely valaszait tartalmazza a Big Five szemelyisegkerdoiv kerdeseira. Az elso 25 oszlop a kerdoiv kerdeseire adott valaszokat tartalmazza, az utolso harom oszlop (gender, education, es age) pedig demografiai kerdeseket tartalmaz. A reszleteket az egyes itemekhez tartozo kerdesekrol es a valaszok kodolasarol elolvashatod ha lefuttatod a ?bfi parancsot.	
+# 	
+# Az adatbazist betoltheted a kovetkezo parancsokkal. 	
+# 	
+# 	
+	
+?bfi	
+	
+data(bfi)	
+my_data_bfi = bfi[,1:25]	
+	
+	
+# 	
+# 	
+# Ebben a feladatban csak az elso 25 oszlopot hasznald, az eredeti kerdoiv kerdeseit. Vegezz el feltaro faktorelemzest, es ez alapjan hatarozd meg, hany faktor megtartasa az idealis, mely faktorokra mely itemek toltenek leginkabb, es ez alapjan hogyan nevezned el a faktorokat. Melyek a faktorstruktura altal leginkabb es a legkevesbe reprezentalt itemek?	
+# 	
+# **____________________________________________________________**	
+# 	
+# 	
