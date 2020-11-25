@@ -3,9 +3,6 @@
 
 # Ebben a gyakorlatban a "dimenzionalitás átkaval" birkozunk meg. Ezt a valtozok szamanak csokkentesevel oldjuk meg a fokomponenselemzes (PCA) es az exploratoros faktorelemzes (EFA) segitsegevel.	
 
-# Ez a gyakorlat nagy mertekben a DataCamp Dimensionality Reduction in R kurzusa alapjan lett osszeallitva.	
-# https://www.datacamp.com/courses/dimensionality-reduction-in-r	
-
 # # Adat kezeles es leiro statisztikak	
 
 # ## Csomagok betoltese	
@@ -111,9 +108,9 @@ return(plot)
 }	
 
 
-# ## A Human Styles Questionnaire betoltese	
+# ## A Humor Styles Questionnaire betoltese	
 
-# Alabb betoltjuk a "Human Styles Questionnaire" adatbazist, ami a Martin et. al. (2003). kutatasabol szarmazik, akik a HSQ kerdoivet vettek fel 1071 szemellyel.	
+# Alabb betoltjuk a "Humor Styles Questionnaire" adatbazist, ami a Martin et. al. (2003). kutatasabol szarmazik, akik a HSQ kerdoivet vettek fel 1071 szemellyel.	
 
 # Az adatbazis elso 32 oszlopa Q1-Q32 a kerdoiv egyes teteleire adott valaszokat tartalmazza minden szemelytol. A valaszadoknak mind a 32 allitasrol ertekelnie kellett, hogy mennyire igaz az ra nezve. A valaszok ordinalis skalan mozognak, 1-tol 5-ig: 1="soha vagy nagyon ritkan igaz"", 5="nagyon gyakran vagy soha nem igaz". Ilyen allitasok szerepelnek a kerdoivben mint: "Q1: Altalaban nem nevetek vagy viccelodok masokkal." (Q1: "I usually don't laugh or joke around much with other people.")	
 
@@ -192,10 +189,13 @@ summary(hsq)
 
 
 
+# Mondjuk hogy szeretnenk meghatarozni melyek az emerekek humor stilusanak legfobb jellegzetessegei, melyek meghatarozzak a szemely stresszel valo viszonyat. Masneven hogy a humor stilus mely aspektusaival segithetnek bejosolni a szemely altalanos stressz-szintjet. Egy modja hogy ezt meghatarozzuk, hogy epitunk egy regresszios modellt, amiben a life_stress valtozot josoljuk be a Humor Style Questionnaire itemeivel (Q1-Q32).	
 
-# Let’s say we would like to determine which are the most important features in humor style that could help us determine life_stress. One way for doing this would be to fit a linear regression model with life_stress as a dependent and Q1-Q32 of the questions as predictors.	
-# If we run this model, in the Coefficients table we find that there are multiple variables that seem to have a significant added predictive power to the model. However, we also know that we have performed 32 statistical tests, which leads to an inflated risk for type I error. There is a large probability that at least one (or multiple) of these predictors are not really related to the outcome, the finding is just a “chance finding” due to sampling error (the luck of the draw in our sample). We have the same problem if we test the correlation of all of the predictors and the outcome variable.	
+# Amikor lefuttatjuk ezt a modellt, a regresszios egyutthatok szignifikanciaja alapjan ugy tunik hogy a modell egeszeben szignifikansan jobb mint a null modell, es tobb olyan item is van aminek van sziginfikans hozzaadott erteke a modellhez, vagyis erdemes a humor stilust figyelembe venni a stressz meghatarozasanal. 	
 
+# De ha arra vagyunk kivancsiak hogy a humor stilus mely aspektusai fontosak, ezt nehez ebbol a regresszios elemzesbol megallapitani. Egyreszt nem bizhatunk meg teljesen a p-ertekekben, mert 32 statistzikai tesztet hajtottunk verge, a 32 item hozzaadott megmagyarazo ertekenek tesztelesekor, ami nagyban noveli az elsofaju hiba (fals pozitiv) valoszinuseget. Vagyis nagy a valoszinusege hogy a szignifikanskent megjelol prediktorok kozul egy, vagy tobb nincs valodi osszefuggesben a stresszel a populacioban. 	
+
+# Masreszt figyelembe kell venni hogy a prediktorok korrelalnak egymassal, vagyis bizonyos prediktorok a stressz varianciajanak hasonlo rezset magyarazzak, es ebben a modellben lehet hogy az egyes prediktorok mas korrelalo prediktorok hatasat elmaszkoljak.	
 
 
 	
@@ -209,10 +209,7 @@ summary(mod_allitems)
 	
 
 
-
-# In fact, if we run the correlation matrix (Anlalyse > Correlate > Bivariate) of all predictors, we see that almost every predictor variable is also correlated significantly with the other predictors. The collinearity diagnostics (VIF in the regression output) tells us that this multicollinearity is not problematic in our particular model (The VIFs are all below 3), but we can imagine that the correlation of the variables could lead to issues with multicollinearity as well in another similar study. 	
-
-
+# A prediktorok kozotti korrelaciorol megbizonyosodhatunk ha lekerdezzuk a prediktorok korrelacios matrixat a cor() fugvennyel. A vif() fugvennyel megnezhetjuk hogy ez az interkorrelacio problemas multikollinearitashoz vezet-e a modellunkben (ebben az esetben a vif 3 alatt marad minden esetben, vagyis nincs szamottevo multikollinearitas, de mas hasonlo esetben amikor kerdoivek minden itemet a modellbe epitjuk ez is konnyen elofordulhat.)	
 
 
 
@@ -231,12 +228,11 @@ vif(mod_allitems)
 
 
 
-# ## The curse of dimensionality	
+# ## A dimenzionalitas atka	
 
+# Vagyis 32 egymassal korrelalo prediktor bevonasa a modellbe nem idealis annak a megertesere, hogy a humor stilus mely aspektusai fontosak a stressz meghatarozasaban. Sot, ez kifejezetten problemas minel kisebb a minta-elemszam a prediktorok szamahoz kepest. Ezt a statisztikusok gyakran a "**dimenzionalitas atka**"-kent emlegetik. A "dimenzionalitas" arra utal, hogy minel tobb valtozo van a modellunkben, az adatokat annal tobb-dimenzios terben lehet modellezni. Peldaul az egyszeru regresszional amikor csak egy kimeneti valtozonk es egy prediktorunk van, az adatok egy ketdimenzios terben abrazolhatok: a kimeneti valtozo az y tengelyen (dimenzion), a prediktor pedig az x tengelyen (dimenzion) abrazolva. A regresszios egyenes ebben az esetben valoban egy egyenes. Amikor mar ket prediktorunk van, az adatok egy harom dimenzios terben abrazolhatok, es a regresszios modell egy regresszios sik, nem csak egy egyenes. Amikor 32 prediktorunk van a fenti peldaban, a modellunk egy 33 dimenzios felulet. Minel tobb dimenzioban mozoghat a modell, annal flexibilisebb, vagyis annal nagyobb a tulillesztes valoszinusege. Ezert torekednunk kell a dimenziok (prediktorok) szamanak minimalizalasara hogy elkerulhessuk a tulillesztest.  	
 
-# So entering 32 intercorrelated predictors into our model is not ideal, especially if we have a small sample size. This is sometimes referred to in the literature as the curse of dimensionality. Dimensionality refers to the fact that in statistical models such as regression, the more variables we have in the model, the higher dimensions are used in the math. For example, in simple regression, the regression line is truly a line that can be depicted in a two dimensional space: the dependent variable on the y axis and the predictor on the x axis. However, if we have two predictors (multiple regression), the regression line is actually a regression plane, that can only be depicted in a 3 dimensional space: the dependent variable on the y axis and the predictors on the x and z axes, and so on. In a linear regression with 32 predictors, the regression plane is 33 dimensional. The more dimensions we have, the more flexible our model is, able to fit to the nooks and crannies of the sampling error, leading to higher and higher risk of overfitting.	
-
-# This problem gets more and more problematic as the number of dimensions or parameters in the model is getting close to the number of observations. If we fit a simple regression line (using only 1 predictor) on data with only 2 observations, there is a line that fits the data perfectly, since there is always a straight line that can connect two points. Since the regression will find the line which passes closest to the observations, with 2 observations we will end up with a regression model that has 0 error. This might seem good at first, but this is actually bad. This means that our model can perfectly fit the error in our sample, and will have almost no resemblance of the actual pattern in the population. The same goes if we have 3 observations and a model with 2 predictors: there is a plane (sheet) that can perfectly fit 3 points in a 3 dimensional space, sothe model can again fit to the error and we don’t know how much information we gain about the actual pattern in the whole population. So it is easy to see that the closer the number of dimensions is to the number of observations, the more flexible the model is, and the less informative the model coefficients would be for new data due to overfitting.	
+# A tulillesztesnek annal nagyobb a veszelye minel inkabb kozelit a prediktorok szama a megfigyelesek szamahoz. Amikor egy prediktorunk van, vagyis az adat ketdimenzios terben irhato le. Ha csak ket megfigyelesunk lenne, akkor a regresszios egyenes tokeletes illeszkedest erhetne el, mert mindig van egy olyan egyenes ami osszekot ket pontot, es ezt a regresszio megtalalja. Belathato hogy ez a regresszios egyenes amit csak ket megfigyeles alapjan ilélesztettunk nagyon serulekeny lesz az adatokban levo hibara, es nem fogja megbizhatoan megranagni a populacioban talalhato valos osszefuggest a prediktor es a kimeneti valtozo kozott. Szoval ahogy a tulillesztesrol szolo oran is lathattuk, a tokeletes illeszkedes a mintankhoz valojaban nem jo, mert a populacio helyett csak a mintaban levo latszolagos mintazatokra illeszkedik a modell amit nagyon befolyasolhat a mintaveteli hiba. Ugyan ez a helyzet amikor egy 2 prediktoros modellt illesztunk 3 megfigyelesre. Mivel a regresszios modell itt egy regresszios sik, egy sikot mindig lehet ugy forgatni hogy pontosan osszekosson 3 pontot, igy az illeszkedes tokelehetes lesz, ami eros tulilleszteshez vezet. Ebbol extrapolalva konnyen lathato hogy ahogy a prediktorok szama kozelit a megfigyelesek szamahoz, a modellunk egyre kevesbe lesz megbizhato a populacio megismeresehez, es egyre serulekenyebb lesz a tulilessztesre.	
 
 # ## A korrelacios struktura vizualizacioja	
 
@@ -267,13 +263,16 @@ cor(hsq_items_only) %>% network_plot(min_cor=0.6)
 
 # Ehelyett egy masik lehetoseg, hogy osszevonjuk a modellben levo valtozokat valamilyen szempontrendszer szerint. Ha ranezunk a korrelacios matrixra es a korrelacios abrakra, lathatjuk hogy vanak klaszterek a valtozok kozott, es a klasztereken belul a valtozok jobban korrelalnak, mint klaszterek kozott. Idealis lenne, ha azokat a valtozokat vonnank ossze amelyek ugyanazon klaszteren belul vannak. A **fokomponenselemzes** egy matematikai megoldast jelent arra, hogy ezt hogyan tehetjuk meg.	
 
-# A **fokomponenselemzest**, hasznalhatjuk arra, hogy lecsokkentsuk a valtozok szamat amivel dolgoznunk kell, ugy, hogy kozben **a leheto legtobb informaciot tartunk meg az adatok variabilitasarol**.	
+# A **fokomponenselemzest** (principal component analysis, roviden PCA), hasznalhatjuk arra, hogy lecsokkentsuk a valtozok szamat amivel dolgoznunk kell, ugy, hogy kozben **a leheto legtobb informaciot tartunk meg az adatok variabilitasarol**.	
 
-# ## How does PCA work?	
+# ## Hogyan mukodik a PCA?	
 
-# In principal component analysis our goal is to reduce the number of dimensions. Nevertheless, in PCA we start by creating the same number of dimensions as we previously had. What we do is we re-define the orientation of the coordinate axes that we previously had defined by our variables. Basically what we do is shift our perspective of the observations, while the observations keep their original relations to each other. But we do this shift in the dimensions systematically with a purpose: we first find a dimension on which the data has the most variance, this dimension captures the most variance from the data. We start from this initial dimension/axis, then find another dimension which captures most of the **remaining** variance. The variance that is not already captured by the first dimension, and so on, until we reach the number of dimensions we started out with. It turns out that we can maximize the amount of variance explained by each consecutive dimension if the dimension is perpendicular (orthogonal, at a 90 degree angle) to the previous dimensions. So we end up with a new coordinate system with the same number of dimensions as before, but with a different orientation. 	
+# A fokomponenselemzes (PCA) soran az a celunk altalaban hogy csokkentsuk a dimenziok szamat, amivel az adataink leirhatok. Ezt ugy erjuk el, hogy eloszor uj dimenziokat keresunk, amelyek minel nagyobb reszet magyarazzak az adatok valtozekonysaganak, majd eldobjuk azokat a dimenziokat, amik a variancia megertesenek viszonylag kis resezert felnek. A PCA soran eloszor azonositunk egy elsodleges dimenziot, ami menten az adatok a legnagyobb varianciat mutatjak. Ez utan azonositunk egy erre meroleges uj dimenziot, ami a **fennmarado** variancia legnagyobb reszet kepes magyarazni, es igy tovabb, addig amig el nem erjuk az eredetileg a fokomponenselemzesbe rakott valtozok szamat. (Mivel a dimenziok merolegesek egymasra, ezert ket dimenzio a variancia mindig valamilyen uj reszet irja le, nincs redundancia a dimenziok altal megmagyarazott varianciaban.) Igy a fokomponenselemzes vegere egy uj koordinatarendszert kapunk, amiben az adatokat abrazolhatjuk. 	
 
-# Importantly, the new set of dimensions are systematically different from each other in the amount of variance captured by them. The amount of variance on a given dimension is called the **eigenvalue** of that dimension, and going from the first dimension we identified to the last, the eigenvalue (amount of variance in that particular dimension) decreases. This is the fact that allows us to reduce the number of dimensions in the end, because as the amount of variance on the dimensions decreases, the dimensions get less and less useful, less and less informative for us. A dimension (variable) on which almost all observatrions take the same or very similar values is less important to consider, so we might disregard some of the dimensions extracted this way and still be able to retain most of the information about the variability in our dataset. Imagine that we did a study among children in the first grade of primary school, and we record their age among ther variables. Imagine that it turns out that almost everyone in the sample is age 6 with just a few months between all the children. We might decide to ignore this variable in our study, since there is almost no variability in it in our sample. In PCA we artificially generate such variables, and variables that are extremely informative in comparison, in order to make it easier for us to decide which ones to retain and which ones to exclude from our analysis.	
+# Fontos, hogy az uj koordinatarendszer dimenzioi nagyban elternak abban hogy az adatok mennyire variabilisek az adott dimenzioban. Az elso nehany "fokomponens" (dimenzio) amit kivalasztottunk a varianica nagyon nagy reszet lefedi, es a fennmarado dimenziokban az adatok alig mutatnak variabilitast. Egy adott dimenzioban a variancia merteket **eigenvalue**-nak nevezzuk. Ahogy az elsotol az utolsokent azonositott dimenzio fele haladunk az eigenvalue egyre csokken (vagyis a dimenzioban megfigyelheto variancia). Ez engedi meg hogy csokkentsuk a dimenziok szamat, mert a PCA vegen azonositott dimenziokon elhanyagolhato lesz az adatok kulonbozosege egymastol, igy ezeket a dimenziokat elvethetjuk, es csak a **leghasznosabb dimenziokat tartjuk meg**.	
+
+# Kepzeljuk el peldaul hogy egy kutatasban arra vagyunk kivancsiak hogy mennyire erettek az iskolakezdo elso osztalyosok. A kutatasban merjuk a gyerekek verbalis keszsegeit, szociabilitasat, es eletkorat evekben. Kiderul hogy a vizsgalt mintaban szinte minden elso osztalyos 6 eves, vagyis szinte semmi variabilitas nincs az eletkorban (ha csak evekben merjuk). Ettol a valtozotol akar el is tekinthetunk a kutatasunkban, hiszen annyira nem kulonboznek benne a vizsgalt szemlyeink. Ezzel szemben a szociabilitasban es a verbalis keszsegekben nagyobb szemlyeke kozotti kulonbseget merunk, ezert ezek fontos indikatorok a kutatasunkban abbol a szempontbol, hogy a gyerekeket megkulonboztessuk erettseguk szintjeben. A fokomponenselemzes soran mestersegesen generalunk uj valtozokat ugy hogy azok direkt nagyon nagy vagy nagyon keves varianciat magyarazzanak, hogy a keves varianciat magyarazo valtozokat elvethessuk ugty, hogy kozben minel tobb informaciot tartsunk meg az adatok kulonbozosegerol.	
+
 
 # ## PCA hasznalata R-ben	
 
@@ -515,7 +514,7 @@ hsq_correl = hsq_mixedCor$rho
 
 # A bartlett teszt lenyege hogy a **valos korrelacios matrixot** osszehasonlitjuk egy **hipotetikus null-korrelacios matrix-al**, amiben minden korrelacio 0 erteket vesze fel (identity matrix). A null hipotezis amit itt tesztelunk az, hogy a ket korrelacios matrix nem kulonbozik egymastol. Ha a teszt szignifikans, az azt jelenti hogy **az adattabla valtozoi korrelalnak egymassal**.	
 
-# Azonban fontos megjegyezni, hogy a Bartlett tesztnek van egy hatulutoje, megpedig hogy **nagy elemszamoknal szinte biztosan szignifikans** eredmenyt ad. Csak olyankor erdemes erre a mutatora hagyatkozni a faktoralhatosag megallapitasakor amikor amikor a megfigyelesek szama es a megfigyelt valtozok szamanak **aranya kisebb mint 5**. A mi esetunkben ez az arany 1071/32 = 33.5, vagyis a Bartlett teszt eredmenye nem megbizhato.	
+# Azonban fontos megjegyezni, hogy a Bartlett tesztnek van egy hatulutoje, megpedig hogy **nagy elemszamoknal szinte biztosan szignifikans** eredmenyt ad. Csak olyankor erdemes erre a mutatora hagyatkozni a faktoralhatosag megallapitasakor amikor amikor a megfigyelesek szama es a megfigyelt valtozok szamanak **aranya kisebb mint 5**. A mi esetunkben ez az arany 993/32 = 31.03, vagyis a Bartlett teszt eredmenye nem megbizhato.	
 
 
 
