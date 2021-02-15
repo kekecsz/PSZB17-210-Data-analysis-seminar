@@ -158,7 +158,7 @@ mean(USArrests$Murder)
 	
 
 
-# A másik pedig lehetőség a **paraméterezés**. Ebben a megoldásban az objektum neve után egy szögletes zárójelet rakunk, és azon belül határozzuk meg, az objektum melyik részét szeretnénk megtartani, vagy éppen elvetni. 	
+# A másik lehetőség a részelemek kiválasztására (subsetting-re) a **paraméterezés**. Ebben a megoldásban az objektum neve után egy szögletes zárójelet rakunk, és azon belül határozzuk meg, az objektum melyik részét szeretnénk megtartani, vagy éppen elvetni. 	
 
 
 USArrests[,"Murder"]	
