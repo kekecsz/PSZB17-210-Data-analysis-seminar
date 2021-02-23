@@ -29,7 +29,7 @@
 # 6.feladat:
 ## Számold ki az átlagos várható élettartamot kontinensenként külön minden mérési évre, majd ábrázold
 ## ezt az átlagos várható élettartam változását az évek során egy vonal ábrával (geom_line) úgy, hogy
-## a színek a különböző országokat ábrázolják. 
+## a színek a különböző kontinenseket ábrázolják. 
 
 # 7.feladat: 
 ## Értelmezd az ábrát. Ez alapján melyik kontinensen nőtt leginkább a várható élettartam 1952 és 2007 között?
