@@ -8,7 +8,6 @@
 ## A kész gyakorlófeladatot mentsd el a saját Drive mappádba. 
 ## A fájl neve ez legyen: 
 ## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20200912.R” !
-## A beadási határidő minden héten vasárnap éjfél.
 
 
 ### Ismétlés: Adatkezelés a tidyverse-ben #
