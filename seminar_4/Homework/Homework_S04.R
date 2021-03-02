@@ -9,12 +9,12 @@
 # https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv
 # Ha a fenti link nem mukodne, alternativ link: "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_4/COVID19_OWID_20200929.csv"
 
-# 3. feladat: Szurd az adatokat ugy, hogy csak a 2020-09-29 datummal 
+# 3. feladat: Szurd az adatokat ugy, hogy csak a legutobbi datummal 
 # felvett adatok legyenek benne. Rendeld hozza ezt a szurt adatottablat egy uj objektumhoz
-# aminek a neve: COVID_20200929
+# aminek a neve: COVID_latest
 
-# 4. feladat: Listazz ki az atlagot, legalacsonyabb es legmagasabb ertekek, es mediant
-# a COVID_20200929 adatbazisban a kovetkezo valtozokrol: 
+# 4. feladat: Listazd ki az atlagot, legalacsonyabb es legmagasabb ertekek, es mediant
+# a COVID_latest adatbazisban a kovetkezo valtozokrol: 
 # new_cases, new_cases_per_million, total_cases, gdp_per_capita
 
 # 5. feladat: Abrazold a population_density valtozo eloszlasat tetszoleges abraval.
@@ -23,7 +23,7 @@
 # hogy harom csoport alakuljon ki: 100 alatt - "ritka", 100-500 - "kozepes", 500 felett - "suru". 
 # (Emlekezteto: ezt a mutate() es a case_when() funkciokkal tudod peldaul elerni.) 
 # Ezt az uj valtozot nevezd el "population_density_kat" -nak, es az ezt az uj
-# valtozot is tartalmazo adattablat mentsd el "COVID_20200929_ujvaltozok" neven.
+# valtozot is tartalmazo adattablat mentsd el "COVID_latest_ujvaltozok" neven.
 
 # 6.b. feladat: Fontos, hogy a "population_density_kat" valtozot faktor valotozokent jelold meg.
 # (Ezt lehet az elozo lepesben a mutate() funkcion belul, vagy egy kulon lepesben, de 
@@ -36,13 +36,13 @@
 # 8. feladat: Keszits egy abrat amin azt abrazolod hogy a population_density_kat egyes faktorszintjeikbe hany 
 # megigyeles tartozik. Ezen az abran azt is ellenorziheted hogy a sorrendezes jol mukodott-e.
 
-# 9. feladat: Keszits egy ujabb adat objektumot (nevezzuk mondjuk COVID_20200929_ujvaltozok_surunelkul -nek),
+# 9. feladat: Keszits egy ujabb adat objektumot (nevezzuk mondjuk COVID_latest_ujvaltozok_surunelkul -nek),
 # amiben nincsenek benne a "suru" nepsurusegi kategoriaba
 # eso orzsagok adatai (population_density_kat). Ezutan keszits egy tablazatot arrol, 
 # hogy az egyes faktorszintekre a "population_density_kat" valtozon belul hany megfigyeles esik.
 
-# 10. feladat: A COVID_20200929_ujvaltozok_surunelkul adat-objektumban ejtsd a 
-# nem hasznalt faktorszinteket.  Ird felul a COVID_20200929_ujvaltozok_surunelkul  objektumon belul 
+# 10. feladat: A COVID_latest_ujvaltozok_surunelkul adat-objektumban ejtsd a 
+# nem hasznalt faktorszinteket.  Ird felul a COVID_latest_ujvaltozok_surunelkul  objektumon belul 
 # a "population_density_kat" valtozo korabbi valtozatat ezzel az 
 # modositott valatozoval, ahol mar nincsenek meg a felesleges szintek. 
 # Ehhez a mutate() funkcion belul kell a droplevels() funkciot hasznalni. 
