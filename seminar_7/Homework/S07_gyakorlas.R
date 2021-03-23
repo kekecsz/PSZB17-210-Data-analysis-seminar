@@ -2,15 +2,6 @@
 # Az 7. gyakorlat gyakorló script-je #
 ######################################
 
-## Töltsd le ezt a kódot.
-## Oldd meg a feladatokat úgy hogy a kódot amit a megoldáshoz használsz az adott
-## feladat kommentje alá másolod.
-## A kész gyakorlófeladatot mentsd el a saját Drive mappádba. 
-## A fájl neve ez legyen: 
-## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20200912.R” !
-## A beadási határidő minden héten vasárnap éjfél.
-
-
 # 
 # 1. Töltsd be a tidyverse és a gsheet csomagokat!
 
