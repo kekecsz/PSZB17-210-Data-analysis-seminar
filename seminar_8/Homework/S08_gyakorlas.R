@@ -43,23 +43,23 @@ data_weightloss = read.csv("https://tinyurl.com/weightloss-data")
 
 ### Gyakorlofeladat - specialis prediktorok
 
-# 1. A data_house adattablat hasznalva epits egy linearis regresszios modellt a lakas eladasi
+# 3. A data_house adattablat hasznalva epits egy linearis regresszios modellt a lakas eladasi
 # aranak (price) bejoslasara a kovetkezo prediktorokkal:  sqm_living, grade, has_basement.
 
-# 2. Ertelmezd a fentiek alapjan a regresszios egyutthatok tablazatat. 
-# 2.a. Mit jelent az intercept regresszios egyutthatoja? 
-# 2.b. Mit jelent a has_basement prediktorhoz tartozo regresszios egyutthato?
+# 4. Ertelmezd a fentiek alapjan a regresszios egyutthatok tablazatat. 
+# 4.a. Mit jelent az intercept regresszios egyutthatoja? 
+# 4.b. Mit jelent a has_basement prediktorhoz tartozo regresszios egyutthato?
 
-# 3. Epits egy modellt a data_weightloss adatbazison ahol a **BMI_post_treatment**-t becsuljuk meg 
+# 5. Epits egy modellt a data_weightloss adatbazison ahol a **BMI_post_treatment**-t becsuljuk meg 
 # a **motivation** es a **body_acceptance** prediktorokkal, a ket prediktor interakciojat is epitsd be a modellbe. 
 
-# 4. Ertelmezd a regresszios egyutthatokat.
-# 4.a. Milyen valtozast varhatunk a BMI szintjeben ha a motivation szintje 1-el no?
-# 4.b. Milyen valtozast varhatunk a BMI szintjeben ha a body_acceptance szintje 1-el no?
-# 4.c. van szignifikans interakcio a ket prediktor kozott?
-# 4.d. Hogyan ertemezhetjuk az interakciohoz tartozo regresszios egyutthatot?
+# 6. Ertelmezd a regresszios egyutthatokat.
+# 6.a. Milyen valtozast varhatunk a BMI szintjeben ha a motivation szintje 1-el no?
+# 6.b. Milyen valtozast varhatunk a BMI szintjeben ha a body_acceptance szintje 1-el no?
+# 6.c. van szignifikans interakcio a ket prediktor kozott?
+# 6.d. Hogyan ertemezhetjuk az interakciohoz tartozo regresszios egyutthatot?
 
-# 5. (EXTRA FELADAT, NEM KOTELEZO MEGOLDANI): A haz eladasi arakat tartalmazo adatbazison kiserletezz kulonbozo modellekkel a sajat elmeleteid
+# 7. A haz eladasi arakat tartalmazo adatbazison kiserletezz kulonbozo modellekkel a sajat elmeleteid
 # alapjan hogy mi befolyasolhatja a hazak/lakasok arat. Probald meg az adjusted R^2-et 52% fole novelni.
 # Ha szeretnel az eredeti teljes adatbazishoz hozzaferest kapni amin ellenorizheted melyik modell mukodik legjobban,
 # a Kaggle-on megtalalod az eredeti adatokat, es masok regresszios modelljeit. https://www.kaggle.com/harlfoxem/housesalesprediction/activity
