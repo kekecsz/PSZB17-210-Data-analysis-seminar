@@ -1,5 +1,5 @@
 #####################################
-# A 10. gyakorlat gyakorlo script-je #
+# A 9. gyakorlat gyakorlo script-je #
 #####################################
 
 
