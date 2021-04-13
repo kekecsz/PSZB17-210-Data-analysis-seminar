@@ -1,5 +1,5 @@
 
-# Absztrakt	
+# # Absztrakt	
 
 # Ebben a gyakorlatban arra térünk ki, hogyan ellemorizhetjük hogy a lineáris regresszió elofeltetelei teljesülnek-e a modellünkre, milyen következményei vannak ha sérülnek ezek az elofeltetelek és mi a teendo ilyenkor.	
 
@@ -207,7 +207,7 @@ mod_house2 %>%
 # # A lineáris regresszió elofeltetelei	
 
 # * **Normalitás**: A modell rezidualisai normáleloszlást követnek	
-# * **Linearitás**: A prediktor és az eredmény között lineáris kapcsolat kell legyen	
+# * **Linearitás**: A prediktor és a kimeneti valtozo között lineáris kapcsolat kell legyen	
 # * **Homoszkedaszticitás**: A rezidualisok varianciája minden értékre hasonló a prediktorokéhez	
 # * **Nincs kollinearitás**: egyetlen prediktor sem határozható meg a többi prediktor lineáris kombinációjaként.	
 
@@ -746,8 +746,6 @@ summary(mod_house3)
 # http://statisticsbyjim.com/regression/multicollinearity-in-regression-analysis/	
 
 # **_____________Gyakorlás______________**	
-
-# Opcionális (nem kötelező) gyakorlófeladat:	
 
 # Végezzünk modell diagnoztikát a ma tanultak alapján, egy új lineáris modellen, ahol az “sqm_living”, “sqm_living15”, “yr_built”, és “condition” prediktorok alapján határozzuk meg az ingatlan árakat.	
 
