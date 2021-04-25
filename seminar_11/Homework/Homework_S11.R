@@ -1,8 +1,8 @@
-#################################################################
+
 #################################################################
 #  Hazi feladat a fokomponenselemzes es faktorelemzes temaban   #
 #################################################################
-#################################################################
+
 
 # 1. Toltsd be a szukseges package-eket, es sajat funkciokat. 
 # Az alabbi package-ekre peldaul szukseged lehet:
