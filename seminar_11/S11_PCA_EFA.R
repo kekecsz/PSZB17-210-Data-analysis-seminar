@@ -193,9 +193,9 @@ summary(hsq)
 
 # Amikor lefuttatjuk ezt a modellt, a regresszios egyutthatok szignifikanciaja alapjan ugy tunik hogy a modell egeszeben szignifikansan jobb mint a null modell, es tobb olyan item is van aminek van sziginfikans hozzaadott erteke a modellhez, vagyis erdemes a humor stilust figyelembe venni a stressz meghatarozasanal. 	
 
-# De ha arra vagyunk kivancsiak hogy a humor stilus mely aspektusai fontosak, ezt nehez ebbol a regresszios elemzesbol megallapitani. Egyreszt nem bizhatunk meg teljesen a p-ertekekben, mert 32 statistzikai tesztet hajtottunk verge, a 32 item hozzaadott megmagyarazo ertekenek tesztelesekor, ami nagyban noveli az elsofaju hiba (fals pozitiv) valoszinuseget. Vagyis nagy a valoszinusege hogy a szignifikanskent megjelol prediktorok kozul egy, vagy tobb nincs valodi osszefuggesben a stresszel a populacioban. 	
+# De ha arra vagyunk kivancsiak hogy a humor stilus mely aspektusai fontosak, ezt nehez ebbol a regresszios elemzesbol megallapitani. Egyreszt nem bizhatunk meg teljesen a p-ertekekben, mert 32 statistzikai tesztet hajtottunk verge, a 32 item hozzaadott megmagyarazo ertekenek tesztelesekor, ami nagyban noveli az elsofaju hiba (fals pozitiv) valoszinuseget. Vagyis nagy a valoszinusege hogy a szignifikanskent megjelolt prediktorok kozul nehany nincs valodi osszefuggesben a stresszel a populacioban. 	
 
-# Masreszt figyelembe kell venni hogy a prediktorok korrelalnak egymassal, vagyis bizonyos prediktorok a stressz varianciajanak hasonlo rezset magyarazzak, es ebben a modellben lehet hogy az egyes prediktorok mas korrelalo prediktorok hatasat elmaszkoljak.	
+# Masreszt figyelembe kell venni hogy a prediktorok korrelalnak egymassal, vagyis bizonyos prediktorok a stressz varianciajanak hasonlo reszet magyarazzak, es ebben a modellben lehet hogy az egyes prediktorok mas korrelalo prediktorok hatasat elmaszkoljak.	
 
 
 	
@@ -267,11 +267,11 @@ cor(hsq_items_only) %>% network_plot(min_cor=0.6)
 
 # ## Hogyan mukodik a PCA?	
 
-# A fokomponenselemzes (PCA) soran az a celunk altalaban hogy csokkentsuk a dimenziok szamat, amivel az adataink leirhatok. Ezt ugy erjuk el, hogy eloszor uj dimenziokat keresunk, amelyek minel nagyobb reszet magyarazzak az adatok valtozekonysaganak, majd eldobjuk azokat a dimenziokat, amik a variancia megertesenek viszonylag kis resezert felnek. A PCA soran eloszor azonositunk egy elsodleges dimenziot, ami menten az adatok a legnagyobb varianciat mutatjak. Ez utan azonositunk egy erre meroleges uj dimenziot, ami a **fennmarado** variancia legnagyobb reszet kepes magyarazni, es igy tovabb, addig amig el nem erjuk az eredetileg a fokomponenselemzesbe rakott valtozok szamat. (Mivel a dimenziok merolegesek egymasra, ezert ket dimenzio a variancia mindig valamilyen uj reszet irja le, nincs redundancia a dimenziok altal megmagyarazott varianciaban.) Igy a fokomponenselemzes vegere egy uj koordinatarendszert kapunk, amiben az adatokat abrazolhatjuk. 	
+# A fokomponenselemzes (PCA) soran az a celunk altalaban hogy csokkentsuk a dimenziok szamat, amivel az adataink leirhatok. Ezt ugy erjuk el, hogy eloszor uj dimenziokat keresunk, amelyek minel nagyobb reszet magyarazzak az adatok valtozekonysaganak, majd eldobjuk azokat a dimenziokat, amik a variancia megertesenek viszonylag kis resezert felnek. A PCA soran eloszor azonositunk egy elsodleges dimenziot, ami menten az adatok a legnagyobb varianciat mutatjak. Ez utan azonositunk egy erre meroleges uj dimenziot, ami a **fennmarado** variancia legnagyobb reszet kepes magyarazni, es igy tovabb, addig amig el nem erjuk az eredetileg a fokomponenselemzesbe rakott valtozok szamat. (Mivel a dimenziok **merolegesek egymasra**, ezert ket dimenzio a variancia mindig valamilyen uj reszet irja le, **nincs redundancia** a dimenziok altal megmagyarazott varianciaban, vagyis a fokomponensek egymassal nem korrelalnak.) Igy a fokomponenselemzes vegere egy uj koordinatarendszert kapunk, amiben az adatokat abrazolhatjuk. 	
 
 # Fontos, hogy az uj koordinatarendszer dimenzioi nagyban elternak abban hogy az adatok mennyire variabilisek az adott dimenzioban. Az elso nehany "fokomponens" (dimenzio) amit kivalasztottunk a varianica nagyon nagy reszet lefedi, es a fennmarado dimenziokban az adatok alig mutatnak variabilitast. Egy adott dimenzioban a variancia merteket **eigenvalue**-nak nevezzuk. Ahogy az elsotol az utolsokent azonositott dimenzio fele haladunk az eigenvalue egyre csokken (vagyis a dimenzioban megfigyelheto variancia). Ez engedi meg hogy csokkentsuk a dimenziok szamat, mert a PCA vegen azonositott dimenziokon elhanyagolhato lesz az adatok kulonbozosege egymastol, igy ezeket a dimenziokat elvethetjuk, es csak a **leghasznosabb dimenziokat tartjuk meg**.	
 
-# Kepzeljuk el peldaul hogy egy kutatasban arra vagyunk kivancsiak hogy mennyire erettek az iskolakezdo elso osztalyosok. A kutatasban merjuk a gyerekek verbalis keszsegeit, szociabilitasat, es eletkorat evekben. Kiderul hogy a vizsgalt mintaban szinte minden elso osztalyos 6 eves, vagyis szinte semmi variabilitas nincs az eletkorban (ha csak evekben merjuk). Ettol a valtozotol akar el is tekinthetunk a kutatasunkban, hiszen annyira nem kulonboznek benne a vizsgalt szemlyeink. Ezzel szemben a szociabilitasban es a verbalis keszsegekben nagyobb szemlyeke kozotti kulonbseget merunk, ezert ezek fontos indikatorok a kutatasunkban abbol a szempontbol, hogy a gyerekeket megkulonboztessuk erettseguk szintjeben. A fokomponenselemzes soran mestersegesen generalunk uj valtozokat ugy hogy azok direkt nagyon nagy vagy nagyon keves varianciat magyarazzanak, hogy a keves varianciat magyarazo valtozokat elvethessuk ugty, hogy kozben minel tobb informaciot tartsunk meg az adatok kulonbozosegerol.	
+# Kepzeljuk el peldaul hogy egy kutatasban arra vagyunk kivancsiak hogy mennyire erettek az iskolakezdo elso osztalyosok. A kutatasban merjuk a gyerekek verbalis keszsegeit, szociabilitasat, es eletkorat evekben. Kiderul hogy a vizsgalt mintaban szinte minden elso osztalyos 6 eves, vagyis szinte semmi variabilitas nincs az eletkorban (ha csak evekben merjuk). Ettol a valtozotol akar el is tekinthetunk a kutatasunkban, hiszen annyira nem kulonboznek benne a vizsgalt szemlyeink. Ezzel szemben a szociabilitasban es a verbalis keszsegekben nagyobb szemlyek kozotti kulonbseget merunk, ezert ezek fontos indikatorok a kutatasunkban abbol a szempontbol, hogy a gyerekeket megkulonboztessuk erettseguk szintjeben. A fokomponenselemzes soran mestersegesen generalunk uj valtozokat ugy hogy azok direkt nagyon nagy vagy nagyon keves varianciat magyarazzanak, hogy a keves varianciat magyarazo valtozokat elvethessuk ugy, hogy kozben minel tobb informaciot tartsunk meg az adatok kulonbozosegerol.	
 
 
 # ## PCA hasznalata R-ben	
@@ -282,7 +282,7 @@ cor(hsq_items_only) %>% network_plot(min_cor=0.6)
 
 
 
-# Peladaul a Q9 es a Q10 itemeket sokkal jobban leirja a Dim1 mint a Dim2. (a nyil iranya alapjan megallapithato hogy a Q9 negativan, a Q10 pozitivan korrelal a Dim1-el.) Ezzel szemben a Q8 valtozo nyila a ket dimenzio kozott helyezkedik el, ami azt jelenti hogy vagy midkettovel nagyjabol azonos mertekben korrelal (ez lehet nagyon kicsi, vagy akar nagyon nagy korrelacio is).	
+# Peladaul a Q9 es a Q10 itemeket sokkal jobban leirja a Dim1 mint a Dim2. (a nyil iranya alapjan megallapithato hogy a Q9 negativan, a Q10 pozitivan korrelal a Dim1-el.) Ezzel szemben a Q8 valtozo nyila a ket dimenzio kozott helyezkedik el, ami azt jelenti hogy midkettovel nagyjabol azonos mertekben korrelal (ez lehet nagyon kicsi, vagy akar nagyon nagy korrelacio is).	
 
 
 
@@ -297,9 +297,6 @@ pca_mod <- PCA(hsq_items_only)
 # A PCA() funkcioban lehetosegunk van arra hogy meghatarozzunk olyan valtozokat az adatbazisban, amiket nem szeretnenk beepiteni a PCA modellbe. 	
 
 # Azokat a folytonos valtozokat, amiket nem szeretnenk figyelembevenni a PCA soran, a quanti.sup parameterben kell megadnunk, azokat pedig amik kategorikusak a quali.sup parameterben. Itt az addott valtozo oszlopszamat kell megadnunk, nem pedig a nevet, igy ezt eloszor ki kell keresnunk. Ezt megtehetjuk a which(names(hsq) == "valtozo neve") funkcioval.	
-
-# Az alabbi peldaban a drat folytonos, es a cyl, vs, es az am kategorikus valtozokat kiemeljuk a modellbol, igy azok nincsenek figyelembe veve a pca_mod3 fokomponenseinek meghatarozasa soran, de az abrakon ettol meg szerepelnek. Ebben az esetben termeszetesen a modell ujra illesztesre kerul, es a szamszeru ertekek megvaltoznak a korabbi futtatashoz kepest amikor ezek a valtozok meg szerepeltek a modellben.	
-
 
 
 	
@@ -502,7 +499,7 @@ hsq_correl = hsq_mixedCor$rho
 	
 
 
-# **___________________Gyakorlas (opcionalis) ___________________**	
+# **___________________Gyakorlas ___________________**	
 
 # A fentebb tanultak alapjan vizualizald a valtozok kozotti korrelaciot. Hasznalj tobb modszert is, pl. ggcorr(), ggcorrplot() hc.order=TRUE-val kombinalva, vagy network_plot().	
 
@@ -657,7 +654,7 @@ fviz_loadnings_with_cor(EFA_mod2, axes = 4, loadings_above = 0.4)
 
 
 
-# **___________________Gyakorlas (opcionalis)___________________**	
+# **___________________Gyakorlas___________________**	
 
 # A fent tanult technikakat a Big Five Inventory (bfi) adatbazison gyakorolhatod. Ez a psych package-be beepitett adatbazis, ami 2800 szemely valaszait tartalmazza a Big Five szemelyisegkerdoiv kerdeseira. Az elso 25 oszlop a kerdoiv kerdeseire adott valaszokat tartalmazza, az utolso harom oszlop (gender, education, es age) pedig demografiai kerdeseket tartalmaz. A reszleteket az egyes itemekhez tartozo kerdesekrol es a valaszok kodolasarol elolvashatod ha lefuttatod a ?bfi parancsot.	
 
