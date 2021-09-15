@@ -7,14 +7,15 @@
 ## feladat kommentje alá másolod.
 ## A kész gyakorlófeladatot mentsd el a saját Drive mappádba. 
 ## A fájl neve ez legyen: 
-## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20200912.R” !
+## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20210912.R” !
+## A beadási határidő minden héten vasárnap éjfél.
 
 
 ################### Ismétlés
 
 # 1. Csinálj egy integer vektor objektumot, aminek a neve "number" 
 
-# 2. Ellenőrizd hogy mi az is.character(number) kód eredménye(!) milyen osztályba tartozik.
+# 2. Ellenőrizd hogy az is.character(number) kód eredménye(!) milyen osztályba tartozik.
 
 ################### Alapvető funkciók és subsetting
 
