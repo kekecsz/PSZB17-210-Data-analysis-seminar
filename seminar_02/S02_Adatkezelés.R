@@ -47,7 +47,7 @@ is.vector(number)
 # *_________________Gyakorlás__________________*	
 
 
-# Ellenőrizd hogy mi az is.character(number) kód **eredménye** milyen osztályba tartozik.	
+# Ellenőrizd hogy az is.character(number) kód **eredménye** milyen osztályba tartozik.	
 
 
 # *____________________________________________*	
@@ -80,7 +80,7 @@ my_new_vector
 class(my_new_vector)	
 
 
-# Természetesen vektor objektumokat is kombinálhatunk a c() függvénnyel (a fenti megkötés figyelembevételéve).	
+# Természetesen **vektor objektumokat is kombinálhatunk** a c() függvénnyel (a fenti megkötés figyelembevételéve).	
 
 
 my_final_vector <- c(my_vector, my_new_vector)	
@@ -112,7 +112,7 @@ USArrests
 
 # ## Alapvető parancsok az adattábla struktúrájának megértéséhez	
 
-# Gyakran megesik hogy nem akarjuk az egész adattáblát megnézni, hanem csak annak valamelyik részéről szeretnénk információt kapni, vagy ezt az adatot valahogy felhasználni. Erre számos hasznos funkció áll rendelkezésünkre.	
+# Az alábbi funkciók az adat objektumok struktúrális tulajdonságairól adnak információt.	
 
 # - **str()**: információt ad arról hogy milyen olytályba tartozik az adott objektum, hány sora és hány oszlopa van, és az egyes oszlopokban milyen típusú adatokat tartalmaznak, és egy kis mintát is kapunk az adatokból.	
 # - **names()** : oszlopok neveit listázza ki (column names, headers)	
@@ -135,11 +135,12 @@ nrow(USArrests)
 ncol(USArrests)	
 
 
+# A head() és a tail() funkciókkal az adat első vagy utolsó valamennyi sorát nézhetjük meg. Alapértelmezettként 6, de megadhatunk más számot is. 	
+
 
 head(USArrests)	
 	
 tail(USArrests, 10)	
-
 
 
 
@@ -195,7 +196,7 @@ USArrests[-c(4:50),-2]
 USArrests[-c(4:50),-which(names(USArrests) == "Assault")]	
 
 
-# Az alábbi kód a %in% (within) operátor használatával teszi lehetővé hogy több nevet is megjelöltjünk, amit szeretnénk kizárni. Eredménye ekvivalens az alatta lévő sorral, ahol az oaszlopok számát használjuk.	
+# Az alábbi kód a %in% (within) operátor használatával teszi lehetővé hogy több nevet is megjelöltjünk, amit szeretnénk kizárni. Eredménye ekvivalens az alatta lévő sorral, ahol az oszlopok számát használjuk.	
 
 
 USArrests[-c(4:50),-which(names(USArrests) %in% c("Murder", "Assault"))]	
@@ -221,7 +222,7 @@ USArrests[-c(4:50),-c(1,2)]
 
 # Az adatkezelést az R közösség gyakran "Data wrangling"-nek nevezi. Ezt a base R funciókkal is meg lehet csinálni, de általában egy nagyobb adatelemzési projekt végére ez nehezen átlátható kódot eredményez. A tiszta és átlátható kódolás elősegítésére a **Tidyverse** package gyűjtemény használhatjuk. Ez olyan R package-ek gyűjteménye, melyek mind egy standardizált és átlátható kód-írási rendszert támogatnak. Az egésznek az alapja a tiszta adatmenedzsmentet elősegítő *dplyr pakcage*.	
 
-# Először töltsük be a Tidyverse package-et a library() funkcióval. (Ha a package még nincs felinstallálva, akkor ekőször fel kell installálni az install.packages() funkcióval, lásd az előző óra anyagát.)	
+# Először töltsük be a Tidyverse package-et a library() funkcióval. (Ha a package még nincs felinstallálva, akkor először fel kell installálni az install.packages() funkcióval, lásd az előző óra anyagát.)	
 
 
 
@@ -256,40 +257,6 @@ x %>%
   mean() %>%	
     log() %>% 	
       round(digits = 1)	
-	
-	
-
-
-# Nem minden funkció alkalmazható Tidyverse-ben, de a legtöbb funkciónak van egy Tidyverse-kompatibilis változata valamelyik package-ben.	
-
-# Például a sima összeadás és kivonás függvények nem használhatóak önállóan a %>% után. (Ez általában akkor jelent problémát amikor a matematikai művelettel kezdődik a sor. Amint a matematikai művelet valamilyen funció után következik akkor már általában lefut.)	
-
-
-
-
-	
-x %>%	
-  mean() %>%	
-    log() %>% 	
-      round(digits = 1) %>% 	
-        -3 %>% 	
-          +5 %>% 	
-            /2	
-
-
-# A magrittr package-ben található subtract(), add(), divide_by() stb. függvények lehetőséget adnak az ilyen alapvető matematikai műveletek Tidy kódban való megírására:	
-
-
-library(magrittr)	
-	
-	
-x %>%	
-  mean() %>%	
-    log() %>% 	
-      round(digits = 1) %>% 	
-        subtract(3) %>% 	
-          add(5) %>% 	
-            divide_by(2)	
 	
 	
 
@@ -458,6 +425,44 @@ ToothGrowth %>%
 
 
 # *____________________________________________*	
+
+
+# ## A tidyverse limitációi	
+
+# Nem minden funkció alkalmazható Tidyverse-ben, de a legtöbb funkciónak van egy Tidyverse-kompatibilis változata valamelyik package-ben.	
+
+# Például a sima összeadás és kivonás függvények nem használhatóak önállóan a %>% után. (Ez általában akkor jelent problémát amikor a matematikai művelettel kezdődik a sor. Amint a matematikai művelet valamilyen funció után következik akkor már általában lefut.)	
+
+
+
+
+	
+x %>%	
+  mean() %>%	
+    log() %>% 	
+      round(digits = 1) %>% 	
+        -3 %>% 	
+          +5 %>% 	
+            /2	
+
+
+# A magrittr package-ben található subtract(), add(), divide_by() stb. függvények lehetőséget adnak az ilyen alapvető matematikai műveletek Tidy kódban való megírására:	
+
+
+library(magrittr)	
+	
+	
+x %>%	
+  mean() %>%	
+    log() %>% 	
+      round(digits = 1) %>% 	
+        subtract(3) %>% 	
+          add(5) %>% 	
+            divide_by(2)	
+	
+	
+
+
 
 
 
