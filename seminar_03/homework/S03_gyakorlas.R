@@ -7,7 +7,7 @@
 ## feladat kommentje alá másolod.
 ## A kész gyakorlófeladatot mentsd el a saját Drive mappádba. 
 ## A fájl neve ez legyen: 
-## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20200912.R” !
+## Családnév Utónév gyakorlófeladat ÉÉÉÉHHNN, pl.: “Példa Géza gyakorlófeladat 20210921.R” !
 
 
 ### Ismétlés: Adatkezelés a tidyverse-ben #
@@ -15,62 +15,29 @@
 # 
 # 1. Töltsd be a tidyverse csomagot!
 
-# 2. Telepítsd és töltsd be a “gapminder” csomagot!
-
-
-# A gapminder adatbázist fogjuk hazsnálni, 
-# ami országonkánt 5 évente adatokat tartalmaz a lakosság méretéről,  
-# a várható élettartamról, és az egy főre eső GDP-ről 1952-ig visszamenőleg.
-
-# 3. Nézd meg a gapminder adattáblát hogy képet kapj arról, mi az adatok elnrednezése!
-# (Használhatod a View és az str parancsokat például)
-
-# 4. Szűrd meg az adatokat úgy hogy csak a 2007-ből (year) származó adatokkal dolgozzunk,
-# és számold ki az átalagos várható életkort (lifeExp) kontinensenként (continent) 
-# ezeken a 2007-es adatokon. 
-# Ez alapján az eredmény alapján melyik kontinensen volt a legmagasabb 
-# a várható életkor 2007-ben?
-
-# 6. Nézd meg, hogy hány mérés tartozik az egyes országokhoz (country). 
-# (Segítség: Minden mérés egy sor.)
-
-# 7. Hogy könnyebben átlássuk a populációt, hozz létre egy “pop_thousand” nevű változót,
-# amiben a meglévő populáció értékek (pop) el vannak osztva ezerrel. Az adattáblát amiben már
-# ez az új változó is benne van mentsd el egy új objektumba amit 
-# “gapminder_with_pop_thousand”-nak nevezz el.
-
 ### Adatvizualizáció #
 
-# Használjuk a movies adatbázist a következő gyakorlófeladatokhoz.
+# Használjuk a lovoo adatbázist a következő gyakorlófeladatokhoz.
 
-load(url("https://stat.duke.edu/~mc301/data/movies.Rdata"))
-
-# 8. Ábrázold az összefüggést az IMDB értékelések (imdb_rating) és a 
-# között hogy egy adott filmre hány értékelés jött (imdb_num_votes).
-
-# 9. Alakítsd úgy a fenti ábrát hogy a műfaj (genre) hatása is szerepeljen rajta.
-
-# 10. Hozz létre egy ábrát, melyet egy "my_first_plot" nevű objektumhoz rendelj hozzá.
-# Ezen az ábrán vizsgáld meg kritikusok által adott értékelás (critics_score) eloszlását.
-# Tetszőleges geomot használhatsz. A ggplot2 cheatsheet segíthet kitalálni, melyik 
-# a legjobb geom erre a célra. 
-# https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
-# Tipp: a critics_score egy folytonos (continuous) változó. Mivel egy változó eloszlását 
-# vizualizáljuk, ezért érdemes a cheatsheet "One Variable" dobozából választani geomot.
-
-# 11. Most módosítsd az ábrát úgy, hogy legyen látható, hogy az eloszlás hogyan különbözik
-# azoknál a filmeknél amiket jelöltek a legjobb film oszkárdíjra (best_pic_nom) azokhoz 
-# képest amelyeket nem. Ehhez használj tetszőleges aes()-t, pl.: color, fill, linetype, 
-# size. A ggplot2 cheatsheet segít hogy az általad választott geomnál melyik a releváns aes()
+lovoo_data <- read.csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_03/lovoo_v3_users_api-results.csv")
 
 
-# 12. Ábrázold a nézői értékelés (audience_score) és a kritikusi értékelés 
-# (critics_score) kapcsolatát egy pontdiagrammal úgy, hogy csak az 
-# 1995-ben megjelent (thtr_rel_year) filmek szerepeljenek az ábrán.
+lovoo_data <- lovoo_data %>% 
+  mutate(isOnline = factor(isOnline),
+         verified = factor(verified),
+         isNew = factor(isNew))
 
-# 13. Tedd rá a filmek címét az ábrára feliratként, 
-# hogy minden ponton szerepeljen a film címe.
+# 2.a Szűrd az adatokat úgy, hogy csak azoknak a felhasználóknak az adata látsszon, akik nyitottak a randizásra (flirtInterests_date == "true")
+# 2.b Ábrázold az összefüggést az életkor (age) és a profilmegtekintések száma (counts_profileVisits) között egy pontdiagrammon.
+# 2.c Az ábrán az is szerepeljen, hogy a profil külső forrásból megerősített-e (verified).
+# 2.d Illessz egy trendvonalat is az ábrára (geom_smooth), amin belül a method = "lm"-paramétert használd.
 
-# 14. Most ábrázoljuk csak a legnagyobb bevételt behozó filmeket (top200_box == "yes"). 
-# Nézzük meg, hogy melyik film milyen imdb pontot kapott (imdb_rating). A filmek címe (title) szerepeljen az egyik 
-# tengelyen és legyen olvasható.
+
+
+# 3.a Szűrd az adatokat, hogy csak a külső forrásból megerősített felhasználók adatai szerepeljenek benne (verified == 1)
+# 3.b Hozz létre egy ábrát, melyet egy "my_first_plot" nevű objektumhoz rendelj hozzá. Ezen az ábrán vizsgáld meg a feltöltött képek számának (counts_pictures) eloszlását. Tetszőleges geomot használhatsz. A ggplot2 cheatsheet segíthet kitalálni, melyik a legjobb geom erre a célra. 
+# https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf
+# Tipp: a counts_pictures egy folytonos (continuous) változó. Mivel egy változó eloszlását vizualizáljuk, ezért érdemes a cheatsheet "One Variable" dobozából választani geomot.
+# 3.c Most módosítsd az ábrát úgy, hogy legyen látható, hogy az eloszlás milyen az új felhasználóknál és a reégieknél (isNew) Ehhez használj tetszőleges aes()-t, pl.: color, fill, linetype, size. A ggplot2 cheatsheet segít hogy az általad választott geomnál melyik a releváns aes()
+
+
