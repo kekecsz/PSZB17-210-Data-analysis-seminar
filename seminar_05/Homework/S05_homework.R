@@ -6,8 +6,9 @@
 # (az alabbi feladatok a tidyverse es a psych packagekkel megoldhatoak)
 
 # 2. toltsd be az adatot errol az URL-rol (ez egy .csv file) a mar korabban megismert adatbeolvaso funkcioval:
-#"https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_5/Homework/homework_data.csv"
+#"https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_05/Homework/homework_data.csv"
 #
+
 # Az adatok szimulalt adatok, de kepzeljuk el hogy egy randomizalt 
 # kontrollalt klinikai kutatas eredmenyeibol szarmaznak, ahol a 
 # pszichoterapia hatekonysagat teszteltek. Olyan szemelyeket vontak 
