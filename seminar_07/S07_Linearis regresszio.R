@@ -1,4 +1,4 @@
-
+	
 # Ennek az oranak a celja hogy megismerkedjunk a linearis regresszioval, annak logikajaval, es az ertelmezesehez szukseges alapfogalmakkal. Eloszor az ugynevezett "egyszeru" linearis regressziot (simple regression) fogjuk megismerni, ahol egy bejoslo valtozo alapjan becsuljuk meg egy kimeneti valtozo erteket. Miutan megismertuk az egyszeru regresszioval, tovabbmegyunk a tobbszoros regressziora, ahol altalanositjuk az egyszeru regressziorol nyert tudast olyan esetekre, ahol tobb prediktor (bejoslo valtozo) is szerepel a modellben.	
 
 # ## Package-ek betoltese	
@@ -8,11 +8,13 @@
 
 library(psych) # for describe	
 library(gsheet) # to read data from google sheets	
-library(car)# for scatter3d	
+library(car) # for scatter3d	
+library(rgl) # for scatter3d	
 library(psych) # for describe	
 library(lm.beta) # for lm.beta	
 library(gridExtra) # for grid.arrange	
 library(tidyverse) # for tidy code	
+	
 
 
 
@@ -73,7 +75,7 @@ coef_table = function(model){
 # Az alabbi koddal betolthetjuk az adattablat, amiben a korabbi orakon felvett kerdoivekbol szerepelnek a magassag es cipomeret adatok.	
 
 
-mydata = as_tibble(gsheet2tbl("https://docs.google.com/spreadsheets/d/1sPBXkgm7o4IsMrP55ZPk0v06U-qBSgRrmDkbiJLBe_g/edit?usp=sharing"))	
+mydata = read.csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_07/Shoe%20size%20data.csv")	
 
 
 # ### Adatok ellenorzese	
@@ -138,7 +140,7 @@ mod1 <- lm(shoe_size ~ height, data = mydata)
 
 # ### Regresszios egyenlet	
 
-# A **regresszios egyenletet** igy formalizaljuk: Y = b0 + b1*X1, amelyben Y a kimeneti (bejosolt) valtozo becsult erteke, a b0 egy allando/konstans ertek, amit legtobbszor intercept-nek neveznek, a b1 a regresszios egyutthato, az x1 pedig a bejososlo (prediktor) erteke az adott szemelynel. 	
+# A **regresszios egyenletet** igy formalizaljuk: Y = b0 + b1*X1, amelyben Y a kimeneti (bejosolt) valtozo becsult erteke, a b0 egy allando/konstans ertek ami nem fugg a bejososlo (prediktor) erteketol, amit legtobbszor intercept-nek neveznek, a b1 a regresszios egyutthato, az x1 pedig a bejososlo (prediktor) erteke az adott szemelynel. 	
 
 # Vagyis ugy kaphatunk egy becslest az Y bejosolt valotozo ertekere (height), ha a konstanshoz hozzaadjuk a regresszios egyutthato es a prediktor ertekenek szorzatat.    	
 
@@ -148,12 +150,12 @@ mod1 <- lm(shoe_size ~ height, data = mydata)
 mod1	
 
 
-# Tegyuk fel hogy a regresszios egyelet elemei a kovetkezok:	
+# Ha a regresszios egyenlet elemei a kovetkezok:	
 
 # - intercept (b0) = 3.74	
 # - a height-hoz tartozo regresszios egyutthato (b1) = 0.21	
 
-# Ezeket az adatokat a modell objektum kilistazasaval olvashatjuk le a Coefficients: reszbol.	
+# Ezeket az adatokat a modell objektum kilistazasaval olvashatjuk le a "Coefficients:" reszbol.	
 
 # Ez azt jelenti, hogy a cipomeretet bejoslo regresszios egyenlet a kovetkezo: 	
 
@@ -165,14 +167,14 @@ mod1
 
 # ### Becsles a regresszios egyenlet alapjan	
 
-# Ezt a szamitast nem kell kezzel vagy fejben megcsinalni, ehelyett hasznalhatod az R predict() funciojat a bejosolt ertek kiszamitasara barmilyen, vagy akar tobb prediktor-ertekre is.	
+# Ezt a szamitast nem kell kezzel vagy fejben megcsinalni, ehelyett hasznalhatod az R predict() funciojat a bejosolt ertek kiszamitasara.	
 
 # A **predict()** funkcio hasznalatahoz meg kell adnunk egy adattablat (data.frame vagy tibble-t) ami a prediktor ertekeit tartalmazza, amit a kimeneti valtozo megbecslesere, bejoslasara szeretnenk hasznalni. 	
 
 
 
-height = c(160, 170, 180, 190)	
-height_df = as.data.frame(height)	
+	
+height_df = data.frame(height = c(160, 170, 180, 190))	
 	
 predictions = predict(mod1, newdata = height_df)	
 	
@@ -194,10 +196,11 @@ mydata %>%
 
 # **______Gyakorlas_______**	
 
-# 1. Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **exam_score** (ZH eredmeny) a kimeneti valtozo es az **hours_of_practice_per_week** (hetente atlagosan hany orat gyakololt) a prediktor. A modell eredmenyet mentsd el egy objektumba.	
-# 2. Ird le a regresszios fuggvenyt amivel bejosolhato a ZH eredmeny (exam_score).	
-# 3. Ertelmezd a regresszios fuggvenyt. Aki tobbet gyakorol annak magasabb vagy alacsonyabb a ZH eredmenye? (Egy abra segithet)	
-# 4. Ertelmezd a regresszios fuggvenyt. Aki egy oraval tobbet gyakorol hetente mint masok, annak mennyivel varhato hogy magasabb lesz az energiaszintje?	
+# 1. Szamold ki hogy a regresszios modell szerint a sajat magassagodhoz milyen cipomeret tartozik.	
+# 2. Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **exam_score** (ZH eredmeny) a kimeneti valtozo es az **hours_of_practice_per_week** (hetente atlagosan hany orat gyakololt) a prediktor. A modell eredmenyet mentsd el egy objektumba.	
+# 3. Ird le a regresszios fuggvenyt amivel bejosolhato a ZH eredmeny (exam_score).	
+# 4. Ertelmezd a regresszios fuggvenyt. Aki tobbet gyakorol annak magasabb vagy alacsonyabb a ZH eredmenye? (Egy abra segithet)	
+# 5. Ertelmezd a regresszios fuggvenyt. Aki egy oraval tobbet gyakorol hetente mint masok, annak mennyivel varhato hogy magasabb lesz az energiaszintje?	
 # (Opcionális: 5. Ennek a modellnek a segitsegevel becsuld meg a ZH eredmenyet olyan embereknek akik heti 2, 5, vagy 8 orat gyakorolnak.)	
 
 # **________________________**	
@@ -254,7 +257,7 @@ R2 = 1-(RSS/TSS)
 R2	
 
 
-# Tegyuk fel hogy az R^2 ebben az esetben 0.73. Ez azt jelenti, hogy a prediktorok figyelembevetelevel (a mi esetunkben ez a magassag), a cipomeret valtozekonysaganak 73%-at tudjuk megmagyarazni. 	
+# Ha az R^2 ebben az esetben 0.73. Ez azt jelenti, hogy a prediktorok figyelembevetelevel (a mi esetunkben ez a magassag), a cipomeret valtozekonysaganak (atlagtol valo elteresenek) 73%-at tudjuk megmagyarazni. 	
 
 # R^2 = 1 azt jelenti, hogy a kimeneti valtozo variabilitasat teljesen meg tudjuk magyarazni a prediktorok ismereteben. 	
 # R^2 = 0 azt jelenti, hogy a kimeneti valtozo variabilitasat egyaltalan nem magyarazzak meg a prediktorok	
@@ -321,7 +324,7 @@ ggplot(mydata, aes(x = height, y = shoe_size))+
 # Az adatbazisnak csak egy kis reszet hasznaljuk (N = 200).	
 
 
-data_house = read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_7/data_house_small_sub.csv")	
+data_house = read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_07/data_house_small_sub.csv")	
 
 
 # ## Adatellenoryes	
@@ -444,6 +447,7 @@ grid.arrange(plot1, plot2, nrow = 1)
 
 
 # plot the regression plane (3D scatterplot with regression plane)	
+	
 scatter3d(price_HUF ~ sqm_living + grade, data = data_house)	
 	
 
