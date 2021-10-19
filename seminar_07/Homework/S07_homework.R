@@ -1,11 +1,12 @@
 ### Hazi feladat
 
 # 1. toltsd be a lakasarak adatbazist errol a linkrol: 
-# "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_7/data_house_small_sub.csv"
+# "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_07/data_house_small_sub.csv"
 
-# 2. Alakitsd at az adatokat ugy hogy dollar helyett forintban legyen a price valtozo, es negyzetlab helyett 
+# 2. Alakitsd at az adatokat ugy hogy dollar helyett millio forintban legyen megadva a price valtozo, es negyzetlab helyett 
 # negyzetmeterben szerepljenek az adatok (ez a kovetkezo valtozokat erinti: 
 # sqft_living, sqft_lot, sqft_above, sqft_basement, sqft_living15, sqft_lot15) (1 negyzetlab = 0.9 m^2)
+# az orai kodban megtalalod az atvaltashoz hasznalt kodot.
 
 # 3. futtass le egy korrelacios tesztet hogy meghatarozd, van-e egyuttjaras a lakas ara es a lakas minosege (grade) kozott (cor.test())
 

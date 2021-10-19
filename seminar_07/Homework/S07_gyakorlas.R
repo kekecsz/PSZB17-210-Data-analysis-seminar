@@ -6,8 +6,8 @@
 # 1. Töltsd be a tidyverse és a gsheet csomagokat!
 
 # 2. Töltsd be az adatokat. Ezt a 
-# "https://docs.google.com/spreadsheets/d/1sPBXkgm7o4IsMrP55ZPk0v06U-qBSgRrmDkbiJLBe_g/edit?usp=sharing" 
-# url-ről tudod betölteni. Használd a betöltéshez a gsheet2tbl() funkciot a gsheet package-bol
+# "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_07/Shoe%20size%20data.csv" 
+# url-ről tudod betölteni.
 
 # 3. Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **exam_score** (ZH eredmeny) a kimeneti valtozo es az **hours_of_practice_per_week** (hetente atlagosan hany orat gyakololt) a prediktor. A modell eredmenyet mentsd el egy objektumba.
 
@@ -26,7 +26,7 @@
 # 9. Hatarozd meg a regresszios egyutthatok konfidencia intervallumat a confint() fuggvennyel
 
 # 10. Toltsd be a lakasarak adatbazist. Ezt a 
-# "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_7/data_house_small_sub.csv"
+# "https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_07/data_house_small_sub.csv"
 # url-ről tudod betölteni. Ez egy .csv file, szoval erdemes a read.csv() vagy read_csv() funkciokat hasznalni a betolteshez.
 
 # 11. Epits egy tobbszoros linearis regresszio modellt az lm() fugvennyel amiben az **price** a kimeneti valtozot becsuljuk meg. Hasznalhatod a **data_house** adatbazisban szereplo barmelyik valtozot a modellben, ami szerinted realisan hozzajarulhat a lakas aranak meghatarozasahoz.
