@@ -149,7 +149,7 @@ AIC(mod_house_geolocation_cond)
 
 # *__________Gyakorlas___________*	
 
-# Tedd hozza a modellhez az iment epitett modellhez (mod_house_geolocation_cond) a haz epitesenek evet (yr_built) es a furdoszobak szamat (bathrooms) mint prediktorokat.	
+# Tedd hozza az iment epitett modellhez (mod_house_geolocation_cond) a haz epitesenek evet (yr_built) es a furdoszobak szamat (bathrooms) mint prediktorokat.	
 # Ez az uj modell szignifikansan jobban illeszkedik az adatokhoz mint a korabbi modellek?	
 
 
@@ -182,7 +182,7 @@ AIC(mod_house_geolocation_cond)
 
 
 
-data_weightloss = read.csv("https://tinyurl.com/weightloss-data")	
+data_weightloss = read.csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_08/weight_loss_data.csv")	
 
 
 # ### Adatellenorzes	
