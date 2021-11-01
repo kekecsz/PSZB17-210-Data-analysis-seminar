@@ -32,7 +32,7 @@ mod_house_geolocation_cond = lm(price_mill_HUF ~ sqm_living + grade + long + lat
 
 # weightloss adatok betoltese
 
-data_weightloss = read.csv("https://tinyurl.com/weightloss-data")
+data_weightloss = read.csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_08/weight_loss_data.csv")
 
 ### Gyakorlofeladat - modellosszehasonlitas
 
