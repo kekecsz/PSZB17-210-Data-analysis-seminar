@@ -43,7 +43,7 @@ stdCoef.merMod <- function(object) {
 # - IQ: Résztvevő IQ-ja a műtét előtt egy héttel felvett IQ teszt alapján
 # - household_income: résztvevő háztartásának bevétele USD-ben
 
-read_csv("https://tinyurl.com/data-pain1")
+read_csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_09/home_sample_5.csv")
 
 ### Feladatok
 
