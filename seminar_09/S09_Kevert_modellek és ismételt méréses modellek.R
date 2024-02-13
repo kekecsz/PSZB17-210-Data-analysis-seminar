@@ -90,10 +90,8 @@ data_bully_int %>%
 
 
 mod_test = lm(sandwich_taken ~ weight + class, data = data_bully_int)
-resid(mod_test)
 
-sqrt(sd(resid(mod_test))^2)
-unlist(sigma.default)
+
 
 # A pontok szine az abran azt mutatja, a diak **melyik iskolai osztalyba** jar (class_1, class_2, class_3, vagy calss_4). Ha jobban megnezzuk, ugy tunik, hogy az azonos szinu pontok egymashoz kozel helyezkednek el az abran, nem pedig random modon elszorva, ami arra utal, hogy az adatpontok nem teljesen fuggetlenek egymastol, hanem csoportosulnak (klasztreket alkotnak).	
 
@@ -274,8 +272,10 @@ sum(residuals(mod_rnd_slope)^2)
 
 
 AIC(mod_fixed)	
-cAIC(mod_rnd_int)$caic	
-cAIC(mod_rnd_slope)$caic	
+
+cAIC(mod_rnd_int)$caic - cAIC(mod_rnd_slope)$caic
+
+AIC(mod_rnd_int) - AIC(mod_rnd_slope)
 
 
 # Ahogy korabban is lattuk az AIC eseten, ha az egyik modell cAIC mutatoja legalabb 2-vel alacsonyabb mint a masik modellhez tartozo cAIC, akkor azt mondhatjuk az alacsonyabb cAIC mutatoval biro modell szignifikansan jobban illeszkedik az adatokhoz. 	
@@ -309,6 +309,9 @@ anova(mod_rnd_int, mod_rnd_slope)
 cAIC(mod_rnd_int)$caic	
 cAIC(mod_rnd_slope)$caic	
 
+summary(mod_fixed)
+
+summary(mod_rnd_slope)
 
 # anova:	
 
