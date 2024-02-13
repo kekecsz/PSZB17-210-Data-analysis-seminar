@@ -40,7 +40,7 @@ probability_of_result
 
 # Ez a valoszinuseg **maskepp mondva** azt jelenti, hogy ha ugyan ezt a kiserletet 100 szor megismetelnenk (mindegyikben 10 feldobassal), akkor a 100 kiserletbol csak atlagosan nagyjabol 1-szer varnanak, hogy 9 vagy tobb fejet kapjunk. 	
 
-# Ezt le is ellenorizhetjuk, ha **randomizalunk 10.000 hasonlo kiserletet** az rbinom() funkcioval. Az abran lathato hogy csak a kiserletek igen kis szazalekaban kaptunk 9 vagy tobb "sikert". (Ezt a kodreszt sem fontos megerteni, a lenyege hogy az rbinom() funkcioval 10000-szer azt szimulaltuk, hogy egymas utan 10-szer feldobtunk egy ermet (vagyis hogy veletlenszeruen valasztottunk egy szamot 0 es 1 kozul), ez utan ennek a 10000 kiserletnek az eredmenyet abrazoltuk a ggplot-tal)	
+# Ezt le is ellenorizhetjuk, ha veletlenszeruen **generalunk 10.000 hasonlo kiserletet** az rbinom() funkcioval. Az abran lathato hogy csak a kiserletek igen kis szazalekaban kaptunk 9 vagy tobb "sikert". (Ezt a kodreszt sem fontos megerteni, a lenyege hogy az rbinom() funkcioval 10000-szer azt szimulaltuk, hogy egymas utan 10-szer feldobtunk egy ermet (vagyis hogy veletlenszeruen valasztottunk egy szamot 0 es 1 kozul), ez utan ennek a 10000 kiserletnek az eredmenyet abrazoltuk a ggplot-tal, az oszlopok magassaga azt jelzi hogy hany kutatsban jott ki az adott szamu siker).	
 
 
 successes = rbinom(n = 10000, size = 10, prob = 0.5)	
@@ -55,7 +55,7 @@ ggplot(data = random_flips) +
 	
 
 
-# Vagyis a 9 fej 10 feldobasbol egy **eleg meglepo** (nagyon ritka) eredmeny, hiszen ez csak az esetek nagyjabol 1%-aban fordul elo ha az erme nem cinkelt. De mit mond ez nekunk arrol hogy **az erme valoban cinkelve van-e** vagy sem? Mekkora ennek az eselye? Ezt sajnos nem tudjuk meg. Amit megtudunk ebből a szamitasbol, az az, hogy **milyen ritka ez az eredmeny amit kaptunk ha azt feltetelezzuk hogy az erme nincs cinkelve**. Ezt a fajta forditott logikat kell megerteni ahhoz, hogy az NHST-t teljesen meg tudjuk erteni.	
+# Vagyis a 9 fej 10 feldobasbol egy **eleg meglepo** (nagyon ritka) eredmeny, hiszen ez csak az esetek nagyjabol 1%-aban fordul elo ha az erme nem cinkelt. De mit mond ez nekunk arrol hogy **az erme valoban cinkelve van-e** vagy sem? Mekkora ennek az eselye? Ezt sajnos nem tudjuk meg. Amit megtudunk ebből a szamitasbol, az az, hogy **milyen ritka ez az eredmeny amit kaptunk ha azt feltetelezzuk hogy az erme nincs cinkelve**. Ezt a fajta forditott logikat kell megerteni ahhoz, amikor az NHST-vel dolgozunk.	
 
 # Tegyuk fel hogy egy **"igen-vagy-nem" dontest** kell hoznunk arrol, hogy cinkelt-e az erme vagy sem. Mondjuk minket biztak meg hogy ellenorizzuk az ermet egy fontos penzfeldobas elott, es el kell dontenunk, hogy megbizunk-e ennek az ermenek a hitelessegeben, vagy kerjunk egy uj ermet a penzfeldobashoz, mert ezt cinkeltnek iteljuk. Itt jon az NHST **teszt** resze. Ezt a dontest az NHST-ben egy elore megahatarozott valoszinusegi kuszubertek, **dontesi kuszobertek**, figyelembevetelevel hozzuk meg. Ha az altalunk megfigyelt eredmeny **kelloen meglepo**, **kelloen ritka** a null hipotezis helyesseget feltetelezve, akkor elvetjuk azt a feltetelezest, hogy a null-hipotezis helyes. Ilyenkor kizarasos alapon az alternativ hipotezis helyesseget fogadjuk el.	
 
@@ -63,7 +63,7 @@ ggplot(data = random_flips) +
 
 # Fontos azonban hangsulyozni, hogy egy-egy NHTS teszt soran nem tudjuk meg a null hipotezis helyessegenek, vagy az alternativ hipotezis helyessegenek a valodi valoszinuseget. Csak azt tudjuk, hogy mennyire valoszinu vagy valoszinutlen hogy az altalunk megfigyelt eredmenyt latjuk "egy olyan vilagban" ahol a null hipotezis helyes. Se tobbet, se kevesebbet. Es ez alapjan hozzuk meg a dontesunket a null-hipotezis elveteserol, vagy megtartasarol. 	
 
-# Az NHST modszer fo elonye, hogy ha **konzisztensen hasznaljuk a fent emlitett dontesi kuszobot** a kutatasainkban, akkor **elegge biztosak** lehetunk abban, hogy a statisztikai donteseinknek **csak 5%-aban vetjuk el hibasan a null hipotezist**. Vagyis a statisztikai donteseknek csak 5%-a lesz hibas, ha a null hipotezis valojaban igaz, igy tehat az elsofaju hiba (alpha-error) valoszinusege 5%. (Masszoval csak a teszteknek csak 5%-aban allitjuk hibasan, hogy van hatas, amikor valojaban nincs hatas.) 	
+# Az NHST modszer fo elonye, hogy ha **konzisztensen hasznaljuk a fent emlitett dontesi kuszobot** a kutatasainkban, akkor **elegge biztosak** lehetunk abban, hogy a statisztikai donteseink soran **csak 5%-aban vetjuk el hibasan a null hipotezist**. Vagyis a statisztikai donteseknek csak 5%-a lesz hibas, ha a null hipotezis valojaban igaz, igy tehat az elsofaju hiba (alpha-error) valoszinusege 5%. (Masszoval a teszteknek csak 5%-aban allitjuk hibasan, hogy van hatas, amikor valojaban nincs hatas.) 	
 
 # Ket fontos kitetelt erdemes megfigyelni a fenti allitasban. Egyreszt hogy azt irtam hogy "elegge biztosak" lehetunk. Azert csak "elegge biztosak" lehetunk ebben, es nem teljesen biztosak, mert ahhoz hogy ez az allitas helyes legyen, az altalunk hasznalt statisztikai tesztek **elofelteveseinek teljesulnie kell**, es ebben nem lehetunk teljesen biztosak a populacio szintjen. A masik, hogy **"ha a null hipotezis valojaban igaz"**. Arrol az NHST-ben nem kapunk garanciat, hogy a statisztikai donteseinknek hany szazaleka hibas ha az alternativ hipotezis az igaz. Azt is fontos megerteni, hogy ez nem jelenti azt, hogy az osszes publikalt null hipotezis-tesztelesben csak 5%-nyi lenne az elsofaju hiba, mert nem minden statisztikai dontest publikalnak.	
 
@@ -254,7 +254,7 @@ set.seed(Sys.time())
 
 # ## Ket kategorikus valtozo kapcsolata: Khi-negyzet proba (Chi-squared test)	
 
-# Ket kategorikus valtozo kapcsolatanak vizsgalatara tobbfajta teszt is alkalmazhato. Olyan esetben, ahol mind a ket kategorikus valtozonak ket-ket szintje van csak (vagyis a kulonbozo kategoria-szint kombinaciok egy 2x2-es tablazatban abrazolhatoak) a Fisher tesztet erdemes alkalmazni vagy a likelihood ratio tesztet, de olyan tablazatokra ahol a kategoriak kombinacioja tobb mint 2x2-es tablazatot alkot, vagyis ahol az egyik csoportosito valtozonak tobb mint 2 szintje van, a **Khi-negyzet proba** javasolt.	
+# Ket kategorikus valtozo kapcsolatanak vizsgalatara a **Khi-negyzet proba** javasolt. 	
 
 # Peldaul megvizsgalhatjuk, hogy van-e kapcsolat abban, hogy a szemelyek lakhatasi helyzete (**home_ownership**) es a kozott, hogy a kutatas vegen az egyes szemelyek meggyogyultak-e (**health_status**).	
 
@@ -285,6 +285,8 @@ data %>%
 
 # A Khi-negyzet proba azt a **null-hipotezist** teszteli, hogy **a csoportokban ugyan olyan a masik kategorikus valtozo eloszlasa** (vagyis a mi esetunkben a null hipotezis hogy ugyan olyan aranyban gyogyulnak meg akik baratnal laknak, akiknak sajat lakasuk van, es akik berlik a lakast).	
 
+# (Mivel itt egy 3x2-es tablazatunk van, a Khi-negyzet proba helyett a Fisher exact tesztet erdemes hasznalni, de az alabbi kodban megtalalod a khi negyzet proba kodjat is.)	
+
 
 	
 ownership_health_status_table = table(data$home_ownership, data$health_status)	
@@ -293,11 +295,27 @@ ownership_health_status_table
 chisq.test(ownership_health_status_table)	
 	
 
+# A teszt eredmenyet igy irhatjuk le:	
+# "Nem volt szignifikans elteres abban, hogy a kulonbozo lakhatasi csoportokban (baratnal, sajat lakasban, vagy berlemenyben lakok) milyen aranyban voltak azok akik meggyogyultak a kutatas vegere (X^2 = 1.70, df = 2, p = 0.428)."	
 
-# Az eredmenyt igy irhatjuk le:	
+# Fentebb lathattuk hogy a Khi-negyzet proba alkalmazasanak egyik feltetele, hogy ne legyen a cellak varhato erteke 5-nel kisebb. A cellak varhato erteket ugy lehet kiszamolni, hogy a cella soranak szamainak az osszeget megszorozzuk a cella oszlopanak szamainak az osszegevel, majd ezt elosztjuk a tablazat osszes szamanak osszegevel. Ezt szerencsere nem kell kezzel kiszamolnunk minden cellara, mert a chiq.test() fuggveny kiszamolja nekunk. Ezt az informaciot a chisq.test() fuggveny eredmenyenek az $expected elemeben talaljuk meg, az alabbi kod bemutat egy peldat:	
 
-# "Nem volt szignifikans elteres abban, hogy a kulonbozo lakhatasi csoportokban (baratnal, sajat lakasban, vagy berlemenyben lakok) milyen aranyban voltak azok akik meggyogyultak a kutatas vegere (X^2 = `r round(chisq.test(ownership_health_status_table)$statistic, 2)`, df = `r chisq.test(ownership_health_status_table)$parameter`, p = `r round(chisq.test(ownership_health_status_table)$p.value, 3)`)."	
 
+	
+chi = chisq.test(ownership_health_status_table)	
+chi$expected	
+	
+
+# Ha ebben a varhato ertekeket tartalmazo tablazatban a szamok tobb mint 20%-a kisebb mint 5, vagy ha barmelyik kisebb mint 1, akkor a Khi-negyzet teszt helyett a Fisher tesztet kell hasznalni. Mivel a fenti peldaban a tablazat csak 6 szamot tartalmaz, annak a 20%-a 1.2, vagyis ha akar egy szam is 5 alatti lenne, a Fisher tesztet kellene hasznalni. A pendankban a szamok nem 5 alattiak, ezert a Khi-negyzet teszt ereedmenye a mervado, de az alabbi kod mutat egy peldat arra, hogyan kellene a Fisher tesztet hasznalni, ha a Khi-negyzet teszt elofeltetele nem teljesulne.	
+
+
+fisher.test(ownership_health_status_table)	
+	
+
+
+# A Fisher exact teszt eredmenyet igy irhatjuk le:	
+
+# "Nem volt szignifikans elteres abban, hogy a kulonbozo lakhatasi csoportokban (baratnal, sajat lakasban, vagy berlemenyben lakok) milyen aranyban voltak azok akik meggyogyultak a kutatas vegere (Fisher exact p = 0.424)."	
 
 # *________________________________*	
 
@@ -377,7 +395,7 @@ mean_dif
 
 # Az eredmenyt igy irhatjuk le:	
 
-# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t = `r round(t_test_results$statistic, 2)`, df = `r round(t_test_results$parameter, 2)`, p = `r round(t_test_results$p.value, 3)`. A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: `r round(summary$mean[1], 2)`(`r round(summary$sd[1], 2)`), ferfiak: `r round(summary$mean[2], 2)`(`r round(summary$sd[2], 2)`). A nok atlagosan `r round(mean_dif, 2)` ponttal voltak szorongobbak (95% CI = `r round(t_test_results$conf.int[1], 2)`, `r round(t_test_results$conf.int[2], 2)`)."	
+# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t = 2.89, df = 48.52, p = 0.006). A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: 11.47 (2.58), ferfiak: 9.64 (2.70). A nok atlagosan 1.82 ponttal voltak szorongobbak (95% CI = 0.56, 3.09)."	
 
 # ### Egyszempontos ANOVA	
 
@@ -416,7 +434,7 @@ summary(ANOVA_result)
 
 # Az eredmenyt igy irhatjuk le:	
 
-# "A lakhatasi csoportonk szerint nem volt szignifikans kulonsbeg a szorongas atlagos szintjeben (F (`r round(summary(ANOVA_result)[[1]]$Df[1],2)` ,`r round(summary(ANOVA_result)[[1]]$Df[2],2)`) = `r round(summary(ANOVA_result)[[1]]$F[1],2)`, p = `r round(summary(ANOVA_result)[[1]][1,5],3)`). A szorongas atlagat es szorasat az egyes csoportok szerinti bontasban lasd az 1. tablazatban"	
+# "A lakhatasi csoportonk szerint nem volt szignifikans kulonsbeg a szorongas atlagos szintjeben (F (2, 77) = 0.48, p = 0.621). A szorongas atlagat es szorasat az egyes csoportok szerinti bontasban lasd az 1. tablazatban"	
 
 # Alabb lathato, hogyan produkalnank a megfelelo tablazatot a szorongas atlagaval home_ownership csoportok szerint.	
 
@@ -458,7 +476,9 @@ t_test_results_one_sided
 
 # Az eredmenyt igy irhatjuk le:	
 
-# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t = `r round(t_test_results_one_sided$statistic, 2)`, df = `r round(t_test_results_one_sided$parameter, 2)`, p = `r round(t_test_results_one_sided$p.value, 3)`. A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: `r round(summary$mean[1], 2)`(`r round(summary$sd[1], 2)`), ferfiak: `r round(summary$mean[2], 2)`(`r round(summary$sd[2], 2)`). A nok atlagosan `r round(mean_dif, 2)` ponttal voltak szorongobbak (95% CI = `r round(t_test_results_one_sided$conf.int[1], 2)`, inf)."	
+# "A ferfiak es nok szignifikansan kulonboztek a egymastol a szorongas szintjukben (t =  2.89, df = 48.52, p = 0.003. A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: 	
+
+# A csoportok szorongas szintjenek atlaga es szorasa a kovetkezo volt: "nok: 11.47 (2.58), ferfiak: 9.64 (2.70). A nok atlagosan 1.82 ponttal voltak szorongobbak (95% CI = 0.77, inf)."	
 
 # Nezzuk meg, mi tortenne, ha azt tippeltuk volna a hipotezisalkotaskor, hogy a noknek alacsonyabb lesz a szorongasszintjuk. Ezt ugy hatarozhatjuk meg, hogy a t.test() funkcioban alternative = "less" parametert allitunk be.	
 
@@ -512,11 +532,11 @@ data %>%
 	
 
 
-# A ket valtozo fuggetlennek tunik egymastol a feltaro elemzes alapjan, de elkepzelheto, hogy a hatas, barmilyen kicsit is, megis statisztikailag szignifikans, szoval vegezzuk el a statisztikai tesztet is.	
+# A ket valtozo fuggetlennek tunik egymastol a feltaro elemzes alapjan, de elkepzelheto, hogy a hatas, barmilyen kicsi is, megis statisztikailag szignifikans, szoval vegezzuk el a statisztikai tesztet is.	
 
 # Ezt a **pearson korrelacios teszt** segitsegevel tehetjuk meg.	
 
-# The assumptions of pearson's correlation are:	
+# A Pearson korrelacios teszt elofeltetelei:	
 
 # - Ket folytonos skalaju valtozo. Ha barmelyik valtozo ordinalis skalaju, akkor a spreaman korrelaciot lehet hasznalni.	
 # - Minden megfigyelesi egyseghez ket ertek tartalmazzon.	
@@ -535,7 +555,7 @@ correlation_result
 
 # Az eredmenyt igy irhatjuk le:	
 
-# "A reziliencia es a magassag kozott nem talaltunk szignifikans egyuttjarast (r = `r round(correlation_result$estimate, 2)`, 95% CI = `r round(correlation_result$conf.int[1], 2)`, `r round(correlation_result$conf.int[2], 2)`, df = `r round(correlation_result$parameter, 2)`, p = `r round(correlation_result$p.value, 3)`)"	
+# "A reziliencia es a magassag kozott nem talaltunk szignifikans egyuttjarast (r = 0.15, 95% CI = -0.08,  0.36, df = 78, p = 0.193)"	
 
 # Hasonloan a t-teszthez, a korrelacios teszt eseteben is erdemes egyoldalu tesztet hasznalni amikor a hipotezisunk megmondja a kapcsolat iranyat is, nem csak azt, hogy van kapcsolat a ket valtozo kozott.	
 
