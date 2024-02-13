@@ -1,4 +1,4 @@
-
+	
 # # Logisztikus regresszió	
 
 # ## Absztrakt	
@@ -8,9 +8,11 @@
 # ## Loading packages	
 
 
-library(tidyverse) # for dplyr and ggplot2	
 library(pscl) # for pR2	
 library(lmtest) # for lrtest	
+# library(dominanceanalysis) # for dominanceAnalysis()	
+library(tidyverse) # for dplyr and ggplot2	
+library(domir)	
 
 
 # ## Adatkezelés és leíró statisztika	
@@ -212,13 +214,13 @@ lm(disease_status_numerical ~ max_HR, data = heart_data)
 # A grafikonból és a regressziós egyenletből több probléma is kitűnik:	
 
 # 1. A regressziós egyenes nagyon rosszul illeszkedik az adatokhoz.	
-# 2. Ha szabályos regressziós modellt illesztünk az imént létrehozott disease_status_numerical változóval mint kimenettel és a max_HR prediktorral, akkor a max_HR-re 0,009-es regressziós együtthatót kapunk. Ez azt jelenti, hogy minden 1 pontos pulzusszám-növekedés esetén 0,009 pontos növekedés következik be a kimeneti változóban. Ha most kiszámítjuk a várható kimeneti értéket egy olyan személy esetében, akinek 120 a legmagasabb elért pulzusszám. Az eredmény -0,83 + 0,009*120 = 0,25. Ennek az előrejelzésnek nem igazán van értelme, ha a kimenetel csak 0 vagy 1 lehet. Ezt az előre jelzett értéket úgy tekinthetjük, mint annak a valószínűségét, hogy a kimeneti változó értéke 0 helyett 1 lesz. De azt is láthatjuk, hogy a modell könnyen adhat negatív számokat is előrejelzésként, miközben a valószínűségek csak 0 vagy 1 értéket vehetnek fel. Például egy nagyon sportos személy csak 90-et adhatna a legmagasabb pulzusszámként a vizsgálatban használt edzésteszten. A megjósolt "valószínűsége" annak, hogy ennek a személynek szívbetegsége van, -0,02 lenne, de negatív valószínűség nem létezik. Tehát egy másik megközelítésre van szükségünk, amely reális predikcoókat adna vissza.	
+# 2. Ha szabályos regressziós modellt illesztünk az imént létrehozott disease_status_numerical változóval mint kimenettel és a max_HR prediktorral, akkor a max_HR-re 0,009-es regressziós együtthatót kapunk. Ez azt jelenti, hogy minden 1 pontos pulzusszám-növekedés esetén 0,009 pontos növekedés következik be a kimeneti változóban. Ha most kiszámítjuk a várható kimeneti értéket egy olyan személy esetében, akinek 120 a legmagasabb elért pulzusszám. Az eredmény -0,83 + 0,009*120 = 0,25. Ennek az előrejelzésnek nem igazán van értelme, ha a kimenetel csak 0 vagy 1 lehet. Ezt az előre jelzett értéket úgy tekinthetjük, mint annak a valószínűségét, hogy a kimeneti változó értéke 0 helyett 1 lesz. De azt is láthatjuk, hogy a modell könnyen adhat negatív számokat is előrejelzésként, miközben a valószínűségek csak 0 vagy 1 értéket vehetnek fel. Tegyük fel hogy egy nagyon sportos személynél 90-es maximális pulzusszámot mértünk a terheléses teszten. A jósolt "valószínűsége" annak, hogy ennek a személynek szívbetegsége van, -0,02 lenne, de negatív valószínűség nem létezik. Tehát egy másik megközelítésre van szükségünk, amely reális predikciókat ad. 	
 
 # ### Logisztikus regresszió alapötlete	
 
 # A megoldás az, hogy a hagyományos lineáris modell helyett generalizált lineáris modelleket (GLM) használunk az előrejelzéshez. A GLM-eket olyan kimeneti változók modellezésére tervezték, amelyek nem normális eloszlásúak. A GLM-ek családjának egyik tagja a logisztikus regresszió, amelyet kifejezetten bináris kimenetek (kategorikus kimeneti változók aminek csak két szintje lehet) modellezésére terveztek.	
 
-# A GLM-ek alapgondolata az, hogy egy olyan kapcsolási függvényt (link függvényt) használnak, amely a megjósolt kimeneti változót olyan skálára transzformálja, amely a regresszió eredményeit egy reális skálára helyezi. A logisztikus regresszió által használt linkfüggvény a logit függvény (amely a bejósolni kívánt esemény esélyének természetes logaritmusa). Tehát a logisztikus regresszióban ahelyett, hogy a tényleges kimeneti értéket ("heart disease", "no heart disease") jósolnánk meg, a bejósolni kívánt esemény odds-jának természetes alapú logaritmusát jósoljuk meg. Ez a szám pedig a szokásos lineáris regressziós keretben kezelhető, mivel az log(odds) a negatív végtelen és a végtelen között bármilyen értéket felvehet. Miután tehát kiszámítottuk a bejósolni kívánt esemény log(odds)-ját a regressziós egyenlet segítségével bármely esetre, egy egyszeru számítással megkaphatjuk ebböl az esemény odds-ját vagy az esemény valószínűségét is.	
+# A GLM-ek alapgondolata az, hogy egy olyan kapcsolási függvényt (link függvényt) használnak, amely a megjósolt kimeneti változót realisztikus skálájúvá transzformálja. A logisztikus regresszió által használt linkfüggvény a logit függvény (amely a bejósolni kívánt esemény esélyének természetes alalpú logaritmusa). Tehát a logisztikus regresszióban ahelyett, hogy a tényleges kimeneti értéket ("heart disease", "no heart disease") jósolnánk meg, a bejósolni kívánt esemény odds-jának természetes alapú logaritmusát jósoljuk meg. Ez a szám pedig a szokásos lineáris regressziós keretben kezelhető, mivel az log(odds) a negatív végtelen és a végtelen között bármilyen értéket felvehet. Miután tehát kiszámítottuk a bejósolni kívánt esemény log(odds)-ját a regressziós egyenlet segítségével bármely esetre, egy egyszeru számítással megkaphatjuk ebböl az esemény odds-ját vagy az esemény valószínűségét is.	
 
 # ### A logisztikus regressziós modell R-ben	
 
@@ -229,7 +231,7 @@ lm(disease_status_numerical ~ max_HR, data = heart_data)
 
 
 	
-mod1 = glm(disease_status_numerical ~ max_HR, family = binomial(), data = heart_data)	
+mod1 = glm(disease_status ~ max_HR, family = binomial(), data = heart_data)	
 	
 summary(mod1)	
 	
@@ -237,34 +239,36 @@ summary(mod1)
 
 # ## Odds, esélyhányados és valószínűség	
 
-# Most, hogy felépítettünk egy modellt, megnézhetjük, mit jósol a modell. A regressziós egyenlet segítségével ugyanúgy kiszámíthatjuk az egyes megfigyelésekre vonatkozó előrejelzett értéket, mint korábban, de nem szabad elfelejtenünk, hogy az általunk előrejelzett érték a **bejósolni kívánt esemény bekövektezésének ay odds-jának a természetes alapú logaritmusa**, vagzis röviden az esemény log(odds)-ja. Az esemény log(odds) értékét nyers formában nehéz értelmezni, ezért általában **átváltjuk Odds-ra**. Ahhoz, hogy ennek értelme legyen, meg kell értenünk az Odds és a valószínűségek jelentését, és azt, hogy hogyan alakíthatjuk át egyiket a másikra.	
+# Most, hogy felépítettünk egy modellt, megnézhetjük, mit jósol a modell. A regressziós egyenlet segítségével ugyanúgy kiszámíthatjuk az egyes megfigyelésekre vonatkozó előrejelzett értéket, vagy akár új esetekre vonatkozó értéket, mint korábban, de nem szabad elfelejtenünk, hogy az általunk előrejelzett érték a bejósolni kívánt **esemény bekövektezésének odds-jának a természetes alapú logaritmusa**, vagzis röviden az esemény log(odds)-ja. Az esemény log(odds) értékét nyers formában nehéz értelmezni, ezért általában **átváltjuk Odds-ra**. Ahhoz, hogy ennek értelme legyen, meg kell értenünk az Odds és a valószínűségek jelentését, és azt, hogy hogyan alakíthatjuk át egyiket a másikra.	
 
-# ### Odds	
+# ### Esély (Odds)	
 
-# Valamely esemény odds-ja azt az esélyt tükrözi, hogy az esemény milyen valószínűséggel következik be. Az odds-ot általában számpárként ábrázolják. Ha az esemény/eredmény egy repülőgép-szerencsétlenség túlélése, és a túlélés esélye 1 a 4-hez, ez azt jelenti, hogy átlagosan minden 1 túlélő személyre 4 olyan személy jut, aki nem éli túl. Ez úgy is felírható, hogy az odds 0,25, mivel 1/4 = 0,25. Ha a túlélés esélye 2 az egyhez, ez azt jelenti, hogy átlagosan minden 2 túlélőre 1 ember jut, aki meghal. Az esélyt itt is fel lehet írni úgy, hogy 2, mivel 2/1 = 2. 	
+# Valamely esemény **esélye** (odds-ja) azt tükrözi, hogy az esemény bekövetkezésének mi az esélye. Az odds-ot általában számpárként ábrázolják. Ha az esemény/eredmény egy repülőgép-szerencsétlenség túlélése, és a túlélés esélye 1 a 4-hez, ez azt jelenti, hogy átlagosan minden 1 túlélő személyre 4 olyan személy jut, aki nem éli túl. Ez úgy is felírható, hogy az odds 0,25, mivel 1/4 = 0,25. Ha a túlélés esélye 2 az egyhez, ez azt jelenti, hogy átlagosan minden 2 túlélőre 1 ember jut, aki meghal. Az esélyt itt is fel lehet írni úgy, hogy 2, mivel 2/1 = 2. 	
 
-# Az odds-t az exp() függvény segítségével kiszámíthatjuk az log(Odds) értékéből: Odds = exp(log(Odds)). Fontos felismerni, hogy az odds értéke függ a nézőpontunktól, attól, hogy mi az az esemény, ami minket érdekel. Ebben a példában a túlélés az érdekes eseményünk, és ha az érdekes eseményt a repülőgép-szerencsétlenségben való nem túlélésre (halálra) (a másik lehetséges kimenetelre) cserélnénk, akkor az odds a túlélés esélyének fordítottja lenne. Tehát ha a túlélés odds-ja 0,25, akkor a halál odds-ja 1/0,25 = 4. Ha a túlélés odds-ja 2, akkor a halálozás odds-ja 1/2 = 0,5.	
+# Az odds-t az exponenciális, **exp()**, függvény segítségével kiszámíthatjuk az log(Odds) értékéből: Odds = exp(log(Odds)). Fontos felismerni, hogy az odds értéke függ a nézőpontunktól, attól, hogy mi az az esemény, ami minket érdekel. Ebben a példában a túlélés az érdekes eseményünk, és ha az érdekes eseményt a repülőgép-szerencsétlenségben való nem túlélésre (halálra) (a másik lehetséges kimenetelre) cserélnénk, akkor az odds a túlélés esélyének inverze lenne. Tehát ha a túlélés odds-ja 0,25, akkor a halál odds-ja 1/0,25 = 4. Ha a túlélés odds-ja 2, akkor a halálozás odds-ja 1/2 = 0,5.	
 
-# ### Odds ratio	
+# ### Esélyhányados (Odds ratio)	
 
-# Egy másik fontos, az esélyekkel kapcsolatos fogalom az esélyhányados (odds ratio). Ez egy hatásméret-mutató, amely annak értékelésére használható, hogy egy bizonyos csoporthoz való tartozás vs. a csoporthoz való nem tartozás milyen hatással van a vizsgált esemény esélyeire. Az esélyhányados az érdekes esemény odds-jainak aránya két csoport között. Ezt úgy számítják ki, hogy a csoportban a vizsgált esemény esélyét elosztják a csoporton kívüli esemény esélyével. Alapvetően azt mutatja meg, hogy mennyivel nagyobb vagy kisebb az esemény odds-ja (kockázata) az egyik csoportban, mint a másik csoportban. Egy egyszerű példa, ha egy esemény odds-ját hasonlítjuk össze két csoportban, tehát számítsuk ki a nemhez odds ratio-t a repülőgép-balesetben való halálozásra. Képzeljük el, hogy minden 1 férfira, aki túlél egy repülőgép-szerencsétlenséget, átlagosan 6 olyan férfi jut, aki meghal a repülőgép-szerencsétlenségben, így a férfiak esetében a repülőgép-szerencsétlenségben való halálozás esélye 6 lesz. Tegyük fel, hogy valamilyen oknál fogva a nőknél kisebb a kockázata annak, hogy repülőgép-balesetben meghalnak: minden 1 nőre, aki túléli a balesetet, 2 nő jut, aki meghal, így a repülőgép-balesetben való halálozás esélye a nők esetében 2. Most kiszámíthatjuk az esélyhányadost a két odds osztásával: Tehát a repülőgép-balesetben való halálra a férfiak esélyhányadosa a nőkhöz képest 3, mivel a férfiak odds-ja a repülőgép-balesetben való halálra háromszorosa a nőkének.	
+# Egy másik fontos, az esélyekkel kapcsolatos fogalom az **esélyhányados** (odds ratio). Ez egy hatásméret-mutató, amely annak értékelésére használható, hogy egy bizonyos csoporthoz való tartozás vs. a csoporthoz való nem tartozás milyen hatással van a vizsgált esemény esélyeire. Az esélyhányados az érdekes esemény odds-jainak aránya két csoport között. Ezt úgy számítják ki, hogy a csoportban a vizsgált esemény esélyét elosztják a csoporton kívüli esemény esélyével. Alapvetően azt mutatja meg, hogy mennyivel nagyobb vagy kisebb az esemény odds-ja (kockázata) az egyik csoportban, mint a másik csoportban. Egy egyszerű példa, ha egy esemény odds-ját hasonlítjuk össze két csoportban, tehát számítsuk ki a nemhez tartozó odds ratio-t egy hajószerencsétlenségben való halálozásra nézve. Képzeljük el, hogy minden 1 férfira, aki túlél egy repülőgép-szerencsétlenséget, átlagosan 6 olyan férfi jut, aki meghal a hajószerencsétlenségben, így a férfiak esetében a hajószerencsétlenségben való halálozás esélye 6 lesz. Tegyük fel, hogy valamilyen oknál fogva a nőknél kisebb a kockázata annak, hogy hajószerencsétlenségben meghalnak: minden 1 nőre, aki túléli a balesetet, 2 nő jut, aki meghal, így a repülőgép-balesetben való halálozás esélye a nők esetében 2. Most kiszámíthatjuk az esélyhányadost a két odds egymással való elosztásával: Tehát a hajóbalesetben való halálra a férfiak esélyhányadosa a nőkhöz képest 6/2= 3/1 =3, mivel a férfiak odds-ja a hajóbalesetben való halálra háromszorosa a nőkének.	
 
-# Az oddshoy hasonlóan az esélyhányados is függ a nézőpontunktól: attól, hogy mi az a csoport, amelyik érdekel. Tehát ha a férfiak (a nőkhöz képest) repülőgép-szerencsétlenségben való halálának esélyhányadosa 3, akkor a nők (a férfiakhoz képest) repülőgép-szerencsétlenségben való halálának esélyhányadosa 1/3 = 0,3333. A 0,33-as esélyhányados azt jelenti, hogy a repülőgép-balesetben való halál esélye 0,33-szor akkora a nőknél, mint a férfiaknál. Más szóval, a halálozás esélye 33% a nők körében a férfiakhoz képest.	
+# Az oddshoz hasonlóan az esélyhányados is függ a nézőpontunktól: attól, hogy mi az a csoport, amelyik érdekel. Tehát ha a férfiak (a nőkhöz képest) repülőgép-szerencsétlenségben való halálának esélyhányadosa 3, akkor a nők (a férfiakhoz képest) repülőgép-szerencsétlenségben való halálának esélyhányadosa 2/6 = 1/3 = 0,3333. A 0,33-as esélyhányados azt jelenti, hogy a repülőgép-balesetben való halál esélye 0,33-szor akkora a nőknél, mint a férfiaknál. Más szóval, a halálozás esélye 33% a nők körében a férfiakhoz képest.	
 
 # ### Valószínűség	
 
 # A valószínűség (probability) azt mutatja, hogy a sok kísérlet során várhatóan milyen arányban fordul elő az érdekes esemény. Ha a valószínűség 1/4, akkor átlagosan 4-ből 1 alkalommal számítunk arra, hogy az adott eseményt látjuk. Tehát ha a repülőgép-szerencsétlenség túlélésének valószínűsége 1/4 = 0,25 = 25%, akkor 4 emberből 1 túléli, 3 pedig meghal. Ha viszont a valószínűség 3/4 = 0,75 = 75%, akkor azt várjuk, hogy 4 emberből átlagosan 3 túléli és 1 meghal. 	
 
-# A valószínűséget a log(Odds)-ból a következő képlettel tudjuk kiszámítani: p = exp(log(Odds))/(1 + exp(log(Odds)), más szóval Odds / (1 + Odds).	
+# A valószínűséget a log(Odds)-ból a következő képlettel tudjuk kiszámítani: p = Odds / (1 + Odds) vagyis p = exp(log(Odds))/(1 + exp(log(Odds)).	
 
 
 # ## A logisztikus regresszió eredményeinek értelmezése	
 
 # Most, hogy tudjuk, mi az esély (odds), az esélyhányados és a valószínűség, és hogyan kapcsolódnak egymáshoz, készen állunk a modell eredményeinek értelmezésére. Használjuk a regressziós egyenletet, hogy megkapjuk a 182-es maximális pulzusszámú egyénre vonatkozó bejósolt értéket. A regressziós egyenlet a következő eredményt adja: -6,39 + 0,044 * 182 = 1,628. Ez a log(odds) érték. Ha az érték negatív, az azt jelenti, hogy annak a valószínűsége, hogy az adott esemény bekövetkezik, kisebb, mint annak a valószínűsége, hogy nem következik be. Tehát a mi esetünkben, mivel a log(odds) pozitív szám, azt mondhatjuk, hogy nagyobb a valószínűsége annak, hogy az illetőnek szívbetegsége van (ez számunkra az érdekes esemény), mint annak, hogy az illetőnek nincs szívbetegsége. Ezen kívül azonban nehéz tovább értelmezni a log(odds)-ot anélkül, hogy odds-á alakítanánk.	
 
-# A log(odds) értéket az exp() függvény segítségével alakíthatjuk át odds-á. exp(1,628) = 5,09. Tehát annak ay esélye, hogy a személy szívbetegségben szenved ayyal szemben hogy nem szenved abban 5,09, ami azt jelenti, hogy körülbelül ötször nagyobb az esélye annak, hogy ez a személy szívbeteg, mint annak, hogy nem szenved. Ezt a fenti képlet segítségével valószínűségre is átváltoztathatjuk: p = Odds / (1 + Odds). Esetünkben 5,09/ (1 + 5,09) = 0,84, ami azt jelenti, hogy a modellünk szerint 84% a valószínűsége annak, hogy ez a személy szívbetegségben szenved.	
+# A log(odds) értéket az exp() függvény segítségével alakíthatjuk át odds-á. exp(1,628) = 5,09. Tehát annak az esélye, hogy a személy szívbetegségben szenved azzal szemben hogy nem szenved abban 5,09, ami azt jelenti, hogy körülbelül ötször nagyobb az esélye annak, hogy ez a személy szívbeteg, mint annak, hogy nem szenved. Ezt a fenti képlet segítségével valószínűségre is átváltoztathatjuk: p = Odds / (1 + Odds). Esetünkben 5,09/ (1 + 5,09) = 0,84, ami azt jelenti, hogy a modellünk szerint 84% a valószínűsége annak, hogy ez a személy szívbetegségben szenved.	
 
-# Mint korábban is láttuk, ezt nem kell kézzel kiszámítanunk minden egyes személyre, az adathalmazunk minden egyes megfigyelésére megkaphatjuk a bejósolt log(odds) értékeket a predict() függvény használatával a modell objektumon.	
+# Mint korábban is láttuk, ezt nem kell kézzel kiszámítanunk minden egyes személyre, az adathalmazunk minden egyes az eredeti adatbázisunkban szereplő megfigyelésére megkaphatjuk a bejósolt log(odds) értékeket a predict() függvény használatával a modell objektumon.	
+
+predict(mod1, newdata = data.frame(max_HR = 180))
 
 
 	
@@ -279,7 +283,7 @@ predict(mod1)
 # A modell előrejelző képességének ismert mutatója az R^2 index. A logisztikus regresszióhoz azonban nem létezik pontos R^2 mutató. Ehelyett a megmagyarázott variancia arányát különböző statisztikai eljárásokkal becsüljük, amelyeket pszeudo R négyzet módszereknek nevezünk. Több pszeudo R négyzet index létezik, mint például a Cox és Snell R^2, Nagelkerke R^2 és a McFadden R^2. Ezek egyike sem általánosan elfogadott jó R^2 becslés, de a Cox és Snell R^2, valamint a Nagelkerke R^2 komoly hátrányokkal küszködik, ezért ha egyáltalán használunk R^2-t logisztikus regresszióhoz, akkor az a McFadden R^2. 	
 # A Cox és Snell R^2-tel az a probléma, hogy van egy felső határa, amely alacsonyabb, mint 1. Azok számára, akik a jó öreg R^2 indexhez szoktak hozzá, amely 0 és 1 között bármilyen értéket felvehet, és így a megmagyarázott variancia arányát mutatja, ez megnehezítheti a Cox és Snell R^2 értelmezését. A Nagelkerke R^2-t ennek ellensúlyozására dolgozták ki azáltal, hogy a Cox és Snell R^2 skáláját kiterjesztették, hogy az 1-ig terjedjen. Az ehhez használt korrekciót azonban gyakran túlkompenzációnak tekintik, és ez irreálisan magas R^2-értékeket adhat vissza. 	
 
-# Így marad a McFadden R^2. Ezt a mutatót a pscl csomag pR2() függvényének futtatásával kaphatjuk meg.	
+# Így marad a **McFadden R^2**. Ezt a mutatót a pscl csomag pR2() függvényének futtatásával kaphatjuk meg.	
 
 # A pR2() függvény outputja megmutatja számunkra a modell log likelihoodját is az "llh" oszlopban. Ezt a számot -2-vel megszorozva kiszámíthatjuk a -2 Log Likelihoodot (-2LL), amelyet a szakirodalomban "devianciának" is neveznek. Ennek ugyanaz az általános jelentése, mint a rezidual sum of squares-nek (RSS) a hagyományos regresszióban. Összehasonlítja a bejósolni kívánt változóra kiszámított becsült értéket a tényleges értékkel, és ezeket a különbségeket összegzi, hogy a modell teljes hibájának mértékét adja meg. Az RSS-hez és az AIC-hoz hasonlóan a -2LL-t is nehéz értelmezni az adott modell kontextusán kívül, mivel értéke függ a minta méretétől, és a modellben szereplő paraméterek számától, de ugyan azon az adaton ugyan annak a kimeneti változónak a bejóslására szolgáló két modell összehasonlítására alkalamas. Lényegében megmutatja a hiba összegét, amely a modellünkben szereplő prediktorokkal magyarázott összes variancia figyelembevétele után marad, és minél alacsonyabb ez a szám, annál jobb a modell illeszkedése. (Ez persze azt is jelenti, hogy minél magasabb a log likelihood, annál jobb a modell illeszkedése).	
 
@@ -292,7 +296,7 @@ pR2(mod1)
 pR2(mod1)["llh"] * -2	
 	
 
-
+AIC(mod1)
 # ### Előrejelzési pontosság	
 
 # Bizonyos helyzetekben nem elég, ha az érdekes esemény odds-ját kapjuk meg az egyes személyekre, hanem szeretnénk egy konkrét választ kapni arra, hogy az adott megfigyelés melyik kategóriába sorolható, abba, amiben az esemény bekövetkezik, vagy abba amiben nem következik be. (Vagyis például hogy egy személynek van-e vagy nincs szívbertegsége.) Ahhoz hogy konkrét csoportokba soroljuk a megfigyeléseket, általában egy határértéket használunk, és ez alapján a log(odds), odds, vagy valószínűségi határérték alapján soroljuk csoportba a megfigzeléseket. A legegyszerűbb megoldás, ha a megfigyeléseket a "nincs esemény" kategóriába soroljuk, ha az adott megfigyelés esetében az esemény valószínűsége 50% vagy annál kisebb, és "van esemény" kategóriába soroljuk, ha az érdekes esemény valószínűsége 50%-nál nagyobb az adott megfigyelés esetében. A fenti átváltási formulák alapján könnyen belátható hogy az 50%-os valószínűség 1-es odds-nak és 0 log(odds)-nak felel meg, így valójában közvetlenül használhatjuk a modellünk előrejelzését (amely log(odds)-ban van megadva) a kategorizáláshoz: a 0 vagy annál kisebb log(odds)-ot "no_heart_disease", míg a 0-nál nagyobb log(odds)-ot "heart_disease"-ként kódoljuk, mivel a szívbetegség az érdekes esemény a vizsgálatunkban. Az alábbi kódban ezt úgy tesszük, hogy a kimeneti változó (disease status) bejósolt értékét egy új változóba mentjük, amelynek neve "pred_mod1".	
@@ -336,7 +340,7 @@ heart_data %>%
 
 
 	
-mod_null = glm(disease_status_numerical ~ 1, family = binomial(), data = heart_data)	
+mod_null = glm(disease_status ~ 1, family = binomial(), data = heart_data)	
 	
 summary(mod_null)	
 	
@@ -377,7 +381,7 @@ heart_data %>%
   summarise(count = n()) %>%	
   mutate(freq = count / sum(count))	
 	
-# correctly categorized as having not having heart disease	
+# correctly categorized as not having heart disease	
 	
 heart_data %>%	
   filter(disease_status == "no_heart_disease") %>% 	
@@ -400,8 +404,8 @@ heart_data %>%
 
 heart_data = heart_data %>% 	
   mutate(pred_mod1_tuned = predict(mod1)) %>% 	
-  mutate(pred_mod1_tuned = case_when(pred_mod1_tuned <= 0.4 ~ "no_heart_disease",	
-                               pred_mod1_tuned > 0.4 ~ "heart_disease"))	
+  mutate(pred_mod1_tuned = case_when(pred_mod1_tuned <= -0.4 ~ "no_heart_disease",	
+                               pred_mod1_tuned > -0.4 ~ "heart_disease"))	
 	
 	
 # coding correct guesses	
@@ -435,7 +439,7 @@ heart_data %>%
   summarise(count = n()) %>%	
   mutate(freq = count / sum(count))	
 	
-# correctly categorized as having not having heart disease	
+# correctly categorized as not having heart disease	
 	
 heart_data %>%	
   filter(disease_status == "no_heart_disease") %>% 	
@@ -485,6 +489,7 @@ confint(mod1)
 
 # A lineáris regresszióhoz hasonlóan a modell summary-ban a prediktorokhoz tartozó p-értékeket vagy a confint() függvény által mutatott konfidencia intervallumokat használhatjuk arra, hogy megítáljük, egy adott prediktornak van-e hozzáadott előrejelző értéke a modellben. Más szóval, hogy az adott prediktor regressziós együtthatója szignifikánsan különbözik-e nullától.	
 
+
 # ### Mit kell leírni egy cikkben az eredményekről?	
 
 # Most már minden adatunk megvan az eredmények leírásához.	
@@ -515,4 +520,20 @@ confint(mod1)
 
 # *________________________________*	
 
+mod2 = glm(disease_status ~ max_HR + sys_bloodpressure + has_chest_pain, family = binomial(), data = heart_data)
 
+heart_data = heart_data %>% 
+  mutate(pred_mod2 = predict(mod2)) %>% 
+  mutate(pred_mod2_cat = case_when(pred_mod2<= 0 ~ "no_heart_disease",	
+                                   pred_mod2 > 0 ~ "heart_disease"
+                                   ))
+heart_data = heart_data %>%
+  mutate(accuracy_mod2 = case_when(pred_mod2_cat == disease_status ~ "correct",
+                                   pred_mod2_cat != disease_status ~ "incorrect"))
+
+table(heart_data$accuracy_mod2)[1]/(table(heart_data$accuracy_mod2)[1] +table(heart_data$accuracy_mod2)[2])
+
+
+summary(mod2)
+
+exp(coef(mod2))
