@@ -200,7 +200,7 @@ mod_house2 %>%
 
 # Esetünkben egyetlen esetben sem nagyobb a Cook távolság 1-nél, néhány esetben azonban 0,02-t már meghaladja. Vagyis a második kirtérium alapján van nehany nagy hatasu eset a mintaban.	
 
-# A nagy hatasu esetek jelenlete onmagaban nem feltetlenul jelent orvosolando problemat, viszont ez konnyen vezethet a regresszios modell **bejoslo erejenek csokkenesehez**, es ahhoz, hogy a regresszio alapfeltetelei megserulnek.	
+# A nagy hatasu esetek jelenlete onmagaban nem feltetlenul jelent orvosolando problemat, viszont ez konnyen vezethet a regresszios modell **bejoslo erejenek csokkenesehez**, es ahhoz, hogy a regresszio elofeltetelei serulnek.	
 
 # Eloször is teszteljük hogy teljesülnek-e a többszörös regresszió elofeltetelei, és csak utána hozzunk dontest azzal kapcslatban, hogy mit kezdunk a nagy hatasu esetekkel.	
 
@@ -228,7 +228,9 @@ mod_house2 %>%
 mod_house2 %>% 	
   plot(which = 2)	
 # histogram	
-	
+
+plot(mod_house2, which = 2)
+
 residuals_mod_house2 = enframe(residuals(mod_house2))	
 residuals_mod_house2 %>% 	
   ggplot() +	
@@ -267,13 +269,15 @@ describe(residuals(mod_house2))
 # eloszlása közelebb legyen a normál eloszláshoz. Ekkor azonban fontos figyelembe venni, hogy az így	
 # kapott egyutthatok is transzformálva lesznek. Ugyan ez vonatkozik a hiba feltételekre, azaz ha a modell	
 # transzformált értékekre vonatkozó RSS-je nem lesz összehasonlítható az transzformalatlan értékekével.	
-# Az átalakításról további információk az alábbi linken találhatóak: http://abacus.bates.edu/~ganderso/biology/bio270/homework_files/Data_Transformation.pdf (a file szerzoje számomra ismeretlen, de a	
+# A különböző átalakítási formulák, és hogy milyentipusu eloszlásoknál melyiket érdemes használni az alábbi linken találhatóak bővvebb információk: https://www.statisticssolutions.com/transforming-data-for-normality/.	
 # dokumentum tartalmilag pontos, és megfelelo hivatkozásokkal ellátott).	
 # 3. Ha mindössze néhány eset okozza a normalitástól való eltérést, úgy hasznos lehet a **kiugró értékek kizárása**.	
 # Formális hipotézisteszt esetén a változók kizárása nem alapulhat a p-értéken. A kizárás feltételei	
 # preregisztrálhatóak, vagy egy érzékenységi elemzest is használhatunk, azaz az adott elemzest kétszer	
 # lefuttathatjuk adatainkon, egyszer a problémás értékek bevonásával, egyszer pedig azok kizárásával,	
 # majd az eredményeket összehasonlíthatjuk a két esetben.	
+# 4. **Bootstrapping** modszert is használhatjuk a konfidencia szintek robosztus becslésére a normalitas feltetel	
+# serulese eseten.	
 
 # Esetünkben, lévén adataink mindössze néhány kiugro eset miatt sértik a normalitási feltételt, megpróbálhatjuk	
 # kizárni ezeket az adatokat, hátha így kiküszöbölheto a probléma. Itt a **186-os és 113-as esetek** kizárását	
@@ -314,8 +318,6 @@ summary(mod_house3)
 # A további feltétel-vizsgálatokban azt a modell-t vizsgaljuk majd, amibol mar kizartuk ezeket a kiurgo eseteket	
 # (186-os és 113-as esetek).	
 
-# 4. **Bootstrapping** modszert is használhatjuk a konfidencia szintek robosztus becslésére a normalitas feltetel	
-# serulese eseten.	
 
 # ### Bootstrapping	
 
@@ -391,7 +393,7 @@ mod_house3 %>%
 
 # ## Homoszkedaszticitás	
 
-# A regresszió során feltételezzük, hogy a **hiba tagok (rezidualisok) szórása konstans és a prediktorok értékétol független**. Tehát például a rezidualisok varianciájának 60 négyzetmeter alapterületu és 300 négyzetmeter	
+# A regresszió során feltételezzük, hogy a **hiba tagok (rezidualisok) szórása konstans és a kimeneti változó értékétol független**. Tehát például a rezidualisok varianciájának 60 négyzetmeter alapterületu és 300 négyzetmeter	
 # alapterületu ingatlanok esetén meg kell egyezzen.	
 
 # Ezt a standardizált **rezidualisokat és a prediktorokat ábrázoló diagramm** vizsgálatával ellenorizhetjük, ahol azt	
@@ -545,7 +547,7 @@ mod_house3_large %>%
 
 
 
-# **Ha egyszerre sérül a normalitás és a homoszkedaszticitás feltétele**, akkor a **wild bottstrapping** ajánlott a sima bootsrapping helyett a konfidencia intervallum kiszámításához. (Ennek a funkciónak a futtatásához először le kell futtatni a script elején lévő kódot amivel elmentjük ezt a wild.boot.confint() funkciót.)	
+# **Ha egyszerre sérül a normalitás és a homoszkedaszticitás feltétele**, akkor a **wild bootstrapping** ajánlott a sima bootsrapping helyett a konfidencia intervallum kiszámításához. (Ennek a funkciónak a futtatásához először le kell futtatni a script elején lévő kódot amivel elmentjük ezt a wild.boot.confint() funkciót.)	
 
 
 ### get 95% confidence intervals with wild bottstrapping	
