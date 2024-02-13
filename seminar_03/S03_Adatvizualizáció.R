@@ -6,7 +6,7 @@
 
 # # Adatábrázolás alapjai a ggplot2-vel	
 
-# A gyakorlat során egy randi.applikációból származó adattáblával fogunk dolgozni. Az adatok a Lovoo nevű appból származnak. Az adatokat Jeffrey Mvutu Mabilama gyűjtötte egy saját programmal 2015-ben. (Az adatokat a saját Lovoo profilján keresztül gyűjtötte, és csak azoknak az adatát érte el, akit neki az App ajánlott, ezért csak nők szerepelnek az adatbázisban. Emiatt vélhetően az adatbázis más szempontból is torzított.) 	
+# A gyakorlat során egy randi applikációból származó adattáblával fogunk dolgozni. Az adatok a Lovoo nevű appból származnak. Az adatokat Jeffrey Mvutu Mabilama gyűjtötte egy saját programmal 2015-ben. (Az adatokat a saját Lovoo profilján keresztül gyűjtötte, és csak azoknak az adatát érte el, akit neki az App ajánlott, ezért csak nők szerepelnek az adatbázisban. Emiatt vélhetően az adatbázis más szempontból is torzított.) 	
 
 # Az adatok a Kaggle-ről elérhetőek, ami egy adatelemzéssel és machine learninggel foglalkozó oldal.	
 
@@ -14,15 +14,19 @@
 
 # Ezt az adatbázist betölthetjük az alábbi kóddal. A kód lefuttatása után a környezetben (environment) megjelenik a lovoo_data adattábla.	
 
-library(tidyverse)
 
+	
+library(tidyverse)	
+	
 lovoo_data <- read.csv("https://raw.githubusercontent.com/kekecsz/PSZB17-210-Data-analysis-seminar/master/seminar_03/lovoo_v3_users_api-results.csv")	
+	
+	
+lovoo_data <- lovoo_data %>% 	
+  mutate(isOnline = factor(isOnline),	
+         verified = factor(verified),	
+         isNew = factor(isNew))	
 
 
-lovoo_data <- lovoo_data %>% 
-  mutate(isOnline = factor(isOnline),
-         verified = factor(verified),
-         isNew = factor(isNew))
 
 # Nézzük meg az adattábla alapvető tulajdonságait a megszokott módon.	
 
@@ -37,7 +41,7 @@ str(lovoo_data)
 
 # Az ábrázoláshoz a **ggplot2** nevű csomagot használjuk majd. 	
 
-# Töltsd be ezt a csomagot! A **tidyverse** csomag tartalmazza a ggplot2-t, így az alábbi kódban ezen keresztül töltöm be a ggplot2-t. Így a %>% (pipe) operatárot is használni tudjuk és egyéb dplyer funkciókat.	
+# Töltsd be ezt a csomagot! A **tidyverse** csomag tartalmazza a ggplot2-t, így az alábbi kódban ezen keresztül töltöm be a ggplot2-t. Így a %>% (pipe) operátort is használni tudjuk és egyéb dplyer funkciókat.	
 
 
 library(tidyverse)	
@@ -49,9 +53,9 @@ library(tidyverse)
 
 # Nézd hogyan lehet a **pipe** %>% operátort használni ahhoz, hogy a ggplot funkciót a lovoo_data adatbázisra alkalmazzuk.	
 
-# A ggplotba a sorok végén "+" jelet használunk ahhoz, hogy **új elemet** adjunk hozzá az ábránkhoz. Az aesthetics **aes()** funkcióval határozzuk meg, hogy az adattáblából **melyik változókat** akarjuk ábrázolni és melyik tengelyeken, vagy egyéb vizualizációs elemben. A **geom_...*** funkciókkal határozzuk meg, **milyen vizualizációs elemek** szerepeljenek az ábrán.	
+# A ggplotba a sorok végén "+" jelet használunk ahhoz, hogy **új elemet** adjunk hozzá az ábránkhoz. Az aesthetics **aes()** funkcióval határozzuk meg, hogy az adattáblából **melyik változókat** akarjuk ábrázolni és melyik tengelyeken, vagy egyéb vizualizációs elemben. A **geom_...*** funkciókkal határozzuk meg, **milyen típusú ábrát** szeretnénk rajzolni.	
 
-# Az hogy **mennyire jár együtt a megtekintések és a like-ok** jól látszik egy **pontdiagramon**, ezért most a **geom_point()** geomot használjuk. ez minden egyes megfigyelést egy pontként ábrázol egy kétdimenziós koordinátarendszerben.	
+# Az hogy **mennyire jár együtt a megtekintések és a like-ok** jól látszik egy **pontdiagramon**, ezért most a **geom_point()** geomot használjuk. Ez minden egyes megfigyelést egy pontként ábrázol egy kétdimenziós koordinátarendszerben.	
 
 
 lovoo_data %>% 	
@@ -63,7 +67,7 @@ lovoo_data %>%
 	
 
 
-# Az ábránkat is, mint minden mást R-ben elmenthetünk egy **objektumba**, és amikor újra lefuttatjuk ezt az objektumot, akkor az ábra újra megjelenik.	
+# Az ábránkat is, mint minden mást az R-ben, elmenthetjük egy **objektumba**, és amikor kilistázzuk ezt az objektumot (vagyis a konzolban lefuttatjuk az objektum nevét), akkor az ábra újra megjelenik.	
 
 
 plot1 <- lovoo_data %>% 	
@@ -98,6 +102,13 @@ plot2
 
 plot2 + aes(shape = factor(isOnline))	
 
+lovoo_data %>% 	
+  ggplot() +	
+  aes(x = counts_profileVisits,	
+      y = counts_kisses,	
+      color = flirtInterests_date,
+      shape = factor(isOnline)) +	
+  geom_point()	
 
 
 # Hozzáadhatunk **új geomokat** is az ábrához hasonló módon. Itt például a **geom_smooth** geomot adtuk hozzá a korábbi ábrához, ami egy vonalat illeszt az adatpontokra, és ezzel igyekszik vizualizálni az adatokban lévő trendeket.	
@@ -111,7 +122,6 @@ lovoo_data %>%
               color = flirtInterests_date) +	
               geom_point() +	
               geom_smooth()	
-
 
 
 # Mivel az egész ggplot-ra vonatkozó aes() funkció tartalmazza a color = flirtInterests_date részt, ezért ez **minden geomra hat**, így látható hogy a geom_smooth vonalai is a flirtInterests_date csoportonként lettek kirajzolva, mindegyik a megfelelő színnel. Azonban megtehetjük, hogy az egyes változókat csak bizonyos geomokon jelenítjük meg. Ezt úgy tudjuk elérni ha a **geom funkcióján belül** specifikálunk egy aes() függvényt. Az alábbi kódban a szín szerinti csoportosítás csak a pontokban jelenik meg, a simított vonalban nem	
@@ -157,17 +167,17 @@ lovoo_data %>%
 
 # Ahogy azt korábban is láttuk, a ggplot egy pipe végére is berakható, így a korábban tanult adatkezelő funkciókkal előkészítheted az adatokat, amit ábrázolni akarsz. 	
 
-# Például az alábbi kóddal elérjük, hogy csak az 50000 profil megtekintés alatti és a 3000 kiss alatti felhasználók adatait ábrázoljuk. 	
+# Például az alábbi kóddal elérjük, hogy csak az 5000 profil megtekintés alatti és a 300 kiss alatti felhasználók adatait ábrázoljuk. Azt is meghatázozzuk, hogy csak a külső forrásból megerősített user-ek adatai jelenjenek meg az ábrán.	
 
 
 
 lovoo_data %>% 	
-  filter(counts_kisses < 3000, counts_profileVisits < 50000) %>% 	
+  filter(counts_kisses < 300, counts_profileVisits < 5000, verified == 1) %>% 	
     ggplot() +	
       aes(x = counts_profileVisits,	
           y = counts_kisses) +	
-      geom_point(aes(color = flirtInterests_date), shape = 21, fill = "white") +	
-      geom_smooth()	
+      geom_point(shape = 21, fill = "white") +	
+      geom_smooth(method = "lm")	
 
 
 
@@ -182,6 +192,17 @@ lovoo_data %>%
 # - Illessz egy trendvonalat is az ábrára (geom_smooth), amin belül a method = "lm"-paramétert használd.	
 
 # *__________________________________*	
+
+
+
+lovoo_data %>% 	
+  filter(flirtInterests_date == "true") %>% 	
+  ggplot() +	
+  aes(x = counts_profileVisits,	
+      y = age,
+      color = factor(verified)) +	
+  geom_point() +	
+  geom_smooth()	
 
 
 # # Geomok	
@@ -208,11 +229,17 @@ lovoo_data %>%
 
 
 lovoo_data %>% 	
-  filter(counts_profileVisits < 1000) %>% 	
+  filter(counts_profileVisits < 3000) %>% 	
   ggplot() +	
     aes(x = counts_profileVisits, fill = factor(verified)) +	
-    geom_density(alpha = .5)	
+    geom_density(alpha = .5) +
+    theme_classic()
 	
+
+lovoo_data %>% 	
+  filter(verified == 1) %>%
+  group_by(isNew) %>% 
+  summarize(n())
 
 
 # ### Pöttydiagramm (dotplot)	
@@ -236,15 +263,16 @@ lovoo_data %>%
 
 # Kategorikus változók eloszlását vizsgálhatjuk az oszlopdiagrammal.	
 
-# Az alábbi ábra megmutatja hogy hogyan oszlanak meg a filmek az adatbázisban a Motion Picture Association of America (MPAA) film rating system szerint.	
+# Itt például azt ábrázoljuk, hogy a felhasználók milyen nemű párt keresnek a lovoo-n.	
 
-# - F - female	
-# - M - male	
-# - both - both male and female	
-# - none - no preference	
+# - F - female (nő)	
+# - M - male (férfi)	
+# - both - both male and female (férfi és nő)	
+# - none - no preference (nincs megjelölve preferencia)	
 
 
 lovoo_data %>% 	
+  filter(verified == 1) %>% 
   ggplot() +	
     aes(x = genderLooking) +	
     geom_bar()	
