@@ -1,4 +1,4 @@
-
+ 	
 # # Absztrakt	
 
 # Ebben a gyakorlatban a "dimenzionalitás átkaval" birkozunk meg. Ezt a valtozok szamanak csokkentesevel oldjuk meg a fokomponenselemzes (PCA) es az exploratoros faktorelemzes (EFA) segitsegevel.	
@@ -189,13 +189,13 @@ summary(hsq)
 
 
 
-# Mondjuk hogy szeretnenk meghatarozni melyek az emerekek humor stilusanak legfobb jellegzetessegei, melyek meghatarozzak a szemely stresszel valo viszonyat. Masneven hogy a humor stilus mely aspektusaival segithetnek bejosolni a szemely altalanos stressz-szintjet. Egy modja hogy ezt meghatarozzuk, hogy epitunk egy regresszios modellt, amiben a life_stress valtozot josoljuk be a Humor Style Questionnaire itemeivel (Q1-Q32).	
+# Mondjuk hogy szeretnenk meghatarozni melyek az emerek humor stilusanak legfobb jellegzetessegei, melyek meghatarozzak a szemely stresszel valo viszonyat. Masneven hogy a humor stilus mely aspektusaival segithetnek bejosolni a szemely altalanos stressz-szintjet. Egy modja hogy ezt meghatarozzuk, hogy epitunk egy regresszios modellt, amiben a life_stress valtozot josoljuk be a Humor Style Questionnaire itemeivel (Q1-Q32).	
 
 # Amikor lefuttatjuk ezt a modellt, a regresszios egyutthatok szignifikanciaja alapjan ugy tunik hogy a modell egeszeben szignifikansan jobb mint a null modell, es tobb olyan item is van aminek van sziginfikans hozzaadott erteke a modellhez, vagyis erdemes a humor stilust figyelembe venni a stressz meghatarozasanal. 	
 
 # De ha arra vagyunk kivancsiak hogy a humor stilus mely aspektusai fontosak, ezt nehez ebbol a regresszios elemzesbol megallapitani. Egyreszt nem bizhatunk meg teljesen a p-ertekekben, mert 32 statistzikai tesztet hajtottunk verge, a 32 item hozzaadott megmagyarazo ertekenek tesztelesekor, ami nagyban noveli az elsofaju hiba (fals pozitiv) valoszinuseget. Vagyis nagy a valoszinusege hogy a szignifikanskent megjelolt prediktorok kozul nehany nincs valodi osszefuggesben a stresszel a populacioban. 	
 
-# Masreszt figyelembe kell venni hogy a prediktorok korrelalnak egymassal, vagyis bizonyos prediktorok a stressz varianciajanak hasonlo reszet magyarazzak, es ebben a modellben lehet hogy az egyes prediktorok mas korrelalo prediktorok hatasat elmaszkoljak.	
+# Masreszt figyelembe kell venni hogy a prediktorok korrelalnak egymassal, vagyis bizonyos prediktorok a stressz varianciajanak hasonlo reszet magyarazzak, es ebben a modellben lehet hogy az egyes prediktorok mas korrelalo prediktorok hatasat eltakarjak.	
 
 
 	
@@ -230,9 +230,9 @@ vif(mod_allitems)
 
 # ## A dimenzionalitas atka	
 
-# Vagyis 32 egymassal korrelalo prediktor bevonasa a modellbe nem idealis annak a megertesere, hogy a humor stilus mely aspektusai fontosak a stressz meghatarozasaban. Sot, ez kifejezetten problemas minel kisebb a minta-elemszam a prediktorok szamahoz kepest. Ezt a statisztikusok gyakran a "**dimenzionalitas atka**"-kent emlegetik. A "dimenzionalitas" arra utal, hogy minel tobb valtozo van a modellunkben, az adatokat annal tobb-dimenzios terben lehet modellezni. Peldaul az egyszeru regresszional amikor csak egy kimeneti valtozonk es egy prediktorunk van, az adatok egy ketdimenzios terben abrazolhatok: a kimeneti valtozo az y tengelyen (dimenzion), a prediktor pedig az x tengelyen (dimenzion) abrazolva. A regresszios egyenes ebben az esetben valoban egy egyenes. Amikor mar ket prediktorunk van, az adatok egy harom dimenzios terben abrazolhatok, es a regresszios modell egy regresszios sik, nem csak egy egyenes. Amikor 32 prediktorunk van a fenti peldaban, a modellunk egy 33 dimenzios felulet. Minel tobb dimenzioban mozoghat a modell, annal flexibilisebb, vagyis annal nagyobb a tulillesztes valoszinusege. Ezert torekednunk kell a dimenziok (prediktorok) szamanak minimalizalasara hogy elkerulhessuk a tulillesztest.  	
+# Vagyis 32 egymassal korrelalo prediktor bevonasa a modellbe nem idealis annak a megertesere, hogy a humor stilus mely aspektusai fontosak a stressz meghatarozasaban. Sot, ez kifejezetten problemas minel kisebb a minta-elemszam a prediktorok szamahoz kepest. Ezt a statisztikusok gyakran a "**dimenzionalitas atka**"-kent emlegetik. A "dimenzionalitas" arra utal, hogy minel tobb valtozo van a modellunkben, az adatokat annal tobb-dimenzios terben lehet modellezni. Peldaul az egyszeru regresszional amikor csak egy kimeneti valtozonk es egy prediktorunk van, az adatok egy ketdimenzios terben abrazolhatok: a kimeneti valtozo az y tengelyen (dimenzion), a prediktor pedig az x tengelyen (dimenzion) abrazolva. A regresszios egyenes ebben az esetben valoban egy egyenes. Amikor mar ket prediktorunk van, az adatok egy harom dimenzios terben abrazolhatok, es a regresszios modell egy regresszios sik, nem csak egy egyenes. Amikor 32 prediktorunk van a fenti peldaban, a modellunk egy 32 dimenzios felulet. Minel tobb dimenzioban mozoghat a modell, annal flexibilisebb, vagyis annal nagyobb a tulillesztes valoszinusege. Ezert torekednunk kell a dimenziok (prediktorok) szamanak minimalizalasara hogy elkerulhessuk a tulillesztest.  	
 
-# A tulillesztesnek annal nagyobb a veszelye minel inkabb kozelit a prediktorok szama a megfigyelesek szamahoz. Amikor egy prediktorunk van, vagyis az adat ketdimenzios terben irhato le. Ha csak ket megfigyelesunk lenne, akkor a regresszios egyenes tokeletes illeszkedest erhetne el, mert mindig van egy olyan egyenes ami osszekot ket pontot, es ezt a regresszio megtalalja. Belathato hogy ez a regresszios egyenes amit csak ket megfigyeles alapjan ilélesztettunk nagyon serulekeny lesz az adatokban levo hibara, es nem fogja megbizhatoan megranagni a populacioban talalhato valos osszefuggest a prediktor es a kimeneti valtozo kozott. Szoval ahogy a tulillesztesrol szolo oran is lathattuk, a tokeletes illeszkedes a mintankhoz valojaban nem jo, mert a populacio helyett csak a mintaban levo latszolagos mintazatokra illeszkedik a modell amit nagyon befolyasolhat a mintaveteli hiba. Ugyan ez a helyzet amikor egy 2 prediktoros modellt illesztunk 3 megfigyelesre. Mivel a regresszios modell itt egy regresszios sik, egy sikot mindig lehet ugy forgatni hogy pontosan osszekosson 3 pontot, igy az illeszkedes tokelehetes lesz, ami eros tulilleszteshez vezet. Ebbol extrapolalva konnyen lathato hogy ahogy a prediktorok szama kozelit a megfigyelesek szamahoz, a modellunk egyre kevesbe lesz megbizhato a populacio megismeresehez, es egyre serulekenyebb lesz a tulilessztesre.	
+# A tulillesztesnek annal nagyobb a veszelye minel inkabb kozelit a prediktorok szama a megfigyelesek szamahoz. Amikor egy prediktorunk van, vagyis az adat ketdimenzios terben irhato le. Ha csak ket megfigyelesunk lenne, akkor a regresszios egyenes tokeletes illeszkedest erhetne el, mert mindig van egy olyan egyenes ami osszekot ket pontot, es ezt a regresszio megtalalja. Belathato hogy ez a regresszios egyenes, amit csak ket megfigyeles alapjan illesztettunk, nagyon serulekeny lesz az adatokban levo hibara, es nem fogja megbizhatoan megranagni a populacioban talalhato valos osszefuggest a prediktor es a kimeneti valtozo kozott. Szoval ahogy a tulillesztesrol szolo oran is lathattuk, a tokeletes illeszkedes a mintankhoz valojaban nem jo, mert a populacio helyett csak a mintaban levo latszolagos mintazatokra illeszkedik a modell amit nagyon befolyasolhat a mintaveteli hiba. Ugyan ez a helyzet amikor egy 2 prediktoros modellt illesztunk 3 megfigyelesre. Mivel a regresszios modell itt egy regresszios sik, egy sikot mindig lehet ugy forgatni hogy pontosan osszekosson 3 pontot, igy az illeszkedes tokelehetes lesz, ami eros tulilleszteshez vezet. Ebbol tovabb altalanositva konnyen lathato hogy ahogy a prediktorok szama kozelit a megfigyelesek szamahoz, a modellunk egyre kevesbe lesz megbizhato a populacio megismeresehez, es egyre serulekenyebb lesz a tulilessztesre.	
 
 # ## A korrelacios struktura vizualizacioja	
 
@@ -261,17 +261,17 @@ cor(hsq_items_only) %>% network_plot(min_cor=0.6)
 
 # Amikor a dimenzionalitas atkaval szembesulunk, az egyik megoldasi lehetoseg a valtozok (dimenziok) szamanak csokkentese. Ha szimplan kizarnak nehany valtozot, mondjuk a valtozok modellhez hozzaadott bejoslo erteke alapjan, az szinten hozzajarulna a tulilleszteshez (ezt korabbi orakon lathattuk). 	
 
-# Ehelyett egy masik lehetoseg, hogy osszevonjuk a modellben levo valtozokat valamilyen szempontrendszer szerint. Ha ranezunk a korrelacios matrixra es a korrelacios abrakra, lathatjuk hogy vanak klaszterek a valtozok kozott, es a klasztereken belul a valtozok jobban korrelalnak, mint klaszterek kozott. Idealis lenne, ha azokat a valtozokat vonnank ossze amelyek ugyanazon klaszteren belul vannak. A **fokomponenselemzes** egy matematikai megoldast jelent arra, hogy ezt hogyan tehetjuk meg.	
+# Ehelyett egy masik lehetoseg, hogy osszevonjuk a modellben levo valtozokat valamilyen szempontrendszer szerint. Ha ranezunk a korrelacios matrixra es a korrelacios abrakra, lathatjuk hogy vanak csoportok (klaszterek) a valtozok kozott, es a klasztereken belul a valtozok jobban korrelalnak, mint klaszterek kozott. Idealis lenne, ha azokat a valtozokat vonnank ossze amelyek ugyanazon klaszteren belul vannak. A **fokomponenselemzes** egy matematikai megoldast jelent arra, hogy ezt hogyan tehetjuk meg.	
 
 # A **fokomponenselemzest** (principal component analysis, roviden PCA), hasznalhatjuk arra, hogy lecsokkentsuk a valtozok szamat amivel dolgoznunk kell, ugy, hogy kozben **a leheto legtobb informaciot tartunk meg az adatok variabilitasarol**.	
 
 # ## Hogyan mukodik a PCA?	
 
-# A fokomponenselemzes (PCA) soran az a celunk altalaban hogy csokkentsuk a dimenziok szamat, amivel az adataink leirhatok. Ezt ugy erjuk el, hogy eloszor uj dimenziokat keresunk, amelyek minel nagyobb reszet magyarazzak az adatok valtozekonysaganak, majd eldobjuk azokat a dimenziokat, amik a variancia megertesenek viszonylag kis resezert felnek. A PCA soran eloszor azonositunk egy elsodleges dimenziot, ami menten az adatok a legnagyobb varianciat mutatjak. Ez utan azonositunk egy erre meroleges uj dimenziot, ami a **fennmarado** variancia legnagyobb reszet kepes magyarazni, es igy tovabb, addig amig el nem erjuk az eredetileg a fokomponenselemzesbe rakott valtozok szamat. (Mivel a dimenziok **merolegesek egymasra**, ezert ket dimenzio a variancia mindig valamilyen uj reszet irja le, **nincs redundancia** a dimenziok altal megmagyarazott varianciaban, vagyis a fokomponensek egymassal nem korrelalnak.) Igy a fokomponenselemzes vegere egy uj koordinatarendszert kapunk, amiben az adatokat abrazolhatjuk. 	
+# A fokomponenselemzes (PCA) soran az a celunk altalaban hogy csokkentsuk a dimenziok szamat, amivel az adataink leirhatok. Ezt ugy erjuk el, hogy eloszor uj dimenziokat keresunk, amelyek minel nagyobb reszet magyarazzak az adatok valtozekonysaganak, majd eldobjuk azokat a dimenziokat, amik a variancia megertesenek viszonylag kis reszeert felnek. A PCA soran eloszor azonositunk egy elsodleges dimenziot, ami menten az adatok a legnagyobb varianciat mutatjak (egy adatfelhoben azt az egyenest, ami menten a legnagyobb az adatok kozotti kulonbseg / szorodas). Ez utan azonositunk egy erre meroleges uj dimenziot, ami a **fennmarado** variancia legnagyobb reszet kepes magyarazni, es igy tovabb, addig amig el nem erjuk az eredetileg a fokomponenselemzesbe rakott valtozok szamat. (Mivel a dimenziok **merolegesek egymasra**, ezert ket dimenzio a variancia mindig valamilyen uj reszet irja le, **nincs redundancia** a dimenziok altal megmagyarazott varianciaban, vagyis a fokomponensek egymassal nem korrelalnak.) Igy a fokomponenselemzes vegere egy uj koordinatarendszert kapunk, amiben az adatokat abrazolhatjuk. 	
 
-# Fontos, hogy az uj koordinatarendszer dimenzioi nagyban elternak abban hogy az adatok mennyire variabilisek az adott dimenzioban. Az elso nehany "fokomponens" (dimenzio) amit kivalasztottunk a varianica nagyon nagy reszet lefedi, es a fennmarado dimenziokban az adatok alig mutatnak variabilitast. Egy adott dimenzioban a variancia merteket **eigenvalue**-nak nevezzuk. Ahogy az elsotol az utolsokent azonositott dimenzio fele haladunk az eigenvalue egyre csokken (vagyis a dimenzioban megfigyelheto variancia). Ez engedi meg hogy csokkentsuk a dimenziok szamat, mert a PCA vegen azonositott dimenziokon elhanyagolhato lesz az adatok kulonbozosege egymastol, igy ezeket a dimenziokat elvethetjuk, es csak a **leghasznosabb dimenziokat tartjuk meg**.	
+# Fontos, hogy az uj koordinatarendszer dimenzioi nagyban elternak abban hogy az adatok mennyire variabilisek az adott dimenzioban. Az elso nehany "fokomponens" (dimenzio) amit kivalasztottunk a varianica nagyon nagy reszet lefedi, es a fennmarado dimenziokban az adatok altalaban alig mutatnak variabilitast. Egy adott dimenzioban a variancia merteket **eigenvalue**-nak nevezzuk. Ahogy az elsotol az utolsokent azonositott dimenzio fele haladunk az eigenvalue egyre csokken (vagyis a dimenzioban megfigyelheto variancia). Ez engedi meg hogy csokkentsuk a dimenziok szamat, mert a PCA vege fele azonositott dimenziokon elhanyagolhato lesz az adatok kulonbozosege egymastol, igy ezeket a dimenziokat elvethetjuk, es csak a **leghasznosabb dimenziokat tartjuk meg**.	
 
-# Kepzeljuk el peldaul hogy egy kutatasban arra vagyunk kivancsiak hogy mennyire erettek az iskolakezdo elso osztalyosok. A kutatasban merjuk a gyerekek verbalis keszsegeit, szociabilitasat, es eletkorat evekben. Kiderul hogy a vizsgalt mintaban szinte minden elso osztalyos 6 eves, vagyis szinte semmi variabilitas nincs az eletkorban (ha csak evekben merjuk). Ettol a valtozotol akar el is tekinthetunk a kutatasunkban, hiszen annyira nem kulonboznek benne a vizsgalt szemlyeink. Ezzel szemben a szociabilitasban es a verbalis keszsegekben nagyobb szemlyek kozotti kulonbseget merunk, ezert ezek fontos indikatorok a kutatasunkban abbol a szempontbol, hogy a gyerekeket megkulonboztessuk erettseguk szintjeben. A fokomponenselemzes soran mestersegesen generalunk uj valtozokat ugy hogy azok direkt nagyon nagy vagy nagyon keves varianciat magyarazzanak, hogy a keves varianciat magyarazo valtozokat elvethessuk ugy, hogy kozben minel tobb informaciot tartsunk meg az adatok kulonbozosegerol.	
+# Kepzeljuk el peldaul hogy egy kutatasban arra vagyunk kivancsiak hogy mennyire erettek az iskolakezdo elso osztalyosok. A kutatasban merjuk a gyerekek verbalis keszsegeit, szociabilitasat, es eletkorat evekben. Kiderul hogy a vizsgalt mintaban szinte minden elso osztalyos 6 eves, vagyis szinte semmi variabilitas nincs az eletkorban (ha csak evekben merjuk). Ettol a valtozotol akar el is tekinthetunk a kutatasunkban, hiszen annyira nem kulonboznek benne a vizsgalt szemlyeink. Ezzel szemben a szociabilitasban es a verbalis keszsegekben nagyobb szemelyek kozotti kulonbseget merunk, ezert ezek fontos indikatorok a kutatasunkban abbol a szempontbol, hogy a gyerekeket megkulonboztessuk erettseguk szintjeben. A fokomponenselemzes soran mestersegesen generalunk uj valtozokat ugy hogy azok direkt nagyon nagy vagy nagyon keves varianciat magyarazzanak, hogy a keves varianciat magyarazo valtozokat elvethessuk ugy, hogy kozben minel tobb informaciot tartsunk meg az adatok kulonbozosegerol.	
 
 
 # ## PCA hasznalata R-ben	
@@ -279,8 +279,6 @@ cor(hsq_items_only) %>% network_plot(min_cor=0.6)
 # A fokomponenselemzest a **PCA() (principal component analysis)** funkcioval tudjuk elvegezni a FactoMineR package-bol. Az elemzes eredmenyet egy pca_mod modell objektumba mentettem el. Ami egybol kiad ket **abrat a ket legfontosabb fokomponensrol (dimenziorol)** amik a leghatekoonyabban irjak le az adatokat.	
 
 # Az egyik abran az latszik, hogy **az egyes megfigyelesek** (ebben az esetben az egyes auto-modellek) **hol helyezkednek el a ket dimenzio menten**. A masodik abra pedig arrol szol, hogy a **dimenziok milyen korrelaciot mutatnak az eredeti valtozokkal**. A szaggatott vonalak mutatjak a fokomponenseket. A nyilak minel kozelebb fekszenek a szaggatott vonalhoz, a valtozo annal inkabb egyuttjar az adott dimenzioval a masik dimenzioval szemben.	
-
-
 
 # Peladaul a Q9 es a Q10 itemeket sokkal jobban leirja a Dim1 mint a Dim2. (a nyil iranya alapjan megallapithato hogy a Q9 negativan, a Q10 pozitivan korrelal a Dim1-el.) Ezzel szemben a Q8 valtozo nyila a ket dimenzio kozott helyezkedik el, ami azt jelenti hogy midkettovel nagyjabol azonos mertekben korrelal (ez lehet nagyon kicsi, vagy akar nagyon nagy korrelacio is).	
 
@@ -316,13 +314,13 @@ summary(pca_mod2)
 
 # A fokomponenselemzes egy dimenzioredukcios technika, vagyis **celunk hogy kevesebb dimenzionk legyen** az elemzes vegere, mint ahany valtozoval kezdtuk az elemzest. Viszont hogyha ranezunk a model summary-ra, lathatjuk hogy a PCA funkcio alapertelmezett modon **pontosan annyi dimenziot generalt mint amennyi valtozonk volt**. 	
 
-# **Meg kell adnunk a PCA funkcionak, hany dimenaziot akarunk** kinyerni. De hogyan tudjuk eldonteni, mennyi az idealis szamu dimenzio?	
+# Azt is megadhatjuk a PCA funcionak, **hogy hany dimenaziot akarunk megtartani** a sok kinyert dimenziobol. De hogyan tudjuk eldonteni, mennyi az idealis szamu dimenzio?	
 
 # Erre szamos modszer letezik. 	
 
 # **1. Scree test**	
 
-# A legismertebb talan a scree-test, ami a megmagyarazott varianciaaranyt abrazolo abra alapjan vegezheto el. Ehhez eloszor a fviz_screeplot() funkcioval abrazolnunk kell az egyes fokomponensek altal megmagyarazott variancia merteket, majd az abra alapjan meg kell allapitanunk, hol van a **"tores" a scree-plotban**, vagyis hol talalhato az a pont, ami utan mar ellaposodik a megmagyarazott varianciaaranyt abrazolo gorbe. **A torespont elotti dimenzional** kell hogy megalljon a dimenzio-extrakcio, vagyis annal a dimenzional, ami meg szignifikansan tobb varianciat kepes megmagyarazni, mint a kesobb kinyerd dimenziok. Ezt a megallasi szabalyt ugy is nevezik hogy a **"konyok kriterium"**, mivel a scree plot egy konyokre emlekeztet, es mi a konyokpontot keressuk a gorbeben.	
+# A legismertebb talan a scree-test, ami a megmagyarazott varianciaaranyt abrazolo abra alapjan vegezheto el. Ehhez eloszor a fviz_screeplot() funkcioval abrazolnunk kell az egyes fokomponensek altal megmagyarazott variancia merteket, majd az abra alapjan meg kell allapitanunk, hol van a **"tores" a scree-plotban**, vagyis hol talalhato az a pont, ami utan mar ellaposodik a megmagyarazott varianciaaranyt abrazolo gorbe. **A torespont elotti dimenzional** kell hogy megalljon a dimenzio-extrakcio, vagyis annal a dimenzional, ami meg szignifikansan tobb varianciat kepes megmagyarazni, mint a kesobb kinyerd dimenziok. Ezt a megallasi szabalyt ugy is nevezik hogy a **"konyok kriterium"**, mivel a scree plot gorbeje egy konyokre emlekeztet, es mi a konyokpontot keressuk ebben a gorbeben.	
 
 # Ezen az abran ugy tunik, hogy a **negyedik dimenzio** utan mar nem erdemes tovabbmennunk, hiszen az otodik dimenzional megtorik a gorbe es onnantol mar nagyon alacsony a megmagyarazott varianciaarany. Vagyis az idealis dimenzioszam ezen az adaton 4.	
 
@@ -337,7 +335,7 @@ fviz_screeplot(pca_mod2, addlabels = TRUE, ylim = c(0, 85))
 
 # Egy masik jol ismert kriterium, hogy azokat a dimenziokat kell megtartanunk, amelyeknek az **eigenvalue erteke 1-nel magasabb**. Ez azert van, mert **az 1-nel alacsonyabb** eigenvalue azt jelenti, hogy **a dimenzio kevesebb varianciat magyaraz meg mint az eredeti valtozok atlagosan**. A fokomponens elemzes lenyege hogy **hasznos osszefoglalo valtozokat** generaljunk amik **tobb valtozo informaciojat tartalmazzak osszevonva**. Azt pedig nem szeretnenk hogy meg az eredeti valtozoinknal is haszontalanabb valtozokat generaljunk, ezert az atlagos valtozoinknal kisebb varianciat megmagyarazo dimenziokat elutasitjuk.	
 
-# A peldankban ez az elemzes is azt sugallja, hogy het dimenziot tartsunk meg, hiszen a nyolcadik dimenziohoz tartozo eigenvalue mar 1-nel kisebb.	
+# A peldankban ez az elemzes azt sugallja, hogy het dimenziot tartsunk meg, hiszen a nyolcadik dimenziohoz tartozo eigenvalue mar 1-nel kisebb.	
 
 
 
@@ -351,7 +349,7 @@ get_eigenvalue(pca_mod2)
 
 # A harmadik (es egyben jelenleg a legelfogadottabb) technika a **parallel elemzes** technika. Ennek a lenyege hogy az eredeti adattablankhoz hasonlo karakterisztikakkal rendelkezo **adatokat generalunk veletlenszeruen**, de ugy, hogy abban a **valtozok ne korrelaljanak egymassal**. Ezt nagyon sokszor megismeteljuk, es ez alapjan a nagy mennyisegu random minta alapjan kiszamoljuk, **mi a veletlenszeruen varhato eigenvalue mintazat**. Ez egyfajta **"null modelkent"** funkcional, amihez hasonlithatjuk a sajat adatainkon kapott eignevalue-kat. Azokat a dimenziokat tartjuk meg, amiknek az **eigenvalue-ja magasabb mint a random mintakban az adott dimenziohoz tartozo null-eigenvalue**. 	
 
-# Ezt a parallel elemzest vegezhetjuk el a **paran()** funkcioval a paran package-bol. Ez a funkcio a null eigenvalue gorbe vizualizalasara is kepes a graph = TRUE prameter beallitasaval, melyet osszehasonlithatunk az adatainkban kapott eigenvalue-val. Az output objektum $Retained komponense megmutatja, az elemzes hany dimenzio megtartasat javasolja.	
+# Ezt a parallel elemzest vegezhetjuk el a **paran()** funkcioval a paran package-bol. Ez a funkcio a null eigenvalue gorbe vizualizalasara is kepes a graph = TRUE prameter beallitasaval, melyet osszehasonlithatunk az adatainkban kapott eigenvalue-val. Az output objektum $Retained komponense megmutatja, az elemzes hany dimenzio megtartasat javasolja. Ebben a peldabana a parallel elemzes 4 komponens megtartasat javasolja.	
 
 
 
@@ -363,7 +361,6 @@ pca_ret = paran(hsq_items_only,
 pca_ret$Retained	
 	
 	
-
 
 
 
@@ -385,9 +382,9 @@ summary(pca_mod3)
 
 # A modell osszefoglalobol **(model summary)** tovabbi hasznos informaciok olvashatok ki. 	
 
-# Az **Eigenvalues** reszben megtudhatjuk hogy az egyes dimenziok az **adatok teljes varianciajanak hany szazalekat magyarazzak meg (% of var)**, es hogy a legfontosabbtol a legalacsonyabbig egyesevel osszevonva mekkora a tobb dimenzio altal megmagyarazott **osszesitett varianciaarany (Cumulative % of var)**. Vagyis a Dim.3-hoz tartozo % of variance ertek (`r round(pca_mod3[["eig"]][,"percentage of variance"][3],2)`) azt mutatja, hogy a harmadikkent kinyert dimenzio az adatok varianciajanak `r round(pca_mod3[["eig"]][,"percentage of variance"][3],2)*100`%-at tudja megmagyarazni onmagaban. Az Dim.3-hoz tartozo dim Cumulative % of var ertek (`r round(pca_mod3[["eig"]][,"cumulative percentage of variance"][3],2)` pedig azt mutatja, hogy a Dimenzio 3 a Dim.1 es Dim.2-vel egyutt kozosen az adatok varianciajanak (`r round(pca_mod3[["eig"]][,"cumulative percentage of variance"][3],2)*100`%-at kepesek megmagyarazni. Ha csak az eigenvalue-t es a megmagyarazaott varianaciaaranyokat tartalmazo tablazat erdekel minket, ezt kinyerhetjuk ugy hogy csak a  pca_mod3$eig komponenst listazzuk ki.	
+# Az **Eigenvalues** reszben megtudhatjuk hogy az egyes dimenziok az **adatok teljes varianciajanak hany szazalekat magyarazzak meg (% of var)**, es hogy a legfontosabbtol a legalacsonyabbig egyesevel osszevonva mekkora a tobb dimenzio altal megmagyarazott **osszesitett varianciaarany (Cumulative % of var)**. Vagyis a Dim.3-hoz tartozo % of variance ertek (8.75) azt mutatja, hogy a harmadikkent kinyert dimenzio az adatok varianciajanak 8.75%-at tudja megmagyarazni onmagaban. Az Dim.3-hoz tartozo dim Cumulative % of var ertek (39.68) pedig azt mutatja, hogy a Dimenzio 3 a Dim.1 es Dim.2-vel egyutt kozosen az adatok varianciajanak 39.68%-at kepesek megmagyarazni. Ha csak az eigenvalue-t es a megmagyarazaott varianaciaaranyokat tartalmazo tablazat erdekel minket, ezt kinyerhetjuk ugy hogy csak a  pca_mod3$eig komponenst listazzuk ki.	
 
-# A model summary arrol is tartalmaz informaciot a Variables reszeben, hogy az egyes **valtozok hogyan korrelalnak az egyes uj dimenziokkal** (a Dim.1, Dim.2, Dim.3 ... oszlopokaban), es hogy mekkora a hozzajarulasuk az adott valtozo altal megmagyarazott varianciahoz (a ctr oszlopban). Ez egy nagyon fontos tablazat, mert innen tudjuk leolvasni (az abrak mellett) hogy az egyes valtozokat mely dimenziok (faktorok) irjak le leginkabb. Bovebb informaciot talalunk ha kilistazzuk a pca_mod3$var komponenst.	
+# A model summary arrol is tartalmaz informaciot a Variables reszeben, hogy az egyes **valtozok hogyan korrelalnak az egyes uj dimenziokkal** (a "cor" reszben Dim.1, Dim.2, Dim.3 ... oszlopokaban), es hogy mekkora a hozzajarulasuk az adott valtozo altal megmagyarazott varianciahoz (a ctr oszlopban). Ez egy nagyon fontos tablazat, mert innen tudjuk leolvasni (az abrak mellett) hogy az egyes valtozokat mely dimenziok (faktorok) irjak le leginkabb. Bovebb informaciot talalunk ha kilistazzuk a pca_mod3$var komponenst.	
 
 
 
@@ -431,7 +428,7 @@ fviz_pca_ind(pca_mod3, select.ind = list(cos2 = 10), repel = T)
 	
 
 
-# Egy masik fontos abratipus az egyes dimenziok ertelmezesenek elosegitesehez a  **fviz_contrib() altal generalt barchart**, ami az egyes valtozok egyes dimenziokhoz valo hozzajarulasat mutatja meg. 	
+# Egy masik fontos abratipus az egyes dimenziok ertelmezesenek elosegitesehez a  **fviz_contrib() altal generalt oszlopdiagram**, ami az egyes valtozok egyes dimenziokhoz valo hozzajarulasat mutatja meg. 	
 
 # Az **axes = parameterrel allithatjuk be, melyik dimenziora** vagyunk kivancsiak. **A piros szaggatott vonal** azt mutatja, hogy mi lenne az **elvart hozzajarulas szazaleka** abban az esetben ha minden valtozo azonos mertekben jarulna hozza a dimenzio megmagyarazasahoz.	
 
@@ -439,7 +436,7 @@ fviz_pca_ind(pca_mod3, select.ind = list(cos2 = 10), repel = T)
 
 # Ezek az abra azt mutatjak, hogy a Dim.1-hez elsosorban Q14, Q17, Q5, Q1 valtozok jarulnak hozza, mig a Dim.2-hoz elsosorban a Q20, Q8, Q4 es Q24 valtozok jarulnak hozza, mig a Dim.3-hoz a Q31, Q15, Q7.	
 
-# Ezek alapjan az abrak alapjan, es a reprezentativ esetek abraja alapjan mit gondolsz, hogyan nevezhetnek el az egyes dimenziokat?	
+# Ezek alapjan az abrak alapjan, es a reprezentativ esetek abraja alapjan mit gondolsz, hogyan nevezhetnek el az egyes dimenziokat? (Azt, hogy az egyes Q1-Q32-ig szamozott itemek pontosan milyen kerdeseket takarnak, az adatbazis bemutatasanal talalod ennek a dokumentumnak ez elejen.)	
 
 
 # original functions in factoextra	
@@ -493,13 +490,14 @@ fviz_pca_ind(pca_mod3,
 # Fontos, hogy a korrelacios matrixot a mixedCor() **a $rho komponenseben tarolja**, ezert ezt kell elmentenunk egy uj adatobjektumba. Mentsuk el ezt a hsq_correl nevu objektumba.	
 
 
+
 	
 hsq_mixedCor <- mixedCor(hsq, c=NULL, p=1:32)	
 hsq_correl = hsq_mixedCor$rho	
 	
 
 
-# **___________________Gyakorlas ___________________**	
+# **___________________Gyakorlas  _______________________________**	
 
 # A fentebb tanultak alapjan vizualizald a valtozok kozotti korrelaciot. Hasznalj tobb modszert is, pl. ggcorr(), ggcorrplot() hc.order=TRUE-val kombinalva, vagy network_plot().	
 
@@ -553,11 +551,11 @@ mvnorm.skew.test(na.omit(hsq[,1:32]))
 
 # Fent lathato hogy mind a Henze-Zirkler teszt mind a tobbvaltozos ferdeseg es csucsossag tesztek a normalitas feltetelenek serulesere utal. Igy a **paf extrakcios modszert** hasznaljuk majd. 	
 
-# A faktorextrakciora a psych package fa() funkciojat hasznaljuk. Ezen belul megadhatjuk a faktoreztrakcios modszert az fm = parameteren belul. Itt fm = "pa"-t hatarozunk meg, mert a paf modszert szeretnenk hasznalni, de ha a tobbvaltozos normalitas nem serult volna, akkor ehelzett "mle"-t hasznaltunk volna. Az nfactors = parameterrel adhatjuk meg, hany faktort szeretnenk kinyerni. Egyelore allitsuk ezt 5-re, lentebb tartgyaljuk majd, hogyan valasztjuk ki az idealis faktormennyiseget.	
+# A faktorelemzesre a psych package fa() funkciojat hasznaljuk. Ezen belul megadhatjuk a faktorextrakcios modszert az fm = parameteren belul. Itt fm = "pa"-t hatarozunk meg, mert a paf modszert szeretnenk hasznalni, de ha a tobbvaltozos normalitas nem serult volna, akkor ehelyett "mle"-t hasznaltunk volna. Az nfactors = parameterrel adhatjuk meg, hany faktort szeretnenk kinyerni. Egyelore allitsuk ezt 5-re, lentebb tartgyaljuk majd, hogyan valasztjuk ki az idealis faktormennyiseget.	
 
-# A modell objektum $communality komponenseben talaljuk a valtozokhoz tartozo kommunalitas ertekekt. Ezt legmagasabbtol legalacsonyabbig sorbarendezzuk es kilistazzuk. Ahogy fentebb emlitettuk a kommunalitas azt jelzi, hogy az egyes megifigyelt valtozokban tapasztalhato variancia mekkora hanyadat magyarazzak a kinyert faktorok.  Az output azt mutatja, hogy a Q17  "Altalaban nem szeretek viccelodni, vagy masokat szorakoztatni" ("I usually don't like to tell jokes or amuse people.") a legjobban reprezentalt item az 5 faktoros strukturaban, aminek 68%-at kepesek megmagyarazni az uj faktorok. Ezzel szemben a Q22 "Amikor szomoru vagy ideges vagyok altalaban elvesztem a humorerzekemet" ("If I am feeling sad or upset, I usually lose my sense of humor.") a legkevesbe reprezentalt item, varianciajanak csak 25%-at magyarazza a jelenlegi faktorstruktura.	
+# A modell objektum $communality komponenseben talaljuk a valtozokhoz tartozo kommunalitas ertekeket. Ezt legmagasabbtol legalacsonyabbig sorbarendezzuk es kilistazzuk. Ahogy fentebb emlitettuk a kommunalitas azt jelzi, hogy az egyes megifigyelt valtozokban tapasztalhato variancia mekkora hanyadat magyarazzak a kinyert faktorok.  Az output azt mutatja, hogy a Q17  "Altalaban nem szeretek viccelodni, vagy masokat szorakoztatni" ("I usually don't like to tell jokes or amuse people.") a legjobban reprezentalt item az 5 faktoros strukturaban, aminek 68%-at kepesek megmagyarazni az uj faktorok. Ezzel szemben a Q22 "Amikor szomoru vagy ideges vagyok altalaban elvesztem a humorerzekemet" ("If I am feeling sad or upset, I usually lose my sense of humor.") a legkevesbe reprezentalt item, varianciajanak csak 25%-at magyarazza a jelenlegi faktorstruktura.	
 
-# Neha ahhoz hogy a faktorstruktura jol mukodjon, erdemes a rosszul reprezentalt itemeket kizarni. Ez foleg akkor fontos, ha kicsi a mintaelemszam. **Ha a megfigyelesek szama 250 alatti, akkor MacCallum et al. szerint elvarhato hogy az itemek atlagos kommunalitasa legalabb 0.6 legyen.** A mi esetunkben ennel megengedobbek is lehetunk, mert az elemszamunk nagyobb, de egy melyebb faktorelemzes eseten igy is erdemes lehet elgondolkodni a rosszul reprezentalt itemek kizarasan.	
+# Neha ahhoz hogy a faktorstruktura jol mukodjon, erdemes a rosszul reprezentalt itemeket kizarni. Ez foleg akkor fontos, ha kicsi a mintaelemszam. **Ha a megfigyelesek szama 250 alatti, akkor MacCallum et al. szerint elvarhato hogy az itemek atlagos kommunalitasa legalabb 0.6 legyen.** A mi esetunkben ennel megengedobbek is lehetunk, mert az elemszamunk nagyobb, de egy melyebb faktorelemzes eseten igy is erdemes lehet elgondolkodni a rosszul reprezentalt (alacsony kommunalitasu) itemek kizarasan.	
 
 # MacCallum, R. C., Widaman, K. F., Zhang, S., & Hong, S. (1999). Sample size in factor analysis. Psychological methods, 4(1), 84.	
 
@@ -576,7 +574,7 @@ mean(EFA_mod1$communality)
 
 # ## Idealis faktorszam kivalasztasa	
 
-# A fokomponenselemzeshez hasonloan meg kell hataroznunk, hany faktort szeretnenk kinyerni az adatokbol. Ahogy azt a fokomponenselemzesnel is lattuk, ennek az eldontesere hasznalhatjuk a scree-tesztet, a Kaiser-Guttman kriteriumot, vagy a parallel tesztet. Ezen felul a psych pacakge ket ujabb modszert is felkinal a donteshozas elosegitesere: a very simple structure (VSS) kriteriumot, es a Wayne Velicer's Minimum Average Partial (MAP) kriteriumot. (A vss() funkcio a psych package-ben)	
+# A fokomponenselemzeshez hasonloan meg kell hataroznunk, hany faktort szeretnenk kinyerni az adatokbol. Ahogy azt a fokomponenselemzesnel is lattuk, ennek az eldontesere hasznalhatjuk a scree-tesztet, a Kaiser-Guttman kriteriumot, vagy a parallel tesztet. Ezen felul a psych pacakge ket ujabb modszert is felkinal a donteshozas elosegitesere: a very simple structure (VSS) kriteriumot, es a Wayne Velicer's Minimum Average Partial (MAP) kriteriumot. (A vss() funkcio a psych package-ben). Elfogadhato megoldas, ha ezek mindegyiket lefuttatjuk, es azt a vegso faktorszamot valasztjuk, amelyet a legtobb modszer javasol.	
 
 # Az alabbi peldaban a psych package fa.parallel funciojat es az nfactors funkciot hasznaljuk arra, hogy a kulonbozo kriteriumok szerint eldonthessuk, hany faktor megtartasa lenne idealis.	
 
@@ -608,15 +606,13 @@ mean(EFA_mod2$communality)
 	
 
 
-
-
 # ## Faktorforgatas	
 #  	
-# A faktorforgatas celja hogy megkonnyitse a faktorok ertelmezeset. Igy elkerulheto hogy az egesz faktorstruktura 1 vagy ket nagyon dominans faktorbol alljon, amire angyon erosek a toltesek, mig a tobbi faktor ertelmezese kodos. A faktorforgatas soran az eredeti valtozok ugyan ott maradnak a "faktorterben", viszont a faktorok dimenzio tengelyeit elforgatjuk, hogy jobban railleszkedjenek egyes valtozocsoportokra. 	
+# A faktorforgatas celja hogy megkonnyitse a faktorok ertelmezeset. Igy elkerulheto hogy az egesz faktorstruktura 1 vagy ket nagyon dominans faktorbol alljon, amire nagyon erosen toltenek az itemek, mig a tobbi faktor ertelmezese kevesbe egyertelmu. A faktorforgatas soran az eredeti valtozok ugyan ott maradnak a "faktorterben", viszont a faktorok dimenzio tengelyeit elforgatjuk, hogy jobban railleszkedjenek egyes item-csoportokra. 	
 
-# A faktorforgatasnak szamos modszere ismert, de ezek ket fo csoportba sorolhatok: ortogonalis es oblique modszerek koze. Az ortogonalis modszerek (mint pl. Quartimax, Equimax, vagy a pszichologiaban leggyakrabban hasznalt **Varimax** modszer) soran a faktor dimenziok egymasra merolegesek maradnak (ez azt jelenti hogy egymassal nem korrelalnak majd a vegso faktorok). Az oblique modszerek (mint pl. **Direct Oblimin** vagy a Promax) eseten viszont megengedett hogy a vegso faktorok valamellyest korrelaljanak egymassal. Az exploratoros faktorelemzes soran tobb modszert is kiprobalhatunk, de itt fontos az elmeleti megalapozottsag is. Elkepzelheto hogy a faktorok korrelaljanak egymassal? Ha igen, akkor az oblique modszerekre erdemes hagyatkozni. (Altalaban a korrelalatlan faktorokat konnyebb ertelmezni).	
+# A faktorforgatasnak szamos modszere ismert, de ezek ket fo csoportba sorolhatok: ortogonalis es oblique modszerek koze. Az ortogonalis modszerek (mint pl. Quartimax, Equimax, vagy a pszichologiaban leggyakrabban hasznalt **Varimax** modszer) soran a faktor dimenziok egymasra merolegesek maradnak (ez azt jelenti hogy egymassal nem korrelalnak majd a vegso faktorok). Az oblique modszerek (mint pl. **Direct Oblimin** vagy a Promax) eseten viszont megengedett hogy a vegso faktorok korrelaljanak egymassal. Az exploratoros faktorelemzes soran tobb modszert is kiprobalhatunk, de itt fontos az elmeleti megalapozottsag is. Elmeletileg elkepzelheto hogy a latens faktorok korrelaljanak egymassal? Ha igen, akkor az oblique modszerekre erdemes hagyatkozni. (Altalaban a korrelalatlan faktorokat konnyebb ertelmezni).	
 
-# Az alapertelmezett faktorforgatasi modszer a Direct Oblimin ("oblimin"). Probaljuk ki a Promax ("promax) es a Varimax ("varimax") modszereket is.	
+# Az alapertelmezett faktorforgatasi modszer a Direct Oblimin ("oblimin"). Probaljuk ki a Promax ("promax) es a Varimax ("varimax") modszereket is. Erdemes tobb forgatasi modszert is kiprobalni a feltaro faktorelemzes soran, es a vegen azt valasztani, amelyik az elmeleti keretunkben a legjobban ertelmezheto faktorstrukturat eredmenyezi. 	
 
 
 
@@ -638,6 +634,7 @@ EFA_mod_varimax <- fa(hsq_correl, nfactors = 4, fm="pa", rotate = "varimax")
 # Tovabbi segitseget nyujthat a sajat funkcio amit a fokomponsneselemzesnel is hasznaltunk: fviz_loadnings_with_cor(). Itt a fa() modelek eseten megadhatjuk a loading_above = parameterst is, ahol specifikalhatjuk, hogy csak a bizonyos abszolut faktortoltes (korrelacio) feletti megfigyelt valtozokat abrazoljuk. Ez megkonnyitheti az abra atlathatosagat.	
 
 
+
 	
 fa.diagram(EFA_mod2)	
 	
@@ -654,7 +651,7 @@ fviz_loadnings_with_cor(EFA_mod2, axes = 4, loadings_above = 0.4)
 
 
 
-# **___________________Gyakorlas___________________**	
+# **___________________Gyakorlas __________________________________**	
 
 # A fent tanult technikakat a Big Five Inventory (bfi) adatbazison gyakorolhatod. Ez a psych package-be beepitett adatbazis, ami 2800 szemely valaszait tartalmazza a Big Five szemelyisegkerdoiv kerdeseira. Az elso 25 oszlop a kerdoiv kerdeseire adott valaszokat tartalmazza, az utolso harom oszlop (gender, education, es age) pedig demografiai kerdeseket tartalmaz. A reszleteket az egyes itemekhez tartozo kerdesekrol es a valaszok kodolasarol elolvashatod ha lefuttatod a ?bfi parancsot.	
 
