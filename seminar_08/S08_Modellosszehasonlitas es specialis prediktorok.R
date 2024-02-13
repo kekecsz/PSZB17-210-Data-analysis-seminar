@@ -68,6 +68,7 @@ data_house = data_house %>%
 
 
 mod_house2 <- lm(price_mill_HUF ~ sqm_living + grade, data = data_house)	
+mod_house3 <- lm(price_mill_HUF ~ sqm_living + waterfront, data = data_house)	
 
 
 # Majd epitunk egy bonyolultabb modellt, amiben a sqm_living es a grade prediktorokon kivul szerepelnek meg a lakas foldrajzi hosszusag es szelesseg adatai is (*long* es *lat*). 	
@@ -96,8 +97,7 @@ summary(mod_house_geolocation)$adj.r.squared
 
 
 
-AIC(mod_house2)	
-AIC(mod_house_geolocation)	
+AIC(mod_house2)	- AIC(mod_house_geolocation)	
 
 
 # Masreszt pedig az **anova() funkcio** segitsegevel osszehasonlithatjuk a ket modell residualis hibajat.  	
@@ -144,6 +144,9 @@ AIC(mod_house_geolocation)
 AIC(mod_house_geolocation_cond)	
 	
 
+mod_house2
+
+
 
 # A fenti eredmenyek alapjan javult a bejoslo ereje a modellunknek a lakas allapotanak (condition) figyelembevetelevel?	
 
@@ -151,6 +154,9 @@ AIC(mod_house_geolocation_cond)
 
 # Tedd hozza az iment epitett modellhez (mod_house_geolocation_cond) a haz epitesenek evet (yr_built) es a furdoszobak szamat (bathrooms) mint prediktorokat.	
 # Ez az uj modell szignifikansan jobban illeszkedik az adatokhoz mint a korabbi modellek?	
+
+
+mod_uj = update(mod_house_geolocation_cond, .~. + yr_built + bathrooms)
 
 
 # *______________________________*	
@@ -202,13 +208,13 @@ describe(data_weightloss)
 fig_1 = data_weightloss %>% 	
   ggplot() +	
   aes(y = BMI_baseline, x = treatment_type) +	
-  geom_boxplot()	
+  geom_boxplot() +	
   ylim(c(20, 45))	
 	
 fig_2 = data_weightloss %>% 	
   ggplot() +	
   aes(y = BMI_post_treatment, x = treatment_type) +	
-  geom_boxplot()	
+  geom_boxplot()	+
   ylim(c(20, 45))	
 	
 grid.arrange(fig_1, fig_2, nrow=1)	
@@ -312,6 +318,17 @@ summary(mod_2)
 # - Mit jelent a has_basement prediktorhoz tartozo regresszios egyutthato?	
 
 
+mod_house4 <- lm(price_mill_HUF ~ sqm_living + grade + has_basement, data = data_house)	
+mod_house4
+
+
+update(mod_house2, .~. + has_basement)
+
+
+
+
+
+
 
 data_house = read.csv("https://bit.ly/2DpwKOr")	
 	
@@ -326,7 +343,7 @@ data_house = data_house %>%
          )	
 	
 
-
+lm(price ~ sqm_living + grade + has_basement, data = data_house)
 
 
 # *______________________________*	
@@ -368,6 +385,9 @@ data_weightloss = data_weightloss %>%
 
 # Ezt az interakciot a modellbe ugy tudjuk beepiteni, ha **a + helyett *-ot** rakunk a ket valtozo koze, amiknek az interakcioja erdekel mindket.	
 
+
+mod_3 = lm(BMI_post_treatment ~ got_pill + got_psychotherapy, data = data_weightloss)	
+summary(mod_3)	
 
 
 mod_3_a = lm(BMI_post_treatment ~ got_pill * got_psychotherapy, data = data_weightloss)	
@@ -413,10 +433,13 @@ summary(mod_3_c)
 # - Van szignifikans interakcio a ket prediktor kozott?	
 # - Hogyan ertemezhetjuk az interakciohoz tartozo regresszios egyutthatot?	
 
+summary(lm(BMI_post_treatment ~ motivation * body_acceptance, data = data_weightloss))
+
 
 # *______________________________*	
 
-
+mod_gyak = lm(BMI_post_treatment ~ motivation * body_acceptance, data = data_weightloss)
+summary(mod_gyak)
 
 # ## Hatvany prediktorok a nem-linearis osszefuggesek modellezesehez	
 
