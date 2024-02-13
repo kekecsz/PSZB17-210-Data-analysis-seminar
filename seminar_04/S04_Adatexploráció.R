@@ -1,4 +1,5 @@
 
+
 # # 4. Ora - Adatexploracio	
 
 # Az ora celja az adatexploracios modszerek elsajatitasa.	
@@ -49,6 +50,10 @@ COVID_data_raw %>%
   summary()	
 
 
+COVID_data_raw %>% 
+  filter(total_cases == 770874669)
+
+
 # Vagy megkapthatjuk ugyanezt az osszes valtozora, ha ugyanezt az egesz adattablara futtatjuk le. Persze a karakter osztalyba tartozo valtozoknal mindezeknek a leiro statisztikaknak nincs ertelme, ott csak a class informaciot kaptjuk az output-ban.	
 
 
@@ -61,7 +66,10 @@ COVID_data_raw %>%
 
 COVID_data <- COVID_data_raw %>% 	
   filter(!is.na(continent))	
-	
+
+COVID_data <- COVID_data_raw %>% 	
+  drop_na(continent)
+
 	
 COVID_data %>%	
   select(total_cases) %>% 	
@@ -72,7 +80,8 @@ COVID_data_raw %>%
   summary()	
 	
 
-
+COVID_data %>% 
+  filter(total_cases == 103436829 )
 
 # *______________________________* 	
 
@@ -81,8 +90,9 @@ COVID_data_raw %>%
 # - Hany regisztralt eset volt osszesen Magyarorszagon a tegnapi napig (*total_cases*)?	
 # - Mi volt a legmagasabb uj eset-szam Magyarorszagon (*new_cases*)?	
 
-# *______________________________*	
 
+
+# *______________________________*	
 
 
 # ## Megtobb leiro statisztika	
@@ -96,12 +106,17 @@ COVID_data %>%
   describe()	
 
 
+COVID_data %>% 
+  drop_na(new_cases_per_million) %>% 
+  summarise(mean(new_cases_per_million))
+
+
 
 # *______________________________* 	
 
 # ### Gyakorlas	
 
-# - Mi az egy millio fore eso uj esetek (*new_cases_per_million*) ferdesegi mutatoja (skew/skewness)?	
+# - Mi az egy millio fore eso uj esetek (*new_cases_per_million*) atlaga (mean)?	
 # - Hany valid (nem NA) adat szerepel az adatbazisban az egy fore eso gdp-rol (*gdp_per_capita*)? 	
 
 # *______________________________*	
@@ -144,14 +159,14 @@ table(COVID_data$continent)
 COVID_data$continent	
 
 
-# Alabb csinalunk egy COVID_data_latest valtozot, amivel csak az adatbazisban szereplo legutolso napra vonatkozo adatok szerepelnek, hogy kisebb legyen az adattabla amivel dolgozunk.	
+# Alabb csinalunk egy COVID_data_latest valtozot, amivel csak 2023-09-01-én beekrezett adatok szerepelnek, hogy kisebb legyen az adattabla amivel dolgozunk.	
 
 
 COVID_data_latest = COVID_data %>% 	
-  filter(date == max(COVID_data$date))	
+  filter(date == "2023-09-01")	
 
 
-# Miutan egy valtozot faktorkent azonositottunk, bizonyos funkciok kepesek felhasznalni ezt az informaciot. Peldaul a summary() function igy mar a fenti **summary()** funkcio is kiadja az **egyes faktorszintekrol** hogy hany megfigyeles tartozik az egyes kategoriakba (faktorszintekbe).	
+# Miutan egy valtozot faktorkent azonositottunk, bizonyos funkciok kepesek felhasznalni ezt az informaciot. Peldaul igy mar a fenti **summary()** funkcio is kiadja az **egyes faktorszintekrol** hogy hany megfigyeles tartozik az egyes kategoriakba (faktorszintekbe).	
 
 
 COVID_data %>% 	
@@ -212,7 +227,7 @@ COVID_data_latest %>%
   ggplot() +	
   aes(x = gdp_per_capita) +	
   geom_density() + 	
-  geom_vline(xintercept = 5000, linetype="dashed", 	
+  geom_vline(xintercept = c(5000, 10000), linetype="dashed", 	
                 color = "red", size=1.5)	
 	
 
@@ -228,6 +243,8 @@ COVID_data = COVID_data %>%
                                                 gdp_per_capita >= 5000 & gdp_per_capita < 10000 ~ "medium",	
                                                 gdp_per_capita > 10000 ~ "large")))	
 levels(COVID_data$gdp_per_capita_kat)	
+
+cbind(COVID_data$gdp_per_capita_kat, COVID_data$gdp_per_capita)
 	
 # ugyanez a COVID_data_latest -al	
 	
@@ -241,6 +258,11 @@ COVID_data_latest = COVID_data_latest %>%
 # Amikor abrat rajzolunk erreol a valtozorol, lathatjuk hogy a faktorszintek sorrendje "large", "medium", es "small" az abran. 	
 
 
+COVID_data_latest[,c("gdp_per_capita", "gdp_per_capita_kat")]
+
+
+
+
 
 COVID_data_latest %>%	
   select(gdp_per_capita_kat) %>% 	
@@ -251,7 +273,7 @@ COVID_data_latest %>%
 	
 
 
-# Ez nem feltetlenul legikus abrazolas, hiszen altalaban a kisebbtol a nagyobbig szoktunk haladni balrol jobbra. De az R nem tudja mit jelentenek a faktorszintek nevei. A faktorszintek sorrendjenek meghatarozasanal ezert alapertelmezett modon **abc sorrendet hasznal**. 	
+# Ez nem feltetlenul intuitiv abrazolas, hiszen altalaban a kisebbtol a nagyobbig szoktunk haladni balrol jobbra. De az R nem tudja mit jelentenek a faktorszintek nevei. A faktorszintek sorrendjenek meghatarozasanal ezert alapertelmezett modon **abc sorrendet hasznal**. 	
 
 # Specifikalhatjuk maskepp is a faktroszintek sorrendjet a factor funkcioban a **levels = c()** parameteren keresztul egy vektorban megadva. 	
 
@@ -372,7 +394,7 @@ ggplot() +
 
 # ### Gyakorlas	
 
-# Szurd az adatokat ugy hogy csak a 2020-09-07-en jeletett adatokkal dolgozzunk	
+# Szurd az adatokat ugy hogy csak a 2020-09-07-en jeletett adatokkal dolgozzunk, és úgy, hogy csak a total_cases, new_cases, people_vaccinated, location, continent változók legyenek a vizsgált adatbázisban.	
 
 # Hasznald a fent tanult modszereket, hogy **azonositsd az COVID_data adattablaban levo hibakat** vagy nem vart furcsasagokat.	
 
@@ -470,6 +492,7 @@ table(COVID_data_latest$gdp_per_capita_kat, COVID_data_latest$continent)
 
 	
 COVID_data_latest %>%	
+  drop_na(gdp_per_capita_kat) %>% 	
 ggplot() +	
   aes(x = continent, fill = gdp_per_capita_kat) +	
   geom_bar()	
@@ -481,9 +504,10 @@ ggplot() +
 
 	
 COVID_data_latest %>%	
+  drop_na(gdp_per_capita_kat) %>%   	
 ggplot() +	
   aes(x = continent, fill = gdp_per_capita_kat) +	
-  geom_bar(position = "fill")	
+  geom_bar(position = "fill")
 	
 
 
@@ -528,12 +552,14 @@ COVID_data_latest = COVID_data_latest %>%
 
 szamossag_plot <- 	
 COVID_data_latest %>%	
+  drop_na(gdp_per_capita_kat) %>% 	
 ggplot() +	
   aes(x = continent, fill = gdp_per_capita_kat) +	
   geom_bar()	
 	
 reszarany_plot <- 	
 COVID_data_latest %>%	
+  drop_na(gdp_per_capita_kat) %>% 	
 ggplot() +	
   aes(x = continent, fill = gdp_per_capita_kat) +	
   geom_bar(position = "fill") +	
@@ -711,7 +737,6 @@ COVID_data_latest %>%
 
 
 
-	
 COVID_data_latest %>%	
   select(continent, gdp_per_capita) %>% 	
   drop_na() %>%	
