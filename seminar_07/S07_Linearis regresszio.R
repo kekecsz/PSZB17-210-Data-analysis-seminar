@@ -200,8 +200,8 @@ mydata %>%
 # 2. Epits egy egyszeru linearis regresszio modellt az lm() fugvennyel amiben az **exam_score** (ZH eredmeny) a kimeneti valtozo es az **hours_of_practice_per_week** (hetente atlagosan hany orat gyakololt) a prediktor. A modell eredmenyet mentsd el egy objektumba.	
 # 3. Ird le a regresszios fuggvenyt amivel bejosolhato a ZH eredmeny (exam_score).	
 # 4. Ertelmezd a regresszios fuggvenyt. Aki tobbet gyakorol annak magasabb vagy alacsonyabb a ZH eredmenye? (Egy abra segithet)	
-# 5. Ertelmezd a regresszios fuggvenyt. Aki egy oraval tobbet gyakorol hetente mint masok, annak mennyivel varhato hogy magasabb lesz az energiaszintje?	
-# (Opcionális: 5. Ennek a modellnek a segitsegevel becsuld meg a ZH eredmenyet olyan embereknek akik heti 2, 5, vagy 8 orat gyakorolnak.)	
+# 5. Ertelmezd a regresszios fuggvenyt. Aki egy oraval tobbet gyakorol hetente mint masok, annak mennyivel varhato hogy magasabb lesz a uh eredmenye?	
+# (Opcionális: 6. Ennek a modellnek a segitsegevel becsuld meg a ZH eredmenyet olyan embereknek akik heti 2, 5, vagy 8 orat gyakorolnak.)	
 
 # **________________________**	
 
@@ -459,9 +459,7 @@ scatter3d(price_HUF ~ sqm_living + grade, data = data_house)
 # Fontos, hogy a prediktorok ertekeit egy data.frame vagy tibble formatumban kell megadnunk, es a prediktorvaltozok valtozoneveinek meg kell egyeznie a regresszios modellben hasznalt valtozonevekkel.	
 
 
-sqm_living = c(60, 60, 100, 100)	
-grade = c(6, 9, 6, 9)	
-newdata_to_predict = as.data.frame(cbind(sqm_living, grade))	
+newdata_to_predict = data.frame(sqm_living = c(60, 60, 100, 100),	grade = c(6, 9, 6, 9))	
 predicted_price_HUF = predict(mod_house1, newdata = newdata_to_predict)	
 	
 cbind(newdata_to_predict, predicted_price_HUF)	
@@ -490,7 +488,7 @@ AIC(mod_house1)
 
 # Vagyis az "Eredmenyek" reszben igy irnank a fenti pelda eredmenyeirol: 	
 
-# "A tobbszoros regresszios modell mely tartalmazta a lakoterulet es a lakas minosites prediktorokat hatekonyabban tudta bejosolni a lakas arat mint a null modell. A modell a lakasar varianciajanak 0.35%-at magyarazta (F (2, 197) = 54.94, p < 0.001, Adj. R^2 = 0.35, AIC = 2137.06"	
+# "A tobbszoros regresszios modell mely tartalmazta a lakoterulet es a lakas minosites prediktorokat hatekonyabban tudta bejosolni a lakas arat mint a null modell. A modell a lakasar varianciajanak 35%-at magyarazta (F (2, 197) = 54.94, p < 0.001, Adj. R^2 = 0.35, AIC = 2137.06"	
 
 # Ezen felul meg kell adnunk a **regresszios egyenletre es az egyes prediktorok becsleshez valo hozzajarulasara vontkozo adatokat**. Ezt altalaban egy osszefoglalo tablazatban szoktuk megadni, melyben a kovetkezo adatok szerepelnek prediktoronkent:	
 
