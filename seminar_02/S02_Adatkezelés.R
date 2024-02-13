@@ -54,11 +54,18 @@ is.vector(number)
 
 
 
+
+
 # # Alapvető parancsok az adatok megismeréséhez	
 
 # ## Combine függvény	
 
 # A munkánk során erősen hagyatkozunk a c() függvényre. Ez azt jelenti, "combine", és azok az elemek amit a c()-n belül vannak, egy vektorba rendeződnek. 	
+
+my_list = list("valami", USArrests)
+
+my_list[[2]]
+
 
 
 my_vector <- c(1, 3, 2, -3, 3)	
@@ -349,6 +356,8 @@ ToothGrowth %>%
 ToothGrowth %>%	
   select(supp, len) %>% 	
   summary()	
+
+summary(ToothGrowth[,c("supp", "len")])
 	
 ToothGrowth %>%	
   select(-dose)	
@@ -401,7 +410,7 @@ ToothGrowth %>%
 # **recode()**: diszkrét változókat tudunk vele újra kódolni.	
 
 
-ToothGrowth %>% 	
+ToothGrowth_recoded = ToothGrowth %>% 	
   mutate(dose_recode = recode(dose, 	
                               "0.5" = "small",	
                               "1.0" = "medium",	
@@ -425,6 +434,13 @@ ToothGrowth %>%
 
 
 # *____________________________________________*	
+
+
+ToothGrowth %>% 
+  filter(supp == "VC") %>% 
+    group_by(dose) %>% 
+      summarise(hosszatlag = mean(len))
+
 
 
 # ## A tidyverse limitációi	
